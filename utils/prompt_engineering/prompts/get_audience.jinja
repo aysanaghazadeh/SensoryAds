@@ -1,0 +1,8 @@
+Context: This is the message of an advertisement image convincing the audience to take the action in the sentence. The messages are:
+{% for statement in action_reason %}
+    - {{statement}}
+{% endfor %}
+Question: Who is the audience of this advertisement?
+Only return one sentence description of the possible audience without any further explanation.
+The audience of the advertisement:
+
