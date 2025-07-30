@@ -4,7 +4,7 @@ import random
 import csv
 import json
 from collections import Counter, defaultdict
-from util.data.mapping import TOPIC_MAP as topic_map
+from utils.data.mapping import TOPIC_MAP as topic_map
 
 
 def get_train_data(args):
