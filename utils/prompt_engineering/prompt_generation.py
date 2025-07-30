@@ -3,7 +3,7 @@ import os.path
 from LLMs.LLM import LLM
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
-from util.data.mapping import SENTIMENT_MAP, TOPIC_MAP
+from utils.data.mapping import SENTIMENT_MAP, TOPIC_MAP
 from collections import Counter
 
 
