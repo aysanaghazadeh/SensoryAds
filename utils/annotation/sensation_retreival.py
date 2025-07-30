@@ -5,6 +5,7 @@ import os
 from PIL import Image
 import json
 
+
 def get_model(
         args
     ):
@@ -26,6 +27,14 @@ def retreive_single_sensation(
     answer_index = ''.join(i for i in response if i.isdigit())
     answer = sensations[answer_index]
     return answer
+
+def retrieve_visual_elements(
+        model,
+        image,
+        prompt
+    ):
+    response = model(image, prompt)
+    return response
 
 def get_child_sensations(
         sensations
@@ -59,7 +68,14 @@ def retreive_sensation(
     if isinstance(sensations, dict):
         return sensation + ',',  retreive_sensation(args, model, image, sensations[sensation])
     else:
-        return sensation
+        data = {'physical_sensation': sensation}
+        prompt_file = 'extract_visual_elements.jinja'
+        MLLM_prompt = args.MLLM_prompt
+        args.MLLM_prompt = prompt_file
+        prompt = generate_prompt(args, data)
+        visual_elements = f'Visual_elements: {retrieve_visual_elements(model, image, prompt)}'
+        args.MLLM_prompt = MLLM_prompt
+        return sensation + '\n' + visual_elements
 
 def process_images(
         args, 
@@ -79,7 +95,7 @@ def process_images(
         image_path = os.path.join(args.data_path, args.test_set_images, image_url)
         image = Image.open(image_path)
         sensations = SENSATION_HIERARCHY
-        image_sensation_map[image_url] = retreive_sensation(args, model, image, sensations)
+        image_sensation_map[image_url]['sensation'] = retreive_sensation(args, model, image, sensations)
         if results_path:
             with open(results_path, 'w') as f:
                 json.dump(image_sensation_map, f) 

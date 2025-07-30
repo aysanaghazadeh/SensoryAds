@@ -3,7 +3,7 @@ from MLLMs.InternVL2 import InternVL
 from MLLMs.LLAVA16 import LLAVA16
 from MLLMs.QWenVL import QWenVL
 from MLLMs.GPT4_o import GPT4_o
-from MLLMs.InternVL2 import InternVL
+from MLLMs.Gemini import Gemini
 
 class MLLM(nn.Module):
     def __init__(self, args):
@@ -13,7 +13,8 @@ class MLLM(nn.Module):
             'LLAVA16': LLAVA16,
             'InternVL': InternVL,
             'GPT4_o': GPT4_o,
-            'InternVL2_5': InternVL
+            'InternVL2_5': InternVL,
+            'Gemini': Gemini
         }
         self.model = model_map[args.MLLM](args)
 
