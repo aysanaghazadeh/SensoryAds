@@ -7,7 +7,7 @@ from util.data.mapping import SENTIMENT_MAP, TOPIC_MAP
 from collections import Counter
 
 
-class PromptGenerator:
+class ImageGenerationPromptGenerator:
     def __init__(self, args):
         self.LLM_model = None
         self.descriptions = None
@@ -295,3 +295,10 @@ class PromptGenerator:
         prompt_generation_method = getattr(self, prompt_generator_name)
         prompt = prompt_generation_method(args, image_filename)
         return prompt
+
+def generate_prompt(args, data):
+    env = Environment(loader=FileSystemLoader(args.prompt_path))
+    prompt_file = args.MLLM_prompt if args.model_type == 'MLLM' else args.LLM_prompt
+    template = env.get_template(prompt_file)
+    output = template.render(**data)
+    return output

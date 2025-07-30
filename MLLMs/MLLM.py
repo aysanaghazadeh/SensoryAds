@@ -5,9 +5,9 @@ from MLLMs.QWenVL import QWenVL
 from MLLMs.GPT4_o import GPT4_o
 from MLLMs.InternVL2 import InternVL
 
-class VLM(nn.Module):
+class MLLM(nn.Module):
     def __init__(self, args):
-        super(VLM, self).__init__()
+        super(MLLM, self).__init__()
         model_map = {
             'QWenVL': QWenVL,
             'LLAVA16': LLAVA16,
@@ -15,7 +15,7 @@ class VLM(nn.Module):
             'GPT4_o': GPT4_o,
             'InternVL2_5': InternVL
         }
-        self.model = model_map[args.VLM](args)
+        self.model = model_map[args.MLLM](args)
 
     def forward(self, image, prompt, generate_kwargs=None):
         if generate_kwargs is None:

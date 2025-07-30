@@ -50,10 +50,15 @@ def parse_args():
                         type=str,
                         default='IN',
                         help='Choose among IN, UH, combine')
-    parser.add_argument('--VLM',
+    parser.add_argument('--model_type',
+                        type=str,
+                        choices=['LLM', 'MLLM'],
+                        default='MLLM',
+                        help='the model used for text generation tasks like evaluation, description generation, etc')
+    parser.add_argument('--MLLM',
                         type=str,
                         default='llava')
-    parser.add_argument('--VLM_prompt',
+    parser.add_argument('--MLLM_prompt',
                         type=str,
                         default='IN_description_generation.jinja')
     parser.add_argument('--llm_prompt',
@@ -156,6 +161,17 @@ def parse_args():
                         type=str,
                         default=None,
                         help='api key for openai')
+    parser.add_argument('--resume',
+                        default=False,
+                        type=bool,
+                        help='True if continuing the process from saved file.')
+    parser.add_argument('--inference_type',
+                        default='sensation_extraction',
+                        type=str,
+                        choices=['image_generation', 'sensation_extraction'],
+                        help='Inference type which can be image generaiton, sensation_extraction, etc.')
+    parser.add_argument('--result_filename',
+                        type=str)
     return parser.parse_args()
 
 
