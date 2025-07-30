@@ -24,7 +24,7 @@ def retreive_single_sensation(
         response = model(image, prompt)
     else:
         response = model(prompt)
-    answer_index = ''.join(i for i in response if i.isdigit())
+    answer_index = int(''.join(i for i in response if i.isdigit()))
     answer = sensations[answer_index]
     return answer
 
