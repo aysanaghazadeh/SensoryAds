@@ -11,12 +11,10 @@ class Gemini(nn.Module):
         
 
     def forward(self, image, prompt):
-        print(f'Gemini Prompt: {prompt}')
         response = self.client.models.generate_content(
                         model="gemini-2.5-flash",
                         contents=[image, prompt],
                     )
-        print('|'*100)
         print(f'Gemini Reponse: {response.text}')
         print('-' * 40)
         return response.text.split(':')[-1]

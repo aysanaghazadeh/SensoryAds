@@ -73,7 +73,7 @@ def retreive_sensation(
         MLLM_prompt = args.MLLM_prompt
         args.MLLM_prompt = prompt_file
         prompt = generate_prompt(args, data)
-        visual_elements = f'Visual elements: {retrieve_visual_elements(model, image, prompt)}'
+        visual_elements = f'Visual elements:{retrieve_visual_elements(model, image, prompt)}'
         args.MLLM_prompt = MLLM_prompt
         sensation = sensation + '\n' + visual_elements
         return sensation
@@ -98,7 +98,7 @@ def process_images(
         image = Image.open(image_path)
         sensations = SENSATION_HIERARCHY
         image_sensation_info = retreive_sensation(args, model, image, sensations)
-        print(image_sensation_info)
+        image_sensation_map[image_url] = {}
         image_sensation_map[image_url]['sensation'] = image_sensation_info.split('Visual elements:')[0].split(',')
         image_sensation_map[image_url]['visual_elements'] = image_sensation_info.split('Visual elements:')[-1].split(',')
         print(f'sensation info for image {image_url} is: \n {json.dumps(image_sensation_map[image_url], indent=4)}')
