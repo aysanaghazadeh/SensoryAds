@@ -66,7 +66,7 @@ def retreive_sensation(
     prompt = generate_prompt(args, data)
     sensation = retreive_single_sensation(args, model, image, prompt, sensations_list)
     if isinstance(sensations, dict):
-        return sensation + ',',  retreive_sensation(args, model, image, sensations[sensation])
+        return sensation + ',',  str(retreive_sensation(args, model, image, sensations[sensation]))
     else:
         data = {'physical_sensation': sensation}
         prompt_file = 'extract_visual_elements.jinja'
