@@ -151,7 +151,7 @@ def parse_args():
                         help='Path to the description file for the T2I input.')
     parser.add_argument('--prompt_path',
                         type=str,
-                        default='util/prompt_engineering/prompts',
+                        default='utils/prompt_engineering/prompts',
                         help='Path to the folder of prompts. Set the name of prompt files as: {text_input_type}.jinja')
     parser.add_argument('--fine_tuned',
                         type=bool,
