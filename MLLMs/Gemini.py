@@ -15,5 +15,7 @@ class Gemini(nn.Module):
                         model="gemini-2.5-flash",
                         contents=[image, prompt],
                     )
+        print(f'Gemini Reponse: {response.text}')
+        print('-' * 40)
         return response.text.split(':')[-1]
         
