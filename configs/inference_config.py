@@ -44,7 +44,7 @@ def parse_args():
                         help='Choose between PittAd, whoops')
     parser.add_argument('--AD_type',
                         type=str,
-                        default='COM',
+                        default='ALL',
                         choices=['COM', 'PSA', 'ALL'])
     parser.add_argument('--description_goal',
                         type=str,
