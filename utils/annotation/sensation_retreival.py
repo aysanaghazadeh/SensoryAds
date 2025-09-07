@@ -1,4 +1,5 @@
 from MLLMs.MLLM import MLLM
+from LLMs.LLM import LLM
 from utils.data.physical_sensations import SENSATION_HIERARCHY
 from utils.prompt_engineering.prompt_generation import generate_prompt
 import os
@@ -9,7 +10,10 @@ import json
 def get_model(
         args
     ):
-    model = MLLM(args)
+    if args.model_type == 'LLM':
+        model = LLM(args)
+    if args.model_type == 'MLLM':
+        model = MLLM(args)
     return model
 
 def retreive_single_sensation(
@@ -21,11 +25,12 @@ def retreive_single_sensation(
     ):
     assert args.model_type == 'LLM' or image is not None, 'No image is provided for MLLM'
     if image:
-        response = model(image, prompt)
+        responses = model(image, prompt)
     else:
-        response = model(prompt)
-    answer_index = int(''.join(i for i in response if i.isdigit()))
-    answer = sensations[answer_index]
+        responses = model(prompt)
+    responses = responses.split(',')
+    answer_indices = [int(''.join(i for i in response if i.isdigit())) for response in responses]
+    answers = [sensations[answer_index] for answer_index in answer_indices]
     return answer
 
 def retrieve_visual_elements(

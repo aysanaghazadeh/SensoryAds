@@ -34,6 +34,10 @@ def parse_args():
                         required=True,
                         help='Choose among ARGS for commandline arguments, DEFAULT for default values, or YAML for '
                              'config file')
+    parser.add_argument('--project_name',
+                        type=str,
+                        default='SensoryAds',
+                        help='Your project name, it will be used to save the results')
     parser.add_argument('--task',
                         type=str,
                         default='PittAd',

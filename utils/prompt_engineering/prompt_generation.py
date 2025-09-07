@@ -14,13 +14,11 @@ class ImageGenerationPromptGenerator:
         self.sentiments = None
         self.topics = None
         self.audiences = None
-        self.physical_sensation = None
         self.set_LLM(args)
         self.set_descriptions(args)
         self.set_sentiments(args)
         self.set_topics(args)
         self.set_audience(args)
-        self.set_physical_sensation(args)
 
     def set_LLM(self, args):
         if args.text_input_type == 'LLM':
@@ -42,9 +40,7 @@ class ImageGenerationPromptGenerator:
         if args.with_audience:
             self.audiences = self.get_all_audience(args)
     
-    def set_physical_sensation(self, args):
-        if args.with_physical_sensation:
-            self.physical_sensation = self.get_all_physical_sensation(args)
+    
 
     @staticmethod
     def get_all_sentiments(args):
@@ -70,15 +66,6 @@ class ImageGenerationPromptGenerator:
         audiences = pd.read_csv(audience_file)
         audiences = audiences.set_index('ID')['description'].to_dict()
         return audiences
-    
-    @staticmethod
-    def get_all_physical_sensation(args):
-        if not args.with_physical_sensation:
-            return None
-        physical_sensation_file = os.path.join(args.data_path, f'train/physical_sensation_prediction_with_definition_{args.LLM}_FTFalse_{args.AD_type}.csv')
-        physical_sensations = pd.read_csv(physical_sensation_file)
-        physical_sensations = physical_sensations.set_index('ID')['description'].to_dict()
-        return physical_sensations
 
     @staticmethod
     def get_all_descriptions(args):
@@ -109,7 +96,7 @@ class ImageGenerationPromptGenerator:
         # Convert tuple back to list if necessary
         return list(most_freq_tuple)[0]
 
-    def get_original_description_prompt(self, args, image_filename):
+    def get_original_description_prompt(self, args, image_filename, sensation):
         QA_path = args.test_set_QA if not args.train else args.train_set_QA
         QA_path = os.path.join(args.data_path, QA_path)
         QA = json.load(open(QA_path))
@@ -142,16 +129,10 @@ class ImageGenerationPromptGenerator:
                     audience = 'everyone'
             else:
                 print(f'there is no audience for image: {image_filename}')
-        physical_sensation = 'no sensation'
+        
         if args.with_physical_sensation:
-            if image_filename in self.physical_sensation:
-                physical_sensation = self.physical_sensation[image_filename]
-                if len(physical_sensation.split(':')) > 1:
-                    physical_sensation = physical_sensation.split(':')[-1].split('-')[-1]
-                else:
-                    audience = 'no sensation'
-            else:
-                print(f'there is no sensation for image: {image_filename}')
+            physical_sensation = sensation if sensation else 'no sensation'
+        
         data = {'action_reason': action_reason,
                 'description': self.get_description(image_filename, self.descriptions).split('Description of the image:')[-1],
                 'sentiment': sentiment,
@@ -163,7 +144,7 @@ class ImageGenerationPromptGenerator:
         output = template.render(**data)
         return output
 
-    def get_LLM_generated_prompt(self, args, image_filename):
+    def get_LLM_generated_prompt(self, args, image_filename, sensation):
         sentiment = ''
         if args.with_sentiment:
             if image_filename in self.sentiments:
@@ -192,27 +173,15 @@ class ImageGenerationPromptGenerator:
                     audience = 'everyone'
             else:
                 print(f'there is no audience for image: {image_filename}')
-        physical_sensation = 'no sensation'
+        physical_sensation = ''
         if args.with_physical_sensation:
-            if image_filename in self.physical_sensation:
-                physical_sensation = self.physical_sensation[image_filename]
-                if len(physical_sensation.split(':')) > 1:
-                    physical_sensation = physical_sensation.split(':')[-1].split('-')[-1]
-                else:
-                    audience = 'no sensation'
-            else:
-                print(f'there is no sensation for image: {image_filename}')
+            physical_sensation = sensation if sensation else 'no sensation'
+        
         QA_path = args.test_set_QA if not args.train else args.train_set_QA
         QA_path = os.path.join(args.data_path, QA_path)
         QA = json.load(open(QA_path))
         action_reason = QA[image_filename][0]
-        # if image_filename not in QA:
-        #     return ""
-        # action_reason = []
-        # for AR in QA[image_filename][1]:
-        #     if AR not in QA[image_filename][0]:
-        #         action_reason.append(AR)
-        #         break
+        
         LLM_input_prompt = self.get_LLM_input_prompt(args, action_reason, sentiment, topic, audience)
         description = self.LLM_model(LLM_input_prompt)
         # description = f'{description}'
@@ -242,7 +211,7 @@ class ImageGenerationPromptGenerator:
         print('LLM generated prompt:', output)
         return output
 
-    def get_AR_prompt(self, args, image_filename):
+    def get_AR_prompt(self, args, image_filename, sensation):
         sentiment = ''
         if args.with_sentiment:
             if image_filename in self.sentiments:
@@ -271,32 +240,29 @@ class ImageGenerationPromptGenerator:
                     audience = 'everyone'
             else:
                 print(f'there is no audience for image: {image_filename}')
+        physical_sensation = sensation if sensation else 'no sensation'
         QA_path = args.test_set_QA if not args.train else args.train_set_QA
         QA_path = os.path.join(args.data_path, QA_path)
         QA = json.load(open(QA_path))
         action_reason = QA[image_filename][0]
-        # action_reason = []
-        # for AR in QA[image_filename][1]:
-        #     if AR not in QA[image_filename][0]:
-        #         action_reason.append(AR)
-        #         break
-        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience}
+        
+        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience, 'physical_sensation': physical_sensation}
         env = Environment(loader=FileSystemLoader(args.prompt_path))
         template = env.get_template(args.T2I_prompt)
         output = template.render(**data)
         print('AR prompt:', output)
         return output
 
-    def generate_prompt(self, args, image_filename):
+    def generate_prompt(self, args, image_filename, sensation=None):
         prompt_generator_name = f'get_{args.text_input_type}_prompt'
         print('method: ', prompt_generator_name)
         if prompt_generator_name == 'get_LLM_prompt':
             prompt_generator_name = 'get_LLM_generated_prompt'
         prompt_generation_method = getattr(self, prompt_generator_name)
-        prompt = prompt_generation_method(args, image_filename)
+        prompt = prompt_generation_method(args, image_filename, sensation)
         return prompt
 
-def generate_prompt(args, data):
+def generate_text_generation_prompt(args, data):
     env = Environment(loader=FileSystemLoader(args.prompt_path))
     prompt_file = args.MLLM_prompt if args.model_type == 'MLLM' else args.LLM_prompt
     template = env.get_template(prompt_file)

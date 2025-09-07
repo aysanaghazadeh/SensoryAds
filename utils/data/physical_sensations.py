@@ -1,97 +1,113 @@
 SENSATION_HIERARCHY = {
     'Touch': {
-        'Temperature Sensations': [
-            'Freezing cold',
-            'Cool and refereshing',
-            'Comforting warmth',
-            'Intense heat'
+        'Temperature': [
+            'Freezing Cold',
+            'Cool and Refreshing',
+            'Comforting Warmth',
+            'Intense Heat'
         ],
-        'Texture Sensations': [
+        'Texture': [
             'Softness',
-            'Silky smoothness',
+            'Silky Smoothness',
             'Stickiness',
             'Roughness',
             'Sharpness'
         ],
-        'Moisture/Dryness': [
-            'Soaking wetness',
+        'Moisture and Dryness': [
+            'Soaking Wetness',
             'Mistiness',
-            'Greasiness',
+            'Greasiness and Oiliness',
             'Dryness'
         ],
-        'Movement and Body Position': [
-            'High speed',
+        'Motion and Weight': [
+            'High Speed and Acceleration',
             'Weightlessness',
             'Heaviness'
             'Tension',
             'Vibration'
         ],
-        'Pain and relief': [
-            'Sharp pain',
-            'Aching pain',
-            'Soothing and numbing relief'
+        'Pain and Relief': [
+            'Sharp Pain',
+            'Aching Pain',
+            'Soothing Relief and Numbing'
         ]
     },
     'Smell': {
-        'Fresh and clean': [
-            'Fruit and vegtables',
-            'Nature',
-            'Clean'
+        'Fresh and Clean Smell': [
+            'Fresh Fruit Smell',
+            'Fresh Greenery Smell',
+            'Clean and Soapy Smell',
+            'Refreshing Minty Smell',
+            'Refreshing Ocean Smell',
+            'Floral Smell',
+            'Fragrant Smell'
         ],
-        'Rich and Food-Based': [
-            'Drinks',
-            'Fruits and Vegtables',
-            'Foods',
-            'Bakery'
+        'Culinary Smell': [
+            'Drinks Smell',
+            'Savory Food Smell',
+            'Spices Smell',
+            'Bakery Smell',
+            'Sweet Smell'
         ],
-        'Floral and sweets': [
-            'Flowers',
-            'Fruits and vegtables'
+        'Earthy and Musky Smell': [
+            'Woody Smell',
+            'Leather Smell',
+            'Earth and Soil Smell',
+            'Natural Greenary Smell'
         ],
-        'Erthy and musky': [
-            'woody',
-            'Leather',
-            'Nature'
-        ],
-        'Medicinal and Pungent':[
-            'Medicine',
-            'Cleaning Products'
+        'Chemical and Pungent Smell':[
+            'Medicine  and Antiseptic Smell',
+            'Cleaning Products and Chemicals Smells',
+            'Pungent Smell',
+            'Sickening Smell'
         ]
     },
     'Taste': [
-        'Sweet',
-        'Sour',
-        'Bitter',
-        'Spicy',
-        'Umami',
-        'Salty',
-        'Cooling and Refreshing'
+        'Sweet Taste',
+        'Sour Taste',
+        'Bitter Taste',
+        'Spicy Taste',
+        'Umami Taste',
+        'Salty Taste',
+        'Cooling Minty Taste'
     ],
     'Sound': {
-        'Music': [
-            'Instrument',
-            'Singing'
+        'Music Sounds': [
+            'Instruments Sound',
+            'Singing Voice'
         ],
-        'Nature': [
-            'Animal Roar',
-            'Birds',
-            'Waterfall',
-            'Wind',
-            'Peace'
+        'Rural and Industrial Sounds': [
+            'Vehicles Sound',
+            'Traffic Jam Sound',
+            'Machinery Sound'
         ],
-        'Liquid': [
-            'Bubbling and fizz',
-            'Splash',
-            'Pouring'
+        'Nature Sounds': [
+            'Animal Sounds',
+            'Natural Water Sound',
+            'Atmospheric Phenomena Sound',
+            'Geological Events Sound',
+            'Peaceful Ambient'
         ],
-        'Quiet': [
-            'Quiet'
+        'Liquid Sounds': [
+            'Bubbling and Fizzing Sound',
+            'Splash Sound',
+            'Pouring Sound'
+        ]
+        'Silence and Quiet': None,
+        'Human Voice': [
+            'Sad Voice',
+            'Rushing Voice',
+            'Compassion Voice',
+            'Happy Voice',
+            'Argument Voice',
+            'Harsh Voice'
         ]
     },
     'Sight': [
-        'Briliance',
+        'Brilliance and Glow',
         'Clarity',
-        'Glow',
         'Blur'
     ]
+    ,
+    'None': None
 }
