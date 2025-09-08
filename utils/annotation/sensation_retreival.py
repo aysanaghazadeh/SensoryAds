@@ -84,7 +84,7 @@ def retreive_sensation(
                                                                                             sensations_map[sensation], 
                                                                                             parent_sensation=sensation)]
         return output_list
-    else
+    else:
         return sensations
 
 def process_files(
