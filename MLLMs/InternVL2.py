@@ -96,6 +96,7 @@ class InternVL(nn.Module):
 
     def forward(self, image, prompt, generate_kwargs={"max_new_tokens": 250}):
         prompt = f'<image>\n{prompt}'
+        print(image)
         pixel_values = self.load_image(image, max_num=6).to(torch.bfloat16).cuda(self.args.device)
         generation_config = dict(
             num_beams=1,
