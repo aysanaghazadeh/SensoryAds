@@ -255,6 +255,7 @@ SENSATION_DEFINITION = {
 		<li>Splash Sound: sound of something hitting liquid.</li>
 		<li>Pouring Sound: continuous liquid flow sound.</li>
         """,
+    'Silence and Quiet': None,
     'Human Voice':
         """
         <li>Sad Voice: Tone of a person who is sad.</li>
@@ -263,5 +264,6 @@ SENSATION_DEFINITION = {
 		<li>Happy Voice: Tone of a person who is happy.</li>
 		<li>Argument Voice: People arguing over a topic, ex: Political Debate </li>
 		<li>Harsh Voice: Someone shouting</li>
-        """
+        """,
+    'None': None
 }
