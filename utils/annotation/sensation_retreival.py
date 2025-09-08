@@ -107,7 +107,7 @@ def process_files(
                                         args.task,
                                         args.AD_type,
                                         args.MLLM if args.model_type == 'MLLM' else args.LLM,
-                                        args.MLLM_prompt is args.model_type == 'MLLM' else args.LLM_prompt
+                                        args.MLLM_prompt if args.model_type == 'MLLM' else args.LLM_prompt
                                     ]).replace('.jinja', '.json')
                                 
                             )
