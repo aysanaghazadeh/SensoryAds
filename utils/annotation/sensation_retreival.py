@@ -98,8 +98,7 @@ def process_files(
         descriptions = pd.read_csv(args.description_file)
     model = get_model(args)
     results_path = os.path.join(args.result_path, 
-                                args.result_filename) if args.result_filename 
-                            else os.path.join(
+                                args.result_filename) if args.result_filename else os.path.join(
                                 args.result_path,
                                 'results',
                                 args.project_name,
