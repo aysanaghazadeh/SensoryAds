@@ -172,7 +172,7 @@ def get_negative_descriptions(args):
             writer.writerow(pair)
 
 
-def generate_description(args)
+def generate_description(args):
     test_images = get_test_data(args)
     if args.description_goal == 'image_descriptor':
         descriptions = get_descriptions(args, test_images)

@@ -169,7 +169,7 @@ def parse_args():
     parser.add_argument('--inference_type',
                         default='sensation_extraction',
                         type=str,
-                        choices=['image_generation', 'sensation_extraction'],
+                        choices=['image_generation', 'sensation_extraction', 'description_generation'],
                         help='Inference type which can be image generaiton, sensation_extraction, etc.')
     parser.add_argument('--result_filename',
                         type=str)

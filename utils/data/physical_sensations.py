@@ -22,7 +22,7 @@ SENSATION_HIERARCHY = {
         'Motion and Weight': [
             'High Speed and Acceleration',
             'Weightlessness',
-            'Heaviness'
+            'Heaviness',
             'Tension',
             'Vibration'
         ],
