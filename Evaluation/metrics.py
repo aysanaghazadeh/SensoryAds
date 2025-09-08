@@ -6,19 +6,17 @@ from PIL import Image
 import torch
 from torch import nn
 from torchvision.transforms import functional as TF
-# from pytorch_fid.fid_score import calculate_fid_given_paths
 import os
 import tempfile
 from transformers import pipeline, BitsAndBytesConfig
 import re
 import base64
 import requests
-from VLMs.InternVL2 import InternVL
-from VLMs.multi_image_InternVL import MultiInternVL
+from MLLMs.InternVL2 import InternVL
+from MLLMs.multi_image_InternVL import MultiInternVL
 import itertools
 from LLMs.LLM import LLM
 from sentence_transformers import SentenceTransformer
-from cleanfid import fid
 
 
 
@@ -74,14 +72,6 @@ class Metrics:
                                                               token=os.environ.get('HF_TOKEN'),
                                                               device_map="auto",
                                                               trust_remote_code=True)
-
-    @staticmethod
-    def get_FID(generated_image_path, real_image_path):
-        score = fid.compute_fid(
-            real_image_path,
-            generated_image_path,
-        )
-        return score
     
     @staticmethod
     def get_IS(generated_image_path):
@@ -207,8 +197,7 @@ class Metrics:
             'image_image_CLIP_score': self.get_image_image_CLIP_score(generated_image_path, real_image_path, args),
             'image_text_CLIP_score': text_image_score['text'],
             'image_action_CLIP_score': text_image_score['action'],
-            'image_reason_CLIP_score': text_image_score['reason'],
-            'FID_score': self.get_FID(generated_image_path, real_image_path, args)}
+            'image_reason_CLIP_score': text_image_score['reason']}
 
         return scores
 
