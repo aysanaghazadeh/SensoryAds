@@ -73,6 +73,7 @@ def retreive_sensation(
                 output_list += [sensation + ',' + retreived_sensation for retreived_sensation in retreive_sensation(args, 
                                                                                                                     model, 
                                                                                                                     image=image, 
+                                                                                                                    description=description
                                                                                                                     sensation_map=sensations_map[sensation], 
                                                                                                                     parent_sensation=sensation)]
         return output_list
