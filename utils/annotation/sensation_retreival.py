@@ -68,8 +68,8 @@ def retreive_sensation(
     sensations_list = get_child_sensations(sensations_map)
     options = get_options(sensations_list)
     data = {
-        'options': options
-        'context': SENSATION_DEFINITION[parent_sensation]
+        'options': options,
+        'context': SENSATION_DEFINITION[parent_sensation],
         'description': description
     }
     prompt = generate_prompt(args, data)

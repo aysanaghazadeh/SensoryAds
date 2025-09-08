@@ -103,7 +103,7 @@ def parse_args():
                         help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate')
     parser.add_argument('--LLM',
                         type=str,
-                        default='Mixtral7B',
+                        default='LLAMA3_instruct',
                         help='LLM chosen from: Mistral7B, phi, LLaMA3')
     parser.add_argument('--train',
                         type=bool,
