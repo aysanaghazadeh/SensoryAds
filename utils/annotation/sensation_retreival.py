@@ -29,7 +29,11 @@ def retreive_single_level_sensation(
     else:
         responses = model(prompt)
     responses = responses.split(',')
-    answer_indices = [int(''.join(i for i in response if i.isdigit())) for response in responses]
+    answer_indices_string = [''.join(i for i in response if i.isdigit()) for response in responses]
+    answer_indices = []
+    for index in answer_indices_string:
+        if len(index) > 0:
+            answer_indices.append(int(index))
     answers = [sensations[answer_index] for answer_index in answer_indices]
     return answers
 
