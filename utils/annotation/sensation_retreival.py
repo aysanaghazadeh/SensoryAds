@@ -65,13 +65,12 @@ def retreive_sensation(
         'description': description
     }
     prompt = generate_text_generation_prompt(args, data)
-    print(image)
     sensations= retreive_single_level_sensation(args, model, prompt, sensations_list, image=image)
     if isinstance(sensations_map, dict):
         output_list = []
         for sensation in sensations:
             if sensation is not None:
-                output_list += [sensation + ',' + retrieved_sensation in retrieve_sensation(arge, 
+                output_list += [sensation + ',' + retrieved_sensation for retrieved_sensation in retrieve_sensation(arge, 
                                                                                             model, 
                                                                                             image, 
                                                                                             sensations_map[sensation], 
