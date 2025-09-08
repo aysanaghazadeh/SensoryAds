@@ -6,7 +6,7 @@ import json
 import os
 from datetime import datetime
 import csv
-from util.data.trian_test_split import get_test_data
+from utils.data.trian_test_split import get_test_data
 import random
 
 
