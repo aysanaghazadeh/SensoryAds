@@ -71,7 +71,6 @@ def get_descriptions(args, images):
                                     f'_{"_".join(args.test_set_images.split('/')[-2:])}'
                                     f'_{args.AD_type}'
                                     f'_{args.MLLM_prompt.replace(".jinja", "")}.csv')
-                                    'real_ads_human_annotation_description_not_text.csv')
     if os.path.exists(description_file):
         print(description_file)
         processed_images = set(pd.read_csv(description_file).ID.values)
