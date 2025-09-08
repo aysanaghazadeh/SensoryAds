@@ -51,5 +51,7 @@ class QWenVL(torch.nn.Module):
         output_text = self.processor.batch_decode(
             generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
         )
-        print(output_text)
+        print(f'User: {prompt}')
+        print(f'Assistant: {output_text}')
+        print('*' * 10)
         return output_text[0]
