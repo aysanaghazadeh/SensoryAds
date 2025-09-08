@@ -1,12 +1,12 @@
 import json
 from jinja2 import Environment, FileSystemLoader
 from transformers import pipeline
-from util.data.trian_test_split import get_test_data, get_train_data
+from utils.data.trian_test_split import get_test_data, get_train_data
 from PIL import Image
 import os
 import csv
 import pandas as pd
-from util.prompt_engineering.prompt_generation import PromptGenerator
+from utils.prompt_engineering.prompt_generation import PromptGenerator
 from LLMs.LLM import LLM
 from MLLMs.MLLM import MLLM
 
