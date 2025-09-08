@@ -1,5 +1,5 @@
 from T2I_models.T2I_model import T2IModel
-from utils.prompt_engineering.prompt_generation import PromptGenerator
+from utils.prompt_engineering.prompt_generation import ImageGenerationPromptGenerator
 from torch import nn
 
 
@@ -7,7 +7,7 @@ class AdvertisementImageGeneration(nn.Module):
     def __init__(self, args):
         super(AdvertisementImageGeneration, self).__init__()
         self.args = args
-        self.prompt_generator = PromptGenerator(self.args)
+        self.prompt_generator = ImageGenerationPromptGenerator(self.args)
         self.T2I_model = T2IModel(args)
         if args.text_input_type == 'LLM':
             self.prompt_generator.set_LLM(args)
