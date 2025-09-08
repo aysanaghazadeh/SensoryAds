@@ -58,6 +58,8 @@ def retreive_sensation(
         image=None, 
     ):
     sensations_list = get_child_sensations(sensations_map)
+    if len(sensations_list) == 0:
+        return []
     options = get_options(sensations_list)
     data = {
         'options': options,
