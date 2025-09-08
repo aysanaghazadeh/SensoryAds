@@ -1,7 +1,7 @@
 from MLLMs.MLLM import MLLM
 from LLMs.LLM import LLM
 from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATION_DEFINITION
-from utils.prompt_engineering.prompt_generation import generate_prompt
+from utils.prompt_engineering.prompt_generation import generate_text_generation_prompt
 import os
 from PIL import Image
 import json
@@ -72,7 +72,7 @@ def retreive_sensation(
         'context': SENSATION_DEFINITION[parent_sensation],
         'description': description
     }
-    prompt = generate_prompt(args, data)
+    prompt = generate_text_generation_prompt(args, data)
     sensations= retreive_single_level_sensation(args, model, image, prompt, sensations_list)
     if isinstance(sensations_map, dict):
         output_list = []
