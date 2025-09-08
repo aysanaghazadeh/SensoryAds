@@ -6,12 +6,8 @@ import torch
 class QWenVL(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
-        self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
-                                                                     torch_dtype=torch.bfloat16,
-                                                                     load_in_8bit=True,
-                                                                     low_cpu_mem_usage=True,
-                                                                     device_map='auto',
-                                                                     trust_remote_code=True).eval()
+        self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct").eval()
+        self.model = self.model.to(device=args.device)
 
         self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct")
 
