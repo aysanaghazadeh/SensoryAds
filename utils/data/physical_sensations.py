@@ -230,7 +230,7 @@ SENSATION_DEFINITION = {
 		<li>Pungent Smell: A sharp and bad smell like cigar, sweat, onion, garlic, etc.</li>
 		<li>Sickening Smell: Advance pungent smells like rotting mean, sewage, sulphuric acid, etc.</li>
         """,
-    'Music Sound':
+    'Music Sounds':
         """
         <li>Instruments Sound: sound produced by musical tools like guitar, piano, drums.</li>
 		<li>Singing Voice: human vocal musical sound.</li>
