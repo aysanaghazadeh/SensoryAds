@@ -70,11 +70,11 @@ def retreive_sensation(
         output_list = []
         for sensation in sensations:
             if sensation is not None:
-                output_list += [sensation + ',' + retreived_sensation for retreived_sensation in retreive_sensation(arge, 
-                                                                                            model, 
-                                                                                            image, 
-                                                                                            sensations_map[sensation], 
-                                                                                            parent_sensation=sensation)]
+                output_list += [sensation + ',' + retreived_sensation for retreived_sensation in retreive_sensation(args, 
+                                                                                                                    model, 
+                                                                                                                    image, 
+                                                                                                                    sensations_map[sensation], 
+                                                                                                                    parent_sensation=sensation)]
         return output_list
     else:
         return sensations
