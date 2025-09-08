@@ -195,7 +195,7 @@ SENSATION_DEFINITION = {
     'Pain and Relief':
         """
         <li>Sharp Pain: sudden, intense pain from a pointed source.</li>
-		<li>Aching Pain: deep, dull, continuous discomfort.</li>
+		<li>SAching Pain: deep, dull, continuous discomfort.</li>
 		<li>Soothing Relief and Numbing: reduction or dulling of discomfort.</li>    
         """,
     'Fresh and Clean Smell':

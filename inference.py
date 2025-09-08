@@ -8,8 +8,7 @@ if __name__ == "__main__":
     if args.inference_type == 'sensation_extraction':
         image_list = get_test_data(args)
         process_files(args, image_list)
-    if args.inference_type == 'image_generation':
+    elif args.inference_type == 'image_generation':
         generate_images(args)
-        
     else:
         raise ValueError(f"Invalid inference type: {args.inference_type}")
