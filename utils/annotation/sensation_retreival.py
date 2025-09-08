@@ -70,7 +70,7 @@ def retreive_sensation(
         output_list = []
         for sensation in sensations:
             print(sensation)
-            if sensation is not None:
+            if sensation is not 'None':
                 output_list += [sensation + ',' + retreived_sensation for retreived_sensation in retreive_sensation(args, 
                                                                                                                     model, 
                                                                                                                     image=image, 
