@@ -74,13 +74,13 @@ def get_descriptions(args, images):
                                     'real_ads_human_annotation_description_not_text.csv')
     if os.path.exists(description_file):
         print(description_file)
-        return pd.read_csv(description_file)
-    with open(description_file, 'w', newline='') as file:
-        writer = csv.writer(file)
-        # Write the header
-        writer.writerow(['ID', 'description'])
+        processed_images = set(pd.read_csv(description_file).ID.values)
+    else:
+        with open(description_file, 'w', newline='') as file:
+            writer = csv.writer(file)
+            # Write the header
+            writer.writerow(['ID', 'description'])
     pipe = get_model(args)
-    processed_images = set()
     for image_url in images:
         if image_url in processed_images:
             continue

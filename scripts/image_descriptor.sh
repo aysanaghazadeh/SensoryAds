@@ -1,0 +1,1 @@
+python inference.py --config_type=DEFAULT --MLLM_prompt=description_generation.jinja --model_type=MLLM --MLLM=InternVL --description_goal=image_descriptor --resume=True
