@@ -6,7 +6,8 @@ import torch
 class QWenVL(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
-        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct").eval()
+        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
+                                                                        ).eval()
         self.model = self.model.to(device=args.device)
 
         self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct")
@@ -51,4 +52,4 @@ class QWenVL(torch.nn.Module):
             generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
         )
         print(output_text)
-        return output_text
+        return output_text[0]
