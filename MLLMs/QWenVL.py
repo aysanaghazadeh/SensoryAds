@@ -7,7 +7,11 @@ class QWenVL(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
         self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
-                                                                     device_map="auto")
+                                                                     torch_dtype=torch.bfloat16,
+                                                                     load_in_8bit=True,
+                                                                     low_cpu_mem_usage=True,
+                                                                     device_map='auto',
+                                                                     trust_remote_code=True).eval()
 
         self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct")
 
