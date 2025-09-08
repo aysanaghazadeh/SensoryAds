@@ -13,7 +13,6 @@ import re
 import base64
 import requests
 from MLLMs.InternVL2 import InternVL
-from MLLMs.multi_image_InternVL import MultiInternVL
 import itertools
 from LLMs.LLM import LLM
 from sentence_transformers import SentenceTransformer
@@ -44,13 +43,11 @@ class Metrics:
                 bnb_8bit_compute_dtype=torch.float16,
                 torch_dtype="float16"
             )
-            if args.VLM == 'LLAVA':
+            if args.MLLM == 'LLAVA':
                 self.pipe = pipeline("image-to-text", model='llava-hf/llava-1.5-13b-hf',
                                      model_kwargs={"quantization_config": quantization_config})
-            elif args.VLM == 'InternVL':
+            elif args.MLLM == 'InternVL':
                 self.pipe = InternVL(args)
-            elif args.VLM == 'MultiInternVL':
-                self.pipe = MultiInternVL(args)
             self.QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
         llm_needed_evaluation = [
             'text_image_alignment',
