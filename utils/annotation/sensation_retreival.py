@@ -74,7 +74,7 @@ def retreive_sensation(
                                                                                                                     model, 
                                                                                                                     image=image, 
                                                                                                                     description=description,
-                                                                                                                    sensation_map=sensations_map[sensation], 
+                                                                                                                    sensations_map=sensations_map[sensation], 
                                                                                                                     parent_sensation=sensation)]
         return output_list
     else:
