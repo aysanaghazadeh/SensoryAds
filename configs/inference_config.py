@@ -61,17 +61,14 @@ def parse_args():
                         help='the model used for text generation tasks like evaluation, description generation, etc')
     parser.add_argument('--MLLM',
                         type=str,
-                        default='llava')
+                        default='InternVL')
     parser.add_argument('--MLLM_prompt',
-                        type=str,
-                        default='IN_description_generation.jinja')
+                        type=str,)
     parser.add_argument('--llm_prompt',
                          type=str,
-                         default='LLM_input.jinja',
                          help='LLM input prompt template file name.')
     parser.add_argument('--T2I_prompt',
                          type=str,
-                         default='LLM.jinja',
                          help='T2I input prompt template file name.')
     parser.add_argument('--with_sentiment',
                         type=bool,
@@ -87,7 +84,7 @@ def parse_args():
                         help='True if you want to include the detected audience by LLM in the prompt.')
     parser.add_argument('--with_physical_sensation',
                         type=bool,
-                        default=False)
+                        default=True)
     parser.add_argument('--model_path',
                         type=str,
                         default='../models',

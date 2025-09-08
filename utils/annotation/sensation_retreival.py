@@ -1,6 +1,6 @@
 from MLLMs.MLLM import MLLM
 from LLMs.LLM import LLM
-from utils.data.physical_sensations import SENSATION_HIERARCHY
+from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATION_DEFINITION
 from utils.prompt_engineering.prompt_generation import generate_prompt
 import os
 from PIL import Image
@@ -61,6 +61,7 @@ def retreive_sensation(
         args, 
         model, 
         sensations_map,
+        parent_sensation='root',
         description=None,
         image=None, 
     ):
@@ -68,6 +69,7 @@ def retreive_sensation(
     options = get_options(sensations_list)
     data = {
         'options': options
+        'context': SENSATION_DEFINITION[parent_sensation]
         'description': description
     }
     prompt = generate_prompt(args, data)
@@ -76,7 +78,11 @@ def retreive_sensation(
         output_list = []
         for sensation in sensations:
             if sensation is not None:
-                output_list += [sensation + ',' + retrieved_sensation in retrieve_sensation(arge, model, image, sensations_map[sensation])]
+                output_list += [sensation + ',' + retrieved_sensation in retrieve_sensation(arge, 
+                                                                                            model, 
+                                                                                            image, 
+                                                                                            sensations_map[sensation], 
+                                                                                            parent_sensation=sensation)]
         return output_list
     else
         return sensations

@@ -11,24 +11,15 @@ class InternVL(nn.Module):
         super(InternVL, self).__init__()
         self.args = args
         self.model = AutoModel.from_pretrained(
-            "OpenGVLab/InternVL2-26B",
+            "OpenGVLab/InternVL3_5-8B",
             torch_dtype=torch.bfloat16,
             load_in_8bit=True,
             low_cpu_mem_usage=True,
             device_map='auto',
             trust_remote_code=True).eval()
-        self.tokenizer = AutoTokenizer.from_pretrained("OpenGVLab/InternVL2-26B",
-                                                       trust_remote_code=True)
-        # path = "OpenGVLab/InternVL-Chat-V1-1"
-        # self.model = AutoModel.from_pretrained(
-        #     path,
-        #     torch_dtype=torch.bfloat16,
-        #     low_cpu_mem_usage=True,
-        #     use_flash_attn=True,
-        #     load_in_8bit=True,
-        #     trust_remote_code=True,
-        #     device_map='auto').eval()
-        # self.tokenizer = AutoTokenizer.from_pretrained(path, trust_remote_code=True, use_fast=False)
+        self.tokenizer = AutoTokenizer.from_pretrained("OpenGVLab/InternVL3_5-8B",
+                                                       trust_remote_code=True,
+                                                       use_fast=False)
 
     def build_transform(self, input_size):
         IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -104,6 +95,7 @@ class InternVL(nn.Module):
         return pixel_values
 
     def forward(self, image, prompt, generate_kwargs):
+        prompt = f'<image>\n{prompt}'
         pixel_values = self.load_image(image, max_num=6).to(torch.bfloat16).cuda(self.args.device)
         generation_config = dict(
             num_beams=1,
