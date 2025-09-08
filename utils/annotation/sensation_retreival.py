@@ -25,21 +25,13 @@ def retreive_single_level_sensation(
     ):
     assert args.model_type == 'LLM' or image is not None, 'No image is provided for MLLM'
     if image:
-        responses = model(image, prompt)
+        responses = model(image, prompt, generate_kwargs={"max_new_tokens": 20})
     else:
         responses = model(prompt)
     responses = responses.split(',')
     answer_indices = [int(''.join(i for i in response if i.isdigit())) for response in responses]
     answers = [sensations[answer_index] for answer_index in answer_indices]
     return answers
-
-def retrieve_visual_elements(
-        model,
-        image,
-        prompt
-    ):
-    response = model(image, prompt)
-    return response
 
 def get_child_sensations(
         sensations
@@ -129,8 +121,6 @@ def process_files(
         elif args.model_type == 'LLM':
             image_sensations = retreive_sensation(args, model, description=description)
         image_sensation_map[image_url] = image_sensations
-        # image_sensation_map[image_url]['sensation'] = image_sensation_info.split('Visual elements:')[0].split(',')
-        # image_sensation_map[image_url]['visual_elements'] = image_sensation_info.split('Visual elements:')[-1].split(',')
         print(f'sensation info for image {image_url} is: \n {json.dumps(image_sensation_map[image_url], indent=4)}')
         print('-' * 100)
         if results_path:

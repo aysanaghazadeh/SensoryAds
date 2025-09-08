@@ -12,7 +12,7 @@ from transformers import pipeline, BitsAndBytesConfig
 import re
 import base64
 import requests
-from MLLMs.InternVL2 import InternVL
+from MLLMs.MLLM import MLLM
 import itertools
 from LLMs.LLM import LLM
 from sentence_transformers import SentenceTransformer
@@ -43,11 +43,7 @@ class Metrics:
                 bnb_8bit_compute_dtype=torch.float16,
                 torch_dtype="float16"
             )
-            if args.MLLM == 'LLAVA':
-                self.pipe = pipeline("image-to-text", model='llava-hf/llava-1.5-13b-hf',
-                                     model_kwargs={"quantization_config": quantization_config})
-            elif args.MLLM == 'InternVL':
-                self.pipe = InternVL(args)
+            self.pipe = MLLM(args)
             self.QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
         llm_needed_evaluation = [
             'text_image_alignment',
@@ -59,16 +55,7 @@ class Metrics:
             self.llm = LLM(args)
             self.QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
             if args.evaluation_type == 'text_image_alignment':
-                # self.model = BGEM3FlagModel('BAAI/bge-m3', use_fp16=True)
                 self.model = SentenceTransformer("BAAI/bge-m3")
-        if args.evaluation_type == 'image_text_ranking':
-            self.tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-4k-instruct",
-                                                           token=os.environ.get('HF_TOKEN'),
-                                                           trust_remote_code=True)
-            self.model = AutoModelForCausalLM.from_pretrained("microsoft/Phi-3-mini-4k-instruct",
-                                                              token=os.environ.get('HF_TOKEN'),
-                                                              device_map="auto",
-                                                              trust_remote_code=True)
     
     @staticmethod
     def get_IS(generated_image_path):
@@ -187,34 +174,6 @@ class Metrics:
             cosine_similarity += torch.nn.functional.cosine_similarity(image_features, text_features).item()
         cosine_similarity = cosine_similarity / len(action_reason)
         return cosine_similarity
-
-    def get_scores(self, text_description, generated_image_path, real_image_path, args):
-        text_image_score = self.get_text_image_CLIP_score(generated_image_path, text_description, args)
-        scores = {
-            'image_image_CLIP_score': self.get_image_image_CLIP_score(generated_image_path, real_image_path, args),
-            'image_text_CLIP_score': text_image_score['text'],
-            'image_action_CLIP_score': text_image_score['action'],
-            'image_reason_CLIP_score': text_image_score['reason']}
-
-        return scores
-
-    def get_creativity_scores(self, text_description, generated_image_path, product_image_paths, args):
-        image_scores = []
-        for product_image in product_image_paths[:1]:
-            image_scores.append(self.get_image_image_CLIP_score(generated_image_path, product_image, args))
-        avg_image_score = sum(image_scores) / len(image_scores)
-        text_score = self.get_action_reason_image_CLIP_score(generated_image_path, text_description, args)
-        creativity = text_score / (avg_image_score + 0.1)
-        return creativity
-
-    def get_persuasiveness_creativity_score(self, text_alignment_score, generated_image_path, product_image_paths,
-                                            args):
-        image_scores = []
-        for product_image in product_image_paths[:1]:
-            image_scores.append(self.get_image_image_CLIP_score(generated_image_path, product_image, args))
-        avg_image_score = sum(image_scores) / len(image_scores)
-        creativity = text_alignment_score[1] / (avg_image_score + 0.01)
-        return creativity
 
     def get_text_based_persuasiveness_creativity_score(self, text_alignment_score,
                                                        generated_image_path,
