@@ -6,12 +6,12 @@ import torch
 class QWenVL(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
-        self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2-VL-7B-Instruct",
+        self.model = Qwen2VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
                                                                      load_in_8bit=True,
                                                                      torch_dtype="auto",
                                                                      device_map="auto")
 
-        self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-7B-Instruct")
+        self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct")
 
 
     def forward(self, image, prompt, generate_kwargs):
