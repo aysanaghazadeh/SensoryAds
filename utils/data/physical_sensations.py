@@ -216,7 +216,7 @@ SENSATION_DEFINITION = {
 		<li>Bakery Smell: aroma of fresh bread, and baked goods.</li>
 		<li> Sweet Smell: Smells like chocolate, vanilla, etc. which remind you of sweet taste. </li>
         """,
-    'Earthy and Musky':
+    'Earthy and Musky Smell':
         """
         <li>Woody Smell: scent of fresh-cut wood or forest.</li>
 		<li>Leather Smell: rich, slightly musky smell of tanned hide.</li>
