@@ -50,4 +50,6 @@ class QWenLM(nn.Module):
         ]
 
         response = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+        print(f'User: {prompt}')
+        print(f'System: {response}')
         return response
