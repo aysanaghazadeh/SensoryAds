@@ -135,10 +135,6 @@ def parse_args():
     parser.add_argument('--evaluation_type',
                         type=str,
                         default='image_reward')
-    parser.add_argument('--sensation_annotations',
-                        type=str,
-                        default='train/50_sensation_annotation_processed.json',
-                        help='Path to the annotations relative to the data path.')
     parser.add_argument('--project_name',
                         type=str,
                         default='SensoryAds',
