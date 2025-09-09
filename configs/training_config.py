@@ -38,10 +38,6 @@ def parse_args():
                         type=str,
                         default=None,
                         help='The path to the config file if config_type is YAML')
-    parser.add_argument('--AD_type',
-                        type=str,
-                        default='COM',
-                        choices=['COM', 'PSA', 'ALL'])
     parser.add_argument('--description_goal',
                         type=str,
                         default='prompt_expansion',
