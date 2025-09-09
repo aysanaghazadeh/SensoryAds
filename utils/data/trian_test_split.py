@@ -8,9 +8,11 @@ from utils.data.mapping import TOPIC_MAP as topic_map
 
 
 def get_train_data(args):
-    train_file = os.path.join(args.data_path, 'train/train_image_large.csv')
+    train_file = os.path.join(args.data_path, f'train/train_image_large_{args.AD_type}.csv')
+    if args.AD_type=='ALL':
+        train_file = os.path.join(args.data_path, f'train/SensoryAd_image_list_all.csv')
     if os.path.exists(train_file):
-        return pd.read_csv(train_file)
+        return pd.read_csv(train_file).ID.values[:50]
     if os.path.exists(os.path.join(args.data_path, 'Action_Reason_statements.json')):
         QA_base = json.load(open(os.path.join(args.data_path, 'Action_Reason_statements.json')))
     else:

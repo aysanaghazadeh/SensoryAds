@@ -27,7 +27,13 @@ class QWenLM(nn.Module):
                 torch_dtype="auto",
                 device_map="auto"
             )
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            if args.train:
+                self.tokenizer = AutoTokenizer.from_pretrained(model_name,
+                                                               token=os.environ.get('HF_TOKEN'),
+                                                               trust_remote_code=True,
+                                                               padding='right')
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     def forward(self, prompt):
         messages = [

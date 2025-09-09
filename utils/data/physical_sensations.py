@@ -53,7 +53,7 @@ SENSATION_HIERARCHY = {
             'Woody Smell',
             'Leather Smell',
             'Earth and Soil Smell',
-            'Natural Greenary Smell'
+            'Natural Greenery Smell'
         ],
         'Chemical and Pungent Smell':[
             'Medicine  and Antiseptic Smell',
@@ -90,8 +90,8 @@ SENSATION_HIERARCHY = {
         ],
         'Liquid Sounds': [
             'Bubbling and Fizzing Sound',
-            'Splash Sound',
-            'Pouring Sound'
+            'Liquid Splash Sound',
+            'Liquid Pouring Sound'
         ],
         'Silence and Quiet': None,
         'Human Voice': [
