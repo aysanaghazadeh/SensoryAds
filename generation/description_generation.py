@@ -29,7 +29,7 @@ def get_llm(args):
 def get_single_description(args, image_url, pipe):
     image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
     env = Environment(loader=FileSystemLoader(args.prompt_path))
-    template = env.get_template(args.VLM_prompt)
+    template = env.get_template(args.MLLM_prompt)
     prompt = template.render()
     description = pipe(image, prompt=prompt, generate_kwargs={"max_new_tokens": 250})
     return description
@@ -50,7 +50,7 @@ def get_combine_description(args, image_url, pipe):
     T_description = T_descriptions.loc[T_descriptions['ID'] == image_url]['description'].values[0]
     data = {'IN': IN_description, 'UH': UH_description, 'v': v_description, 'T': T_description, 'token_length': None}
     env = Environment(loader=FileSystemLoader(args.prompt_path))
-    template = env.get_template(args.VLM_prompt)
+    template = env.get_template(args.MLLM_prompt)
     prompt = template.render(**data)
     description = pipe(prompt=prompt)
     return description
