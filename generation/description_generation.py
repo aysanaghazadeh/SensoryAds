@@ -6,7 +6,7 @@ from PIL import Image
 import os
 import csv
 import pandas as pd
-from utils.prompt_engineering.prompt_generation import PromptGenerator
+from utils.prompt_engineering.prompt_generation import ImageGenerationPromptGenerator
 from LLMs.LLM import LLM
 from MLLMs.MLLM import MLLM
 
@@ -21,7 +21,7 @@ def get_model(args):
 
 
 def get_llm(args):
-    model = PromptGenerator(args)
+    model = ImageGenerationPromptGenerator(args)
     model.set_LLM(args)
     return model
 
@@ -68,7 +68,7 @@ def get_descriptions(args, images):
                                     args.project_name,
                                     f'{args.description_type}'
                                     f'_{args.MLLM}'
-                                    f'_{"_".join(args.test_set_images.split('/')[-2:])}'
+                                    f'_{"_".join(args.test_set_images.split("/")[-2:])}'
                                     f'_{args.AD_type}'
                                     f'_{args.MLLM_prompt.replace(".jinja", "")}.csv')
     if os.path.exists(description_file):
