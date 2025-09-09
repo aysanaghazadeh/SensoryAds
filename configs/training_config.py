@@ -115,10 +115,6 @@ def parse_args():
                          type=str,
                          default='LLM_input.jinja',
                          help='LLM input prompt template file name.')
-    parser.add_argument('--T2I_prompt',
-                         type=str,
-                         default='LLM.jinja',
-                         help='T2I input prompt template file name.')
     parser.add_argument('--epochs',
                         type=int,
                         default=100,
