@@ -147,11 +147,6 @@ def parse_args():
                         type=str,
                         default='train/50_sensation_annotation_processed.json',
                         help='Path to the annotations relative to the data path.')
-    parser.add_argument('--config_type',
-                        type=str,
-                        required=True,
-                        help='Choose among ARGS for commandline arguments, DEFAULT for default values, or YAML for '
-                             'config file')
     parser.add_argument('--project_name',
                         type=str,
                         default='SensoryAds',
