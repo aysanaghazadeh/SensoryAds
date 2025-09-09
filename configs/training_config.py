@@ -130,8 +130,6 @@ def parse_args():
     parser.add_argument('--weight_decay',
                         type=int,
                         default=0.01)
-    parser.add_argument('--VLM',
-                        type=str)
     parser.add_argument('--evaluation_type',
                         type=str,
                         default='image_reward')
@@ -184,7 +182,7 @@ def parse_args():
                         type=str)
     parser.add_argument('--training_type',
                         type=str,
-                        default='CPO_train',
+                        default='CPO_train_LLM',
                         choices=['CPO_train_LLM', 'DPO_train_MLLM'])
     return parser.parse_args()
 
