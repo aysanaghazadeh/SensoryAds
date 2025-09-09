@@ -5,6 +5,7 @@ from utils.prompt_engineering.prompt_generation import generate_text_generation_
 import os
 from PIL import Image
 import json
+import pandas as pd
 
 
 def get_model(
@@ -16,7 +17,7 @@ def get_model(
         model = MLLM(args)
     return model
 
-def retreive_single_level_sensation(
+def retrieve_single_level_sensation(
         args, 
         model, 
         prompt, 
@@ -53,7 +54,7 @@ def get_options(
     options = '\n'.join([f'{i}- {sensation}' for i, sensation in enumerate(sensations)])
     return options
 
-def retreive_sensation(
+def retrieve_sensation(
         args, 
         model, 
         sensations_map,
@@ -71,13 +72,13 @@ def retreive_sensation(
         'description': description
     }
     prompt = generate_text_generation_prompt(args, data)
-    sensations= retreive_single_level_sensation(args, model, prompt, sensations_list, image=image)
+    sensations= retrieve_single_level_sensation(args, model, prompt, sensations_list, image=image)
     if isinstance(sensations_map, dict):
         output_list = []
         for sensation in sensations:
             print(sensation)
             if sensation is not 'None':
-                output_list += [sensation + ',' + retreived_sensation for retreived_sensation in retreive_sensation(args, 
+                output_list += [sensation + ',' + retrieved_sensation for retrieved_sensation in retrieve_sensation(args,
                                                                                                                     model, 
                                                                                                                     image=image, 
                                                                                                                     description=description,
@@ -125,9 +126,9 @@ def process_files(
             description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0]
         sensations = SENSATION_HIERARCHY
         if args.model_type == 'MLLM':
-            image_sensations = retreive_sensation(args, model, sensations, image=image)
+            image_sensations = retrieve_sensation(args, model, sensations, image=image)
         elif args.model_type == 'LLM':
-            image_sensations = retreive_sensation(args, model, description=description)
+            image_sensations = retrieve_sensation(args, model, description=description)
         image_sensation_map[image_url] = image_sensations
         print(f'sensation info for image {image_url} is: \n {json.dumps(image_sensation_map[image_url], indent=4)}')
         print('-' * 100)
