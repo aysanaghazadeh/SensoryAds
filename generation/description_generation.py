@@ -72,14 +72,22 @@ def get_descriptions(args, images):
                                     f'_{args.AD_type}'
                                     f'_{args.MLLM_prompt.replace(".jinja", "")}.csv')
     if os.path.exists(description_file):
-        print(description_file)
-        processed_images = set(pd.read_csv(description_file).ID.values)
+        print(f'{description_file} exists, reading the processed files')
+        if args.resume:
+            processed_images = set(pd.read_csv(description_file).ID.values)
+            print(f'{len(processed_images)} images are processed and will be skipped')
+        else:
+            print(f'all {len(set(pd.read_csv(description_file).ID.values))} processed images will be overwritten')
+            processed_images = set()
     else:
+        print(f'{description_file} does not exist and is generated.')
         with open(description_file, 'w', newline='') as file:
             writer = csv.writer(file)
             # Write the header
             writer.writerow(['ID', 'description'])
+        processed_images = set()
     pipe = get_model(args)
+    print(f'image description generation started for {len(images) - len(processed_images)} images')
     for image_url in images:
         if image_url in processed_images:
             continue
@@ -90,7 +98,7 @@ def get_descriptions(args, images):
             description = get_combine_description(args, image_url, pipe)
         else:
             description = get_single_description(args, image_url, pipe)
-        print(f'output of image {image_url} is {description}')
+        print(f'description of image {image_url} is:\n {description}')
         print('-' * 80)
         pair = [image_url, description]
         with open(description_file, 'a', newline='') as file:
