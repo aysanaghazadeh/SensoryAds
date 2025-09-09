@@ -128,7 +128,7 @@ def process_files(
         if args.model_type == 'MLLM':
             image_sensations = retrieve_sensation(args, model, sensations, image=image)
         elif args.model_type == 'LLM':
-            image_sensations = retrieve_sensation(args, model, description=description)
+            image_sensations = retrieve_sensation(args, model, sensations, description=description)
         image_sensation_map[image_url] = image_sensations
         print(f'sensation info for image {image_url} is: \n {json.dumps(image_sensation_map[image_url], indent=4)}')
         print('-' * 100)
