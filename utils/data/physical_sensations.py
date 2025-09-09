@@ -115,12 +115,12 @@ SENSATION_HIERARCHY = {
 SENSATION_DEFINITION = {
     'root': 
         """
-        Sight: sensation received by the eyes. Ex. Darkness, Brilliance
-        Sound: sensation received by the ears. Ex. Music Sound, Nature Sound
-        Smell: sensation received by the nose. Ex. Floral Smell, Bakery Smell
-        Taste: sensation received by the tongue. Ex. Sour Taste, Bitter Taste
-        Touch: sensation received by the skin. Ex. Temperature Sensation (Warm, Cold, etc), Motion Sensation (Speed, etc.)
-        None: The image does not evoke any sensation.
+        <li>Touch: sensation received by the skin. Ex. Temperature Sensation (Warm, Cold, etc), Motion Sensation (Speed, etc.)</li>
+        <li>Smell: sensation received by the nose. Ex. Floral Smell, Bakery Smell</li>
+        <li>Taste: sensation received by the tongue. Ex. Sour Taste, Bitter Taste</li>
+        <li>Sight: sensation received by the eyes. Ex. Darkness, Brilliance</li>
+        <li>Sound: sensation received by the ears. Ex. Music Sound, Nature Sound </li>
+        <li>None: The image does not evoke any sensation.</li>
         """,
     'Touch':
         """
