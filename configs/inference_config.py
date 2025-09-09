@@ -64,7 +64,7 @@ def parse_args():
                         default='InternVL')
     parser.add_argument('--MLLM_prompt',
                         type=str,)
-    parser.add_argument('--llm_prompt',
+    parser.add_argument('--LLM_prompt',
                          type=str,
                          help='LLM input prompt template file name.')
     parser.add_argument('--T2I_prompt',
