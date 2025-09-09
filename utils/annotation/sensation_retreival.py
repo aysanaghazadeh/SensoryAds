@@ -109,7 +109,7 @@ def process_files(
                                         args.AD_type,
                                         args.MLLM if args.model_type == 'MLLM' else args.LLM,
                                         args.MLLM_prompt if args.model_type == 'MLLM' else args.LLM_prompt
-                                    ]).replace('.jinja', '.json')
+                                    ]).replace('.jinja', f'{f"_{args.MLLM_prompt}" if args.MLLM_prompt is not None else ""}.json')
                                 
                             )
     if results_path is not None and os.path.exists(results_path) and args.resume:
