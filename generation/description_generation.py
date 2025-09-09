@@ -89,6 +89,7 @@ def get_descriptions(args, images):
     pipe = get_model(args)
     print(f'image description generation started for {len(images) - len(processed_images)} images')
     for image_url in images:
+        print(f'processing {image_url}')
         if image_url in processed_images:
             continue
         if not os.path.exists(os.path.join(args.test_set_images, image_url)):
