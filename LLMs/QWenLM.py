@@ -9,7 +9,7 @@ class QWenLM(nn.Module):
 
         self.args = args
         model_name = "Qwen/Qwen2.5-7B-Instruct"
-        if args.fine_tuned:
+        if not args.train and args.fine_tuned:
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 torch_dtype="auto",
