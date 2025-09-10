@@ -15,10 +15,10 @@ class LLAMA3Instruct(nn.Module):
                 bnb_8bit_compute_dtype=torch.float16
             )
             if args.fine_tuned:
-                self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.1-8B-Instruct",
+                self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3.1-8B-Instruct",
                                                              token=os.environ.get('HF_TOKEN'),
                                                              device_map='auto')
-                self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.1-8B-Instruct",
+                self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3.1-8B-Instruct",
                                                           token=os.environ.get('HF_TOKEN'))
                 self.tokenizer.pad_token = self.tokenizer.eos_token
                 self.tokenizer.padding_side = "right"
@@ -26,7 +26,7 @@ class LLAMA3Instruct(nn.Module):
                                                        os.path.join(args.model_path,
                                                                     'my_LLAMA3_CPO/checkpoint-3000/'))
             else:
-                model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+                model_id = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 
                 self.pipeline = pipeline(
                     "text-generation",
@@ -36,10 +36,10 @@ class LLAMA3Instruct(nn.Module):
                     device_map="auto",
                 )
         else:
-            self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",
+            self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3.1-8B-Instruct",
                                                               token=os.environ.get('HF_TOKEN'),
                                                               device_map='auto')
-            self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",
+            self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3.1-8B-Instruct",
                                                            token=os.environ.get('HF_TOKEN'),
                                                            trust_remote_code=True,
                                                            padding='right')
