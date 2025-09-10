@@ -35,6 +35,14 @@ class LLAMA3Instruct(nn.Module):
                     model_kwargs={"torch_dtype": torch.bfloat16},
                     device_map="auto",
                 )
+        else:
+            self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.1-8B-Instruct",
+                                                              token=os.environ.get('HF_TOKEN'),
+                                                              device_map='auto')
+            self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.1-8B-Instruct",
+                                                           token=os.environ.get('HF_TOKEN'),
+                                                           trust_remote_code=True,
+                                                           padding='right')
 
     def forward(self, prompt):
         if not self.args.fine_tuned:
