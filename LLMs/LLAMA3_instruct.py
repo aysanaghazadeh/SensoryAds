@@ -36,10 +36,10 @@ class LLAMA3Instruct(nn.Module):
                     device_map="auto",
                 )
         else:
-            self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.1-8B-Instruct",
+            self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3-8B-Instruct",
                                                               token=os.environ.get('HF_TOKEN'),
                                                               device_map='auto')
-            self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.1-8B-Instruct",
+            self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3-8B-Instruct",
                                                            token=os.environ.get('HF_TOKEN'),
                                                            trust_remote_code=True,
                                                            padding='right')
