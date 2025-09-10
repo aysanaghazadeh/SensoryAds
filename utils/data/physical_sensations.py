@@ -106,7 +106,8 @@ SENSATION_HIERARCHY = {
     'Sight': [
         'Brilliance and Glow',
         'Clarity',
-        'Blur'
+        'Blur',
+        'Darkness'
     ]
     ,
     'None': None
