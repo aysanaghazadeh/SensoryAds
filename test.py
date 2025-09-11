@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # Open CSV once
     with open(out_csv, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(['ID', 'description', 'predicted_sensation', 'total_logprob', 'per_token_logprobs'])
+        writer.writerow(['ID', 'description', 'predicted_sensation', 'total_logprob', 'per_token_logprobs', 'last_token', 'average'])
 
         # Iterate rows
         for _, row in df.iterrows():
@@ -99,4 +99,4 @@ if __name__ == '__main__':
                     total_logprob, selected_logprobs = float('-inf'), []
 
                 print(f"Sensation for image {ID} is '{sensation}' with score (logP={total_logprob:.4f})")
-                writer.writerow([ID, description, sensation, total_logprob, selected_logprobs])
+                writer.writerow([ID, description, sensation, total_logprob, selected_logprobs, selected_logprobs[-1], sum(selected_logprobs)/len(selected_logprobs)])

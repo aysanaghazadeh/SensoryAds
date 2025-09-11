@@ -1,4 +1,4 @@
-from utils.data.CPO_LLM_data import get_train_LLAMA3_CPO_Dataloader
+from utils.data.CPO_LLM_data import get_train_LLM_CPO_Dataloader
 from configs.training_config import get_args
 from transformers import DataCollatorForLanguageModeling
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments

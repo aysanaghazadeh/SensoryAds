@@ -15,7 +15,7 @@ def get_tokenizer(args):
     return tokenizer
 
 
-def get_LLAMA3_CPO_training_data(args, image_urls):
+def get_LLM_CPO_training_data(args, image_urls):
     tokenizer = get_tokenizer(args)
     tokenizer.pad_token = tokenizer.eos_token
     if tokenizer.chat_template is None:
@@ -65,7 +65,7 @@ def get_LLAMA3_CPO_training_data(args, image_urls):
     return train_dataset
 
 
-def get_train_LLAMA3_CPO_Dataloader(args):
+def get_train_LLM_CPO_Dataloader(args):
     image_urls = get_train_data(args)
-    dataset = get_LLAMA3_CPO_training_data(args, image_urls)
+    dataset = get_LLM_CPO_training_data(args, image_urls)
     return dataset
