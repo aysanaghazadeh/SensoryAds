@@ -47,7 +47,7 @@ if __name__ == '__main__':
             Given the description of the image, the sensation that the image evokes is: """
 
         for sensation in SENSATIONS_PARENT_MAP.keys():
-            total_logprob, selected_logprobs = sequence_logprob(pipe.model, pipe.tokenizer, sensation, prompt)
+            total_logprob, selected_logprobs = sequence_logprob(pipe.model.model, pipe.tokenizer.model, sensation, prompt)
             print(f'sensation for image {ID} is {sensation} with score {(total_logprob, selected_logprobs)}')
             with open(os.path.join(args.result_path, 'results', args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'a') as f:
                 writer = csv.writer(f)

@@ -56,7 +56,7 @@ class QWenLM(nn.Module):
         ]
 
         response = self.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-        if not args.fine_tuned:
+        if not self.args.fine_tuned:
             print(f'User: {prompt}')
             print(f'System: {response}')
         return response
