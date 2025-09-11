@@ -32,7 +32,7 @@ def get_LLAMA3_CPO_training_data(args, image_urls):
     options = '-'.join([f'{i}. {option}' for i, option in enumerate(SENSATIONS_PARENT_MAP.keys())])
     sensation_index_map = {}
     for i, option in enumerate(SENSATIONS_PARENT_MAP.keys()):
-        sensation_index_map[option] = i
+        sensation_index_map[option.lower()] = i
     for image_url in image_urls:
         if image_url in sensations:
             sensation_scores = sensations[image_url]['sensation_scores']
@@ -42,6 +42,8 @@ def get_LLAMA3_CPO_training_data(args, image_urls):
                         Given the description of the image, the index of sensation evoked by the image the most is:"""
             for sensation1 in sensation_scores:
                 for sensation2 in sensation_scores:
+                    sensation1 = sensation1.strip()
+                    sensation2 = sensation2.strip()
                     if sensation_scores[sensation1] == sensation_scores[sensation2]:
                         continue
 
