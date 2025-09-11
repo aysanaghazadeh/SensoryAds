@@ -12,6 +12,7 @@ from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 def get_tokenizer(args):
     pipe = LLM(args)
     tokenizer = pipe.model.tokenizer
+    pipe.model.model = pipe.model.model.to(device='cpu')
     return tokenizer
 
 
