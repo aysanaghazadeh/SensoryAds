@@ -8,7 +8,7 @@ if __name__ == '__main__':
     args = get_args()
     pipe = LLM(args)
     descriptions = pd.read_csv(args.description_file).values
-    with open(os.path.join(args.results_path, args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'w') as f:
+    with open(os.path.join(args.result_path, args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'w') as f:
         writer = csv.writer(f)
         writer.writerow(['ID', 'description', 'predicted_sensation'])
     for row in descriptions:
@@ -18,7 +18,7 @@ if __name__ == '__main__':
             Given the description of the image, the sensation that the image evokes is: """
         predicted_sensation = pipe(prompt=prompt)
         print(f'predicted sensation for image {ID} is {predicted_sensation}')
-        with open(os.path.join(args.results_path, args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'a') as f:
+        with open(os.path.join(args.result_path, args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'a') as f:
             writer = csv.writer(f)
             writer.writerow([ID, description, predicted_sensation])
 
