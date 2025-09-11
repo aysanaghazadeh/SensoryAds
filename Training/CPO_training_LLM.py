@@ -62,7 +62,7 @@ def train(args):
     model, tokenizer = get_model(args)
     cpo_config = CPOConfig(beta=0.1,
                            output_dir=args.model_path+f'/my_{args.LLM}',)
-    train_dataset = get_train_LLAMA3_CPO_Dataloader(args)
+    train_dataset = get_train_LLM_CPO_Dataloader(args)
     tmp = train_dataset.train_test_split(test_size=0.1)
     train_dataset = tmp["train"]
     eval_dataset = tmp["test"]
