@@ -32,12 +32,12 @@ def get_LLAMA3_CPO_training_data(args, image_urls):
     options = '-'.join([f'{i}. {option}' for i, option in enumerate(SENSATIONS_PARENT_MAP.keys())])
     sensation_index_map = {}
     for i, option in enumerate(SENSATIONS_PARENT_MAP.keys()):
-        sensation_index_map[option.lower()] = i
+        sensation_index_map[option.lower()] = str(i)
     for image_url in image_urls:
         if image_url in sensations:
             sensation_scores = sensations[image_url]['sensation_scores']
             description = descriptions.loc[descriptions['ID'] == image_url]['description'].values
-            prompt = f"""Context: Description of an image is {description}.
+            prompt = f"""Context: Description of an image is {description.split('Q2:')[-1]}.
                         options: {options}
                         Given the description of the image, the index of sensation evoked by the image the most is:"""
             for sensation1 in sensation_scores:
