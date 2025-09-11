@@ -72,7 +72,8 @@ if __name__ == '__main__':
             # using the chat template instead of a raw string:
             #
             msgs = [
-                {"role": "user", "content": f"Context: Description of an image is {description}\nGiven the description of the image, the sensation among {'\n-'.join(SENSATIONS_PARENT_MAP.keys())} that the image evokes is:"}
+                dict(role="user",
+                     content=f"Context: Description of an image is {description}\nGiven the description of the image, the sensation that the image evokes is:")
             ]
             prompt = pipe.model.tokenizer.apply_chat_template(
                 msgs, add_generation_prompt=True, tokenize=False
