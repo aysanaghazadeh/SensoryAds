@@ -53,15 +53,15 @@ dataset = dataset.cast(f)
 
 # Train the model
 training_args = DPOConfig(
-    output_dir="idefics2-8b-dpo",
+    output_dir="QWENVL-dpo",
     bf16=True,
     gradient_checkpointing=True,
     per_device_train_batch_size=1,
     gradient_accumulation_steps=32,
-    num_train_epochs=1,
+    num_train_epochs=10,
     # dataset_num_proc=32,  # tokenization will use 32 processes
     dataloader_num_workers=32,  # data loading will use 32 workers
-    logging_steps=10,
+    logging_steps=300,
 )
 trainer = DPOTrainer(
     model,
