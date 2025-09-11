@@ -4,9 +4,10 @@ from configs.inference_config import get_args
 import pandas as pd
 import csv
 import torch
+from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 
 if __name__ == '__main__':
-    def sequence_logprob(model, tokenizer, phrase, context=""):
+    def sequence_logprob(model, tokenizer, phrase, context):
         input_text = context + phrase
         enc = tokenizer(input_text, return_tensors="pt")
         input_ids = enc["input_ids"].to(model.device)
@@ -38,15 +39,17 @@ if __name__ == '__main__':
     descriptions = pd.read_csv(args.description_file).values
     with open(os.path.join(args.result_path, 'results', args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'w') as f:
         writer = csv.writer(f)
-        writer.writerow(['ID', 'description', 'predicted_sensation'])
+        writer.writerow(['ID', 'description', 'predicted_sensation', 'total_logprob', 'selected_log_probs'])
     for row in descriptions:
         ID = row[0]
         description = row[1]
         prompt = f"""Context: Description of an image is {description}
             Given the description of the image, the sensation that the image evokes is: """
-        predicted_sensation = pipe(prompt=prompt)
-        print(f'predicted sensation for image {ID} is {predicted_sensation}')
-        with open(os.path.join(args.result_path, 'results', args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow([ID, description, predicted_sensation])
+
+        for sensation in SENSATIONS_PARENT_MAP.keys():
+            total_logprob, selected_logprobs = sequence_logprob(pipe.model, pipe.tokenizer, sensation, prompt)
+            print(f'sensation for image {ID} is {sensation} with score {(total_logprob, selected_logprobs)}')
+            with open(os.path.join(args.result_path, 'results', args.project_name, f'sensations_predicted_by_{args.LLM}.csv'), 'a') as f:
+                writer = csv.writer(f)
+                writer.writerow([ID, description, sensation, total_logprob, selected_logprobs])
 
