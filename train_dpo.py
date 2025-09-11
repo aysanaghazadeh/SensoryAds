@@ -25,7 +25,7 @@ if torch.cuda.device_count() > 1:
     model.is_parallelizable = True
     model.model_parallel = True
 processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct")
-dataset = load_dataset("openbmb/RLAIF-V-Dataset", split="train[:20]")
+# dataset = load_dataset("openbmb/RLAIF-V-Dataset", split="train[:20]")
 print(dataset)
 def format(example):
     # Prepare the input for the chat template
