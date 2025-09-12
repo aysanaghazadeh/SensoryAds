@@ -78,7 +78,7 @@ SENSATION_HIERARCHY = {
         ],
         'Rural and Industrial Sounds': [
             'Vehicles Sound',
-            'Traffic Jam Sound',
+            'Traffic Jam or Human Crowd Sound',
             'Machinery Sound'
         ],
         'Nature Sounds': [
@@ -100,7 +100,8 @@ SENSATION_HIERARCHY = {
             'Compassion Voice',
             'Happy Voice',
             'Argument Voice',
-            'Harsh Voice'
+            'Harsh Voice',
+            'Human Crowd Noises'
         ]
     },
     'Sight': [

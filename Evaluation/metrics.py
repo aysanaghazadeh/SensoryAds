@@ -20,13 +20,6 @@ from sentence_transformers import SentenceTransformer
 
 
 
-# Function to convert an image file to a tensor
-def image_to_tensor(image_path):
-    image = Image.open(image_path).convert('RGB')
-    tensor = TF.to_tensor(image).unsqueeze(0)  # Add batch dimension
-    return tensor
-
-
 class Metrics:
     def __init__(self, args):
         self.args = args
@@ -981,32 +974,6 @@ class PersuasivenessMetric:
             load_in_8bit=True,
             bnb_8bit_compute_dtype=torch.float16
         )
-        model_id_map = {
-            'LLAVA': "llava-hf/llava-1.5-13b-hf",
-            'VILA': "Efficient-Large-Model/VILA1.5-13b"
-        }
-        task_map = {
-            'LLAVA': "image-to-text",
-            'VILA': "text-generation"
-        }
-        if args.VLM != 'GPT4v':
-            if args.VLM in model_id_map:
-                model_id = model_id_map[args.VLM]
-                task = task_map[args.VLM]
-                self.pipe = pipeline(task,
-                                     model=model_id,
-                                     model_kwargs={"quantization_config": quantization_config},
-                                     trust_remote_code=True,
-                                     device_map='auto')
-                if args.evaluation_type != 'image_reward':
-                    self.LLM_model = LLM(args)
-            else:
-                print('InternVL')
-                if args.evaluation_type != 'image_reward' and args.evaluation_type != 'persuasiveness':
-                    print('llm not skipped')
-                    self.LLM_model = LLM(args)
-                self.pipe = InternVL(args)
-                print(self.pipe)
         self.QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
 
     def get_persuasiveness_score(self, generated_image):
