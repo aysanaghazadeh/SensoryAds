@@ -103,6 +103,6 @@ if __name__ == '__main__':
                     score = float('-inf')
 
                 # print(f"Sensation for image {ID} is '{sensation}' with score (logP={total_logprob:.4f})")
-                print(f"sensation for image {ID} is {sensation} with score {score}")
+                print(f"sensation for image {ID} is {sensation} with score {score.item()}")
                 # writer.writerow([ID, description, sensation, total_logprob, selected_logprobs, selected_logprobs[-1], sum(selected_logprobs)/len(selected_logprobs)])
-                writer.writerow([ID, sensation, score])
+                writer.writerow([ID, sensation, score.item()])
