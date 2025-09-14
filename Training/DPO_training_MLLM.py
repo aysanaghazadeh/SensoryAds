@@ -52,7 +52,7 @@ dataset = dataset.cast(f)
 
 # Train the model
 training_args = DPOConfig(
-    output_dir=f"my_{args.MLLM}",
+    output_dir=f"{args.model_path}/my_{args.MLLM}",
     bf16=True,
     gradient_checkpointing=True,
     per_device_train_batch_size=1,
