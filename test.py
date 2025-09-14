@@ -5,6 +5,7 @@ import pandas as pd
 import csv
 import torch
 import torch.nn.functional as F
+import t2v_metrics
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 
 def sequence_logprob(model, tokenizer, phrase: str, context: str = ""):
@@ -48,55 +49,60 @@ def sequence_logprob(model, tokenizer, phrase: str, context: str = ""):
 
 if __name__ == '__main__':
     args = get_args()
-    pipe = LLM(args)  # expects attributes: pipe.model.model (HF model), pipe.model.tokenizer
-
-    # Load descriptions
+    # pipe = LLM(args)  # expects attributes: pipe.model.model (HF model), pipe.model.tokenizer
+    #
+    # # Load descriptions
+    clip_flant5_score = t2v_metrics.VQAScore(model='clip-flant5-xxl')  # our recommended scoring model
     df = pd.read_csv(args.description_file)
 
     # Prepare output path
     out_dir = os.path.join(args.result_path, 'results', args.project_name)
     os.makedirs(out_dir, exist_ok=True)
-    out_csv = os.path.join(out_dir, f'sensations_predicted_by_{args.LLM}.csv')
-
+    # out_csv = os.path.join(out_dir, f'sensations_predicted_by_{args.LLM}.csv')
+    out_csv = os.path.join(out_dir, 'VQA_score.csv')
     # Open CSV once
     with open(out_csv, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(['ID', 'description', 'predicted_sensation', 'total_logprob', 'per_token_logprobs', 'last_token', 'average'])
-
+        # writer.writerow(['ID', 'description', 'predicted_sensation', 'total_logprob', 'per_token_logprobs', 'last_token', 'average'])
+        writer.writerow(['ID', 'score'])
         # Iterate rows
         for _, row in df.iterrows():
             ID = row[0]
-            description = row[1]
+            # description = row[1]
 
             # If your fine-tuned Llama-3 Instruct expects chat formatting, you can build `prompt`
             # using the chat template instead of a raw string:
             #
-            msgs = [
-                dict(role="user",
-                     content=f"Context: Description of an image is {description}\nGiven the description of the image, the sensation that the image evokes is:")
-            ]
-            prompt = pipe.model.tokenizer.apply_chat_template(
-                msgs, add_generation_prompt=True, tokenize=False
-            )
+            # msgs = [
+            #     dict(role="user",
+            #          content=f"Context: Description of an image is {description}\nGiven the description of the image, the sensation that the image evokes is:")
+            # ]
+            # prompt = pipe.model.tokenizer.apply_chat_template(
+            #     msgs, add_generation_prompt=True, tokenize=False
+            # )
             #
             # Otherwise, this plain prompt is fine:
             # prompt = (
             #     f"Context: Description of an image is {description}\n"
             #     f"Given the description of the image, the sensation that the image evokes is: "
             # )
-
+            image_path = os.path.join(args.test_set_images, ID)
             for sensation in SENSATIONS_PARENT_MAP.keys():
                 try:
-                    total_logprob, selected_logprobs = sequence_logprob(
-                        pipe.model.model,
-                        pipe.model.tokenizer,
-                        phrase=sensation,
-                        context=prompt
-                    )
+                    # total_logprob, selected_logprobs = sequence_logprob(
+                    #     pipe.model.model,
+                    #     pipe.model.tokenizer,
+                    #     phrase=sensation,
+                    #     context=prompt
+                    # )
+                    score = clip_flant5_score(images=[image_path], texts=[sensation])
                 except Exception as e:
                     # Log the error for this (ID, sensation) and continue
                     print(f"[WARN] ID {ID} | sensation '{sensation}' failed: {e}")
-                    total_logprob, selected_logprobs = float('-inf'), []
+                    # total_logprob, selected_logprobs = float('-inf'), []
+                    score = float('-inf')
 
-                print(f"Sensation for image {ID} is '{sensation}' with score (logP={total_logprob:.4f})")
-                writer.writerow([ID, description, sensation, total_logprob, selected_logprobs, selected_logprobs[-1], sum(selected_logprobs)/len(selected_logprobs)])
+                # print(f"Sensation for image {ID} is '{sensation}' with score (logP={total_logprob:.4f})")
+                print(f"sensation for image {ID} is {sensation} with score {score}")
+                # writer.writerow([ID, description, sensation, total_logprob, selected_logprobs, selected_logprobs[-1], sum(selected_logprobs)/len(selected_logprobs)])
+                writer.writerow([ID, sensation, score])
