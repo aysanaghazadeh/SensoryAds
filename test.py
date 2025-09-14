@@ -86,7 +86,7 @@ if __name__ == '__main__':
             #     f"Context: Description of an image is {description}\n"
             #     f"Given the description of the image, the sensation that the image evokes is: "
             # )
-            image_path = os.path.join(args.test_set_images, ID)
+            image_path = os.path.join(args.data_path, args.test_set_images, ID)
             for sensation in SENSATIONS_PARENT_MAP.keys():
                 try:
                     # total_logprob, selected_logprobs = sequence_logprob(
