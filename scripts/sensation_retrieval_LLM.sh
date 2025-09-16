@@ -1,1 +1,1 @@
-python inference.py --config_type=DEFAULT --LLM_prompt=LLM_Sensation_Retrieval.jinja --model_type=LLM --LLM=QWenLM --description_file=../experiments/results/SensoryAds/IN_InternVL_train_images_total_ALL_description_generation.csv --MLLM=InternVL --resume=True
+python inference.py --config_type=DEFAULT --LLM_prompt=LLM_Sensation_Retrieval.jinja --model_type=LLM --LLM=QWenLM --description_file=../experiments/results/SensoryAds/IN_Gemma_train_images_total_ALL_description_generation.csv --MLLM=Gemma --resume=True

@@ -1,5 +1,5 @@
 from torch import nn
-from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, AutoTokenizer
+from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 import torch
 from peft import PeftModel
 import os
@@ -33,6 +33,7 @@ class LLAMA3Instruct(nn.Module):
                     model=model_id,
                     token=os.environ.get('HF_TOKEN'),
                     model_kwargs={"torch_dtype": torch.bfloat16},
+                    quantization_config=BitsAndBytesConfig(load_in_8bit=True),
                     device_map="auto",
                 )
         else:
