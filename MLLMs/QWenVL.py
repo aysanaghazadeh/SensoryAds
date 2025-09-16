@@ -1,4 +1,4 @@
-from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor
+from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor, BitsAndBytesConfig
 from qwen_vl_utils import process_vision_info
 import torch
 
@@ -6,7 +6,9 @@ import torch
 class QWenVL(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
+        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
+                                                                        quantization_config=bnb_config,
                                                                         device_map='auto').eval()
         # self.model = self.model.to(device=args.device)
 
