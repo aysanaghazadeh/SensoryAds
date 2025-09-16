@@ -11,7 +11,8 @@ SENSATION_HIERARCHY = {
             'Silky Smoothness',
             'Stickiness',
             'Roughness',
-            'Sharpness'
+            'Sharpness',
+            'Wrinkly'
         ],
         'Moisture and Dryness': [
             'Soaking Wetness',
@@ -30,10 +31,11 @@ SENSATION_HIERARCHY = {
             'Sharp Pain',
             'Aching Pain',
             'Soothing Relief and Numbing'
-        ]
+        ],
+        'Pressure': None
     },
     'Smell': {
-        'Fresh and Clean Smell': [
+            'Fresh and Clean Smell': [
             'Fresh Fruit Smell',
             'Fresh Greenery Smell',
             'Clean and Soapy Smell',
@@ -131,6 +133,7 @@ SENSATION_DEFINITION = {
         <li>Moisture and Dryness: awareness of the presence or absence of water, oil, or other liquids.</li>
         <li>Motion and Weight: awareness of body motion, acceleration, relative position, and weight from proprioceptive and vestibular input.</li>
         <li>Pain and Relief Sensation: unpleasant or soothing feelings from nociceptors or comfort-inducing stimuli.</li>
+        <li>Pressure: sensation of being squeezed, pressed, or any other form of pressure.</li>
         """,
     'Smell':
         """
@@ -145,7 +148,7 @@ SENSATION_DEFINITION = {
 		<li>Sour Taste: acidic taste that causes mouth puckering.</li>
 		<li>Bitter Taste: sharp, often unpleasant taste from alkaloids.</li>
 		<li>Salty Taste: taste from sodium or mineral salts.</li>
-		<li>Umami Taste: savory taste from glutamates (meaty, brothy).</li>
+		<li>Umami Taste: savory taste from glutamate (meaty, brothy).</li>
 		<li>Spicy Taste: burning heat sensation from chili compounds.</li>
 		<li>Cooling Minty Taste: cooling sensation from mint or menthol.</li>
         """,
@@ -157,12 +160,14 @@ SENSATION_DEFINITION = {
         <li>Liquid Sounds: noises created by moving or interacting liquids.</li>
         <li>Silence and Quiet: absence or near absence of sound.</li>
         <li>Human Voice: Different sounds heard from someone talking.</li>
+        <li>Bursting: Sound created from something bursting like bomb, or rocket engine starting, etc. </li>
         """,
     'Sight':
         """
         <li>Brilliance and Glow: intense brightness or vividness or steady radiance from a surface or object.</li>
 		<li>Clarity: sharp, well-defined visual detail.</li>
 		<li>Blur: lack of sharpness or focus.</li>
+		<li>Darkness: Lack of light, or small light. </li>
         """,
     'Temperature':
         """
@@ -178,6 +183,7 @@ SENSATION_DEFINITION = {
         <li>Stickiness: surface that resists motion due to adhesion.</li>
         <li>Roughness: uneven surface with coarse points or bumps.</li>
         <li>Sharpness: pointed or edged surface that can cut or prick.</li>
+        <li>Wrinkly: uneven surface with coarse points or bumps.</li>
         """,
     'Moisture and Dryness':
         """
@@ -197,9 +203,10 @@ SENSATION_DEFINITION = {
     'Pain and Relief':
         """
         <li>Sharp Pain: sudden, intense pain from a pointed source.</li>
-		<li>SAching Pain: deep, dull, continuous discomfort.</li>
+		<li>Aching Pain: deep, dull, continuous discomfort.</li>
 		<li>Soothing Relief and Numbing: reduction or dulling of discomfort.</li>    
         """,
+    'Pressure': None,
     'Fresh and Clean Smell':
         """
         <li>Fresh Fruit Smell: crisp, plant-based aroma from fruits including citric and other fruits.</li>
@@ -216,7 +223,7 @@ SENSATION_DEFINITION = {
 		<li>Savory Foods Smell: scent of cooked or prepared meals.</li>
 		<li>Spices Smell: Smells like pepper, tumeric, etc. </li>
 		<li>Bakery Smell: aroma of fresh bread, and baked goods.</li>
-		<li> Sweet Smell: Smells like chocolate, vanilla, etc. which remind you of sweet taste. </li>
+		<li>Sweet Smell: Smells like chocolate, vanilla, etc. which remind you of sweet taste. </li>
         """,
     'Earthy and Musky Smell':
         """
@@ -240,8 +247,8 @@ SENSATION_DEFINITION = {
     'Rural and Industrial Sounds':
         """
         <li>Vehicles Sound: Sound of cars, trains, airplanes, etc.</li>
-		<li>Traffic Jam Sound: Sound of horn, cars, etc.</li>
-		<li>Machinary Sound: Sound of machines in factories and industrial equipment, construction, etc.</li>
+		<li>Traffic Jam Sound or Human Crowd Sound: Sound of horn, cars, etc.</li>
+		<li>Machinery Sound: Sound of machines in factories and industrial equipment, construction, etc.</li>
         """,
     'Nature Sounds':
         """
@@ -266,6 +273,7 @@ SENSATION_DEFINITION = {
 		<li>Happy Voice: Tone of a person who is happy.</li>
 		<li>Argument Voice: People arguing over a topic, ex: Political Debate </li>
 		<li>Harsh Voice: Someone shouting</li>
+		<li>Human Crowd Noises: Sound of crowd of people talking or any other form of noises from crowd of people.</li>
         """,
     'None': None
 }
