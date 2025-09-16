@@ -36,13 +36,13 @@ class QWenImage(nn.Module):
             "3:2": (1584, 1056),
             "2:3": (1056, 1584),
         }
-        width, height = aspect_ratios["16:9"]
+        # width, height = aspect_ratios["16:9"]
 
         image = self.pipe(
             prompt=prompt + positive_magic["en"],
             negative_prompt=negative_prompt,
-            width=width,
-            height=height,
+            # width=width,
+            # height=height,
             num_inference_steps=28,
             true_cfg_scale=4.0,
             generator=torch.Generator(device="cuda").manual_seed(0)
