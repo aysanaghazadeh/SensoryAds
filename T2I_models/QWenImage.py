@@ -13,11 +13,11 @@ class QWenImage(nn.Module):
             quant_kwargs={"load_in_4bit": True, "bnb_8bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
             components_to_quantize=["transformer", "text_encoder_2"],
         )
-        self.pipeline = DiffusionPipeline.from_pretrained("Qwen/Qwen-Image",
+        self.pipe = DiffusionPipeline.from_pretrained("Qwen/Qwen-Image",
                                                            torch_dtype=torch.float16,
                                                           quantization_config=quantization_config)
         self.args = args
-        self.pipeline = self.pipeline.to(device=args.device)
+        self.pipe = self.pipe.to(device=args.device)
 
     def forward(self, prompt):
         positive_magic = {
