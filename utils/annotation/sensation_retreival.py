@@ -114,6 +114,7 @@ def process_files(
                                         args.MLLM_prompt if args.model_type == 'MLLM' else args.LLM_prompt
                                     ]).replace('.jinja', f'{f"_{args.MLLM_prompt}" if args.MLLM_prompt is not None and args.model_type=="LLM" else ""}.json')
                             ).replace('.jinja', '')
+    print(f'results will be saved to {results_path}')
     if results_path is not None and os.path.exists(results_path) and args.resume:
         print(f'Resuming from {results_path}')
         image_sensation_map = json.load(open(results_path))
