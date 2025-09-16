@@ -1,14 +1,14 @@
 from diffusers import FluxPipeline, DiffusionPipeline
 import torch
 from torch import nn
-from transformers import BitsAndBytesConfig
+from transformers import PipelineQuantizationConfig
 
 
 class Flux(nn.Module):
     def __init__(self, args):
         super(Flux, self).__init__()
         self.device = args.device
-        quantization_config = BitsAndBytesConfig(
+        quantization_config = PipelineQuantizationConfig(
             load_in_8bit=True,
             bnb_8bit_compute_dtype=torch.float16
         )
