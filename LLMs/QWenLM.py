@@ -27,7 +27,7 @@ class QWenLM(nn.Module):
                 model_name,
                 torch_dtype="auto",
                 device_map="auto",
-                bnb_config=BitsAndBytesConfig(load_in_8bit=True)
+                quantization_config=BitsAndBytesConfig(load_in_8bit=True)
             )
             if args.train:
                 self.tokenizer = AutoTokenizer.from_pretrained(model_name,
