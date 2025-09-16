@@ -14,7 +14,7 @@ class FastVLM(torch.nn.Module):
                                                          quantization_config=bnb_config,
                                                          trust_remote_code=True,
                                                          )
-        self.model = self.model.to(device=args.device)
+        # self.model = self.model.to(device=args.device)
         self.model.eval()
         self.IMAGE_TOKEN_INDEX = -200
         # self.model = self.model.to(device=args.device)

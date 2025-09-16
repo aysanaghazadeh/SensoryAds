@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/MLLMs/FastVLM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/sensation_retrieval_MLLM.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/sensation_retrieval_MLLM.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +71,7 @@
       <option name="presentableId" value="Default" />
       <updated>1757375876349</updated>
       <workItem from="1757375877645" duration="66254000" />
-      <workItem from="1757811033144" duration="11642000" />
+      <workItem from="1757811033144" duration="12004000" />
     </task>
     <servers />
   </component>
@@ -89,6 +88,10 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/MLLMs/QWenVL.py</url>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MLLMs/MLLM.py</url>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
