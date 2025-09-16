@@ -69,7 +69,7 @@
       <option name="presentableId" value="Default" />
       <updated>1757375876349</updated>
       <workItem from="1757375877645" duration="66254000" />
-      <workItem from="1757811033144" duration="9029000" />
+      <workItem from="1757811033144" duration="9362000" />
     </task>
     <servers />
   </component>
@@ -82,6 +82,10 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utils/prompt_engineering/prompt_generation.py</url>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MLLMs/QWenVL.py</url>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
