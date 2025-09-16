@@ -119,7 +119,8 @@ def process_files(
         image_sensation_map = json.load(open(results_path))
         print(f'{len(image_sensation_map)} images are processed and {len(image_list) - len(image_sensation_map)} images will be processed')
     else:
-        print(f'{len(json.load(open(results_path)))} images are processed and will be overwritten')
+        if results_path is not None and os.path.exists(results_path):
+            print(f'{len(json.load(open(results_path)))} images are processed and will be overwritten')
         image_sensation_map = {}
     for image_url in image_list:
         if image_url in image_sensation_map:
