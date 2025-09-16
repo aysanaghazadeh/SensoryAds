@@ -1,4 +1,6 @@
 from torch import nn
+
+from MLLMs.Gemma import Gemma
 from MLLMs.InternVL2 import InternVL
 from MLLMs.LLAVA16 import LLAVA16
 from MLLMs.QWenVL import QWenVL
@@ -6,6 +8,7 @@ from MLLMs.GPT4_o import GPT4_o
 from MLLMs.Gemini import Gemini
 from MLLMs.FastVLM import FastVLM
 from MLLMs.MOLMO import MOLMO
+from MLLMs.Gemma import Gemma
 
 class MLLM(nn.Module):
     def __init__(self, args):
@@ -19,6 +22,7 @@ class MLLM(nn.Module):
             'Gemini': Gemini,
             'FastVLM': FastVLM,
             'MOLMO': MOLMO,
+            'Gemma': Gemma
         }
         self.model = model_map[args.MLLM](args)
 
