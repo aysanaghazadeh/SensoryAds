@@ -26,4 +26,6 @@ class Gemma(torch.nn.Module):
         ]
 
         output = self.pipe(text=messages, max_new_tokens=generate_kwargs["max_new_tokens"])
-        return output
+        print(f'User: {prompt}')
+        print(f'Assistant: {output}')
+        return output[0]
