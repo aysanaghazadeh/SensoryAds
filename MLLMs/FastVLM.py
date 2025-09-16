@@ -24,7 +24,7 @@ class FastVLM(torch.nn.Module):
 
     def forward(self, image, prompt, generate_kwargs):
         if '<image>' not in prompt:
-            prompt += '<image>\n'
+            prompt = '<image>\n' + prompt
         messages = [
             {"role": "user", "content": prompt}
         ]
