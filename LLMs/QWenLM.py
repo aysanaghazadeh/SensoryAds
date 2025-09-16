@@ -1,4 +1,4 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from torch import nn
 from peft import PeftModel
 import os
@@ -10,10 +10,11 @@ class QWenLM(nn.Module):
         self.args = args
         model_name = "Qwen/Qwen2.5-7B-Instruct"
         if not args.train and args.fine_tuned:
+            bnb_config = BitsAndBytesConfig(load_in_8bit=True)
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 torch_dtype="auto",
-                device_map="auto"
+                device_map="auto",
             )
             self.tokenizer = AutoTokenizer.from_pretrained(model_name)
             self.tokenizer.pad_token = self.tokenizer.eos_token
@@ -25,7 +26,8 @@ class QWenLM(nn.Module):
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 torch_dtype="auto",
-                device_map="auto"
+                device_map="auto",
+                bnb_config=BitsAndBytesConfig(load_in_8bit=True)
             )
             if args.train:
                 self.tokenizer = AutoTokenizer.from_pretrained(model_name,

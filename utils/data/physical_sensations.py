@@ -36,84 +36,85 @@ SENSATION_HIERARCHY = {
     },
     'Smell': {
             'Fresh and Clean Smell': [
-            'Fresh Fruit Smell',
-            'Fresh Greenery Smell',
-            'Clean and Soapy Smell',
-            'Refreshing Minty Smell',
-            'Refreshing Ocean Smell',
-            'Floral Smell',
-            'Fragrant Smell'
+                'Fresh Fruit Smell',
+                'Fresh Greenery Smell',
+                'Clean and Soapy Smell',
+                'Refreshing Minty Smell',
+                'Refreshing Ocean Smell',
+                'Floral Smell',
+                'Fragrant Smell'
+            ],
+            'Culinary Smell': [
+                'Drinks Smell',
+                'Savory Food Smell',
+                'Spices Smell',
+                'Bakery Smell',
+                'Sweet Smell'
+            ],
+            'Earthy and Musky Smell': [
+                'Woody Smell',
+                'Leather Smell',
+                'Earth and Soil Smell',
+                'Natural Greenery Smell'
+            ],
+            'Chemical and Pungent Smell':[
+                'Medicine and Antiseptic Smell',
+                'Cleaning Products and Chemicals Smells',
+                'Pungent Smell',
+                'Sickening Smell'
+            ]
+        },
+        'Taste': [
+            'Sweet Taste',
+            'Sour Taste',
+            'Bitter Taste',
+            'Spicy Taste',
+            'Umami Taste',
+            'Salty Taste',
+            'Cooling Minty Taste'
         ],
-        'Culinary Smell': [
-            'Drinks Smell',
-            'Savory Food Smell',
-            'Spices Smell',
-            'Bakery Smell',
-            'Sweet Smell'
-        ],
-        'Earthy and Musky Smell': [
-            'Woody Smell',
-            'Leather Smell',
-            'Earth and Soil Smell',
-            'Natural Greenery Smell'
-        ],
-        'Chemical and Pungent Smell':[
-            'Medicine  and Antiseptic Smell',
-            'Cleaning Products and Chemicals Smells',
-            'Pungent Smell',
-            'Sickening Smell'
+        'Sound': {
+            'Music Sounds': [
+                'Instruments Sound',
+                'Singing Voice'
+            ],
+            'Rural and Industrial Sounds': [
+                'Vehicles Sound',
+                'Traffic Jam or Human Crowd Sound',
+                'Machinery Sound'
+            ],
+            'Nature Sounds': [
+                'Animal Sounds',
+                'Natural Water Sound',
+                'Atmospheric Phenomena Sound',
+                'Geological Events Sound',
+                'Peaceful Ambient'
+            ],
+            'Liquid Sounds': [
+                'Bubbling and Fizzing Sound',
+                'Liquid Splash Sound',
+                'Liquid Pouring Sound'
+            ],
+            'Silence and Quiet': None,
+            'Human Voice': [
+                'Sad Voice',
+                'Rushing Voice',
+                'Compassion Voice',
+                'Happy Voice',
+                'Argument Voice',
+                'Harsh Voice',
+                'Human Crowd Noises'
+            ],
+            'Bursting Sound': None
+        },
+        'Sight': [
+            'Brilliance and Glow',
+            'Clarity',
+            'Blur',
+            'Darkness'
         ]
-    },
-    'Taste': [
-        'Sweet Taste',
-        'Sour Taste',
-        'Bitter Taste',
-        'Spicy Taste',
-        'Umami Taste',
-        'Salty Taste',
-        'Cooling Minty Taste'
-    ],
-    'Sound': {
-        'Music Sounds': [
-            'Instruments Sound',
-            'Singing Voice'
-        ],
-        'Rural and Industrial Sounds': [
-            'Vehicles Sound',
-            'Traffic Jam or Human Crowd Sound',
-            'Machinery Sound'
-        ],
-        'Nature Sounds': [
-            'Animal Sounds',
-            'Natural Water Sound',
-            'Atmospheric Phenomena Sound',
-            'Geological Events Sound',
-            'Peaceful Ambient'
-        ],
-        'Liquid Sounds': [
-            'Bubbling and Fizzing Sound',
-            'Liquid Splash Sound',
-            'Liquid Pouring Sound'
-        ],
-        'Silence and Quiet': None,
-        'Human Voice': [
-            'Sad Voice',
-            'Rushing Voice',
-            'Compassion Voice',
-            'Happy Voice',
-            'Argument Voice',
-            'Harsh Voice',
-            'Human Crowd Noises'
-        ]
-    },
-    'Sight': [
-        'Brilliance and Glow',
-        'Clarity',
-        'Blur',
-        'Darkness'
-    ]
-    ,
-    'None': None
+        ,
+        'None': None
 }
 
 SENSATION_DEFINITION = {
@@ -160,7 +161,7 @@ SENSATION_DEFINITION = {
         <li>Liquid Sounds: noises created by moving or interacting liquids.</li>
         <li>Silence and Quiet: absence or near absence of sound.</li>
         <li>Human Voice: Different sounds heard from someone talking.</li>
-        <li>Bursting: Sound created from something bursting like bomb, or rocket engine starting, etc. </li>
+        <li>Bursting Sound: Sound created from something bursting like bomb, or rocket engine starting, etc. </li>
         """,
     'Sight':
         """
@@ -275,98 +276,103 @@ SENSATION_DEFINITION = {
 		<li>Harsh Voice: Someone shouting</li>
 		<li>Human Crowd Noises: Sound of crowd of people talking or any other form of noises from crowd of people.</li>
         """,
+    'Bursting Sound': None,
     'None': None
 }
 
-SENSATIONS_PARENT_MAP = {'Aching Pain': 'Pain and Relief',
-                         'Animal Sounds': 'Nature Sounds',
-                         'Argument Voice': 'Human Voice',
-                         'Atmospheric Phenomena Sound': 'Nature Sounds',
-                         'Bakery Smell': 'Culinary Smell',
-                         'Bitter Taste': 'Taste',
-                         'Blur': 'Sight',
-                         'Brilliance and Glow': 'Sight',
-                         'Bubbling and Fizzing Sound': 'Liquid Sounds',
-                         'Chemical and Pungent Smell': 'Smell',
-                         'Clarity': 'Sight',
-                         'Clean and Soapy Smell': 'Fresh and Clean Smell',
-                         'Cleaning Products and Chemicals Smells': 'Chemical and Pungent Smell',
-                         'Comforting Warmth': 'Temperature',
-                         'Compassion Voice': 'Human Voice',
-                         'Cool and Refreshing': 'Temperature',
-                         'Cooling Minty Taste': 'Taste',
-                         'Culinary Smell': 'Smell',
-                         'Darkness': 'Sight',
-                         'Drinks Smell': 'Culinary Smell',
-                         'Dryness': 'Moisture and Dryness',
-                         'Earth and Soil Smell': 'Earthy and Musky Smell',
-                         'Earthy and Musky Smell': 'Smell',
-                         'Floral Smell': 'Fresh and Clean Smell',
-                         'Fragrant Smell': 'Fresh and Clean Smell',
+SENSATIONS_PARENT_MAP = {'Touch': 'root',
+                         'Temperature': 'Touch',
                          'Freezing Cold': 'Temperature',
+                         'Cool and Refreshing': 'Temperature',
+                         'Comforting Warmth': 'Temperature',
+                         'Intense Heat': 'Temperature',
+                         'Texture': 'Touch',
+                         'Softness': 'Texture',
+                         'Silky Smoothness': 'Texture',
+                         'Stickiness': 'Texture',
+                         'Roughness': 'Texture',
+                         'Sharpness': 'Texture',
+                         'Wrinkly': 'Texture',
+                         'Moisture and Dryness': 'Touch',
+                         'Soaking Wetness': 'Moisture and Dryness',
+                         'Mistiness': 'Moisture and Dryness',
+                         'Greasiness and Oiliness': 'Moisture and Dryness',
+                         'Dryness': 'Moisture and Dryness',
+                         'Motion and Weight': 'Touch',
+                         'High Speed and Acceleration': 'Motion and Weight',
+                         'Weightlessness': 'Motion and Weight',
+                         'Heaviness': 'Motion and Weight',
+                         'Tension': 'Motion and Weight',
+                         'Vibration': 'Motion and Weight',
+                         'Pain and Relief': 'Touch',
+                         'Sharp Pain': 'Pain and Relief',
+                         'Aching Pain': 'Pain and Relief',
+                         'Soothing Relief and Numbing': 'Pain and Relief',
+                         'Pressure': 'Touch',
+                         'Smell': 'root',
+                         'Fresh and Clean Smell': 'Smell',
                          'Fresh Fruit Smell': 'Fresh and Clean Smell',
                          'Fresh Greenery Smell': 'Fresh and Clean Smell',
-                         'Fresh and Clean Smell': 'Smell',
-                         'Geological Events Sound': 'Nature Sounds',
-                         'Greasiness and Oiliness': 'Moisture and Dryness',
-                         'Happy Voice': 'Human Voice',
-                         'Harsh Voice': 'Human Voice',
-                         'Heaviness': 'Motion and Weight',
-                         'High Speed and Acceleration': 'Motion and Weight',
-                         'Human Voice': 'Sound',
-                         'Instruments Sound': 'Music Sounds',
-                         'Intense Heat': 'Temperature',
-                         'Leather Smell': 'Earthy and Musky Smell',
-                         'Liquid Pouring Sound': 'Liquid Sounds',
-                         'Liquid Sounds': 'Sound',
-                         'Liquid Splash Sound': 'Liquid Sounds',
-                         'Machinery Sound': 'Rural and Industrial Sounds',
-                         'Medicine  and Antiseptic Smell': 'Chemical and Pungent Smell',
-                         'Mistiness': 'Moisture and Dryness',
-                         'Moisture and Dryness': 'Touch',
-                         'Motion and Weight': 'Touch',
-                         'Music Sounds': 'Sound',
-                         'Natural Greenery Smell': 'Earthy and Musky Smell',
-                         'Natural Water Sound': 'Nature Sounds',
-                         'Nature Sounds': 'Sound',
-                         'None': 'None',
-                         'Pain and Relief': 'Touch',
-                         'Peaceful Ambient': 'Nature Sounds',
-                         'Pungent Smell': 'Chemical and Pungent Smell',
+                         'Clean and Soapy Smell': 'Fresh and Clean Smell',
                          'Refreshing Minty Smell': 'Fresh and Clean Smell',
                          'Refreshing Ocean Smell': 'Fresh and Clean Smell',
-                         'Roughness': 'Texture',
-                         'Rural and Industrial Sounds': 'Sound',
-                         'Rushing Voice': 'Human Voice',
-                         'Sad Voice': 'Human Voice',
-                         'Salty Taste': 'Taste',
+                         'Floral Smell': 'Fresh and Clean Smell',
+                         'Fragrant Smell': 'Fresh and Clean Smell',
+                         'Culinary Smell': 'Smell',
+                         'Drinks Smell': 'Culinary Smell',
                          'Savory Food Smell': 'Culinary Smell',
-                         'Sharp Pain': 'Pain and Relief',
-                         'Sharpness': 'Texture',
-                         'Sickening Smell': 'Chemical and Pungent Smell',
-                         'Sight': 'None',
-                         'Silence and Quiet': 'Sound',
-                         'Silky Smoothness': 'Texture',
-                         'Singing Voice': 'Music Sounds',
-                         'Smell': 'None',
-                         'Soaking Wetness': 'Moisture and Dryness',
-                         'Softness': 'Texture',
-                         'Soothing Relief and Numbing': 'Pain and Relief',
-                         'Sound': 'None',
-                         'Sour Taste': 'Taste',
                          'Spices Smell': 'Culinary Smell',
-                         'Spicy Taste': 'Taste',
-                         'Stickiness': 'Texture',
+                         'Bakery Smell': 'Culinary Smell',
                          'Sweet Smell': 'Culinary Smell',
+                         'Earthy and Musky Smell': 'Smell',
+                         'Woody Smell': 'Earthy and Musky Smell',
+                         'Leather Smell': 'Earthy and Musky Smell',
+                         'Earth and Soil Smell': 'Earthy and Musky Smell',
+                         'Natural Greenery Smell': 'Earthy and Musky Smell',
+                         'Chemical and Pungent Smell': 'Smell',
+                         'Medicine and Antiseptic Smell': 'Chemical and Pungent Smell',
+                         'Cleaning Products and Chemicals Smells': 'Chemical and Pungent Smell',
+                         'Pungent Smell': 'Chemical and Pungent Smell',
+                         'Sickening Smell': 'Chemical and Pungent Smell',
+                         'Taste': 'root',
                          'Sweet Taste': 'Taste',
-                         'Taste': 'None',
-                         'Temperature': 'Touch',
-                         'Tension': 'Motion and Weight',
-                         'Texture': 'Touch',
-                         'Touch': 'None',
-                         'Traffic Jam Sound': 'Rural and Industrial Sounds',
+                         'Sour Taste': 'Taste',
+                         'Bitter Taste': 'Taste',
+                         'Spicy Taste': 'Taste',
                          'Umami Taste': 'Taste',
+                         'Salty Taste': 'Taste',
+                         'Cooling Minty Taste': 'Taste',
+                         'Sound': 'root',
+                         'Music Sounds': 'Sound',
+                         'Instruments Sound': 'Music Sounds',
+                         'Singing Voice': 'Music Sounds',
+                         'Rural and Industrial Sounds': 'Sound',
                          'Vehicles Sound': 'Rural and Industrial Sounds',
-                         'Vibration': 'Motion and Weight',
-                         'Weightlessness': 'Motion and Weight',
-                         'Woody Smell': 'Earthy and Musky Smell'}
+                         'Traffic Jam or Human Crowd Sound': 'Rural and Industrial Sounds',
+                         'Machinery Sound': 'Rural and Industrial Sounds',
+                         'Nature Sounds': 'Sound',
+                         'Animal Sounds': 'Nature Sounds',
+                         'Natural Water Sound': 'Nature Sounds',
+                         'Atmospheric Phenomena Sound': 'Nature Sounds',
+                         'Geological Events Sound': 'Nature Sounds',
+                         'Peaceful Ambient': 'Nature Sounds',
+                         'Liquid Sounds': 'Sound',
+                         'Bubbling and Fizzing Sound': 'Liquid Sounds',
+                         'Liquid Splash Sound': 'Liquid Sounds',
+                         'Liquid Pouring Sound': 'Liquid Sounds',
+                         'Silence and Quiet': 'Sound',
+                         'Human Voice': 'Sound',
+                         'Sad Voice': 'Human Voice',
+                         'Rushing Voice': 'Human Voice',
+                         'Compassion Voice': 'Human Voice',
+                         'Happy Voice': 'Human Voice',
+                         'Argument Voice': 'Human Voice',
+                         'Harsh Voice': 'Human Voice',
+                         'Human Crowd Noises': 'Human Voice',
+                         'Sight': 'root',
+                         'Brilliance and Glow': 'Sight',
+                         'Clarity': 'Sight',
+                         'Blur': 'Sight',
+                         'Darkness': 'Sight',
+                         'None': 'root',
+                         'Bursting Sound': 'Sound'}

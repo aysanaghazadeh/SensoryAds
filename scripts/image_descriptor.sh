@@ -1,1 +1,1 @@
-python inference.py --config_type=DEFAULT --inference_type=description_generation --MLLM_prompt=description_generation.jinja --model_type=MLLM --MLLM=QWenVL --description_goal=image_descriptor --resume=True
+python inference.py --config_type=DEFAULT --inference_type=description_generation --MLLM_prompt=description_generation.jinja --model_type=MLLM --MLLM=Gemma --description_goal=image_descriptor --resume=True
