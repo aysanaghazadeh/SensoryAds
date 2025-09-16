@@ -85,7 +85,7 @@ def process_action_reason(action_reasons):
 
 
 def generate_images(args):
-    test_set = get_test_data(args)['ID'].values[:290]
+    test_set = get_test_data(args)
     AdImageGeneration = AdvertisementImageGeneration(args)
     QA, sensations = get_prompt_info(args)
     experiment_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
