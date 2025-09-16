@@ -12,7 +12,7 @@ import random
 
 def get_prompt_info(args):
     QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
-    sensations = json.load(open(os.path.join(args.data_path, args.test_set_sensations)))
+    sensations = json.load(open(os.path.join(args.data_path, args.test_set_sensation)))
     return QA, sensations
 
 
