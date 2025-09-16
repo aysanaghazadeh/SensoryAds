@@ -144,6 +144,9 @@ def parse_args():
                         type=str,
                         default='train_images_total',
                         help='Relative path to the original images for the test set from root')
+    parser.add_argument('--test_set_sensation',
+                        type=str,
+                        default='train/sensation_annotation_parsed.json')
     parser.add_argument('--text_input_type',
                         type=str,
                         default='LLM',

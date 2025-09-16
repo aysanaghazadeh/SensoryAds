@@ -1,5 +1,5 @@
 python inference.py --config_type=DEFAULT --text_input_type=AR --T2I_model=Flux \
 --T2I_prompt=AR_with_sensation.jinja \
---with_sensation=True \
+--with_physical_sensation=True \
 --test_set_sensation=train/sensation_annotation_parsed.json \
 --test_set_QA=train/SensoryAd_Action_Reason.json \
