@@ -7,13 +7,13 @@ class MOLMO(nn.Module):
         super().__init__()
 
         bnb_config = BitsAndBytesConfig(load_in_8bit=True)
-        self.model = AutoModelForCausalLM.from_pretrained('allenai/Molmo-7B-D-0924',
+        self.model = AutoModelForCausalLM.from_pretrained('allenai/Molmo-7B-O-0924',
                                                           trust_remote_code=True,
                                                           torch_dtype='auto',
                                                           device_map='auto',
                                                           quantization_config=bnb_config
                                                           )
-        self.processor = AutoProcessor.from_pretrained('allenai/Molmo-7B-D-0924',
+        self.processor = AutoProcessor.from_pretrained('allenai/Molmo-7B-O-0924',
                                                        trust_remote_code=True,
                                                        torch_dtype='auto',
                                                        device_map='auto'

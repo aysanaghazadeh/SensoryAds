@@ -22,3 +22,4 @@ def get_scores_per_image(metric_scores, image_url, sensation_list):
     return scores
 
 def get_human_score_agreement(metric_scores, human_annotations, args):
+    return
