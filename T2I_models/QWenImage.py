@@ -45,7 +45,7 @@ class QWenImage(nn.Module):
             # height=height,
             num_inference_steps=28,
             true_cfg_scale=4.0,
-            generator=torch.Generator(device="cuda").manual_seed(0)
+            generator=torch.Generator(device="cuda").manual_seed(42)
         ).images[0]
 
         return image
