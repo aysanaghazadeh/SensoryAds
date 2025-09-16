@@ -18,7 +18,7 @@ class MLLM(nn.Module):
             'InternVL2_5': InternVL,
             'Gemini': Gemini,
             'FastVLM': FastVLM,
-            'MoLMO': MOLMO,
+            'MOLMO': MOLMO,
         }
         self.model = model_map[args.MLLM](args)
 
