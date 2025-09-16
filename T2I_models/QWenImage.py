@@ -20,6 +20,7 @@ class QWenImage(nn.Module):
         self.pipeline = self.pipeline.to(device=args.device)
 
     def forward(self, prompt):
+        print(prompt)
         image = self.pipeline(prompt,
                               generator=torch.Generator(device=self.args.device).manual_seed(0)).images[0]
         return image
