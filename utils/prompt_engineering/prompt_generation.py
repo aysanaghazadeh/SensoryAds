@@ -138,7 +138,7 @@ class ImageGenerationPromptGenerator:
                 'sentiment': sentiment,
                 'topic': topic,
                 'audience': audience,
-                'physical_sensation': physical_sensation}
+                'sensation': physical_sensation}
         env = Environment(loader=FileSystemLoader(args.prompt_path))
         template = env.get_template(args.T2I_prompt)
         output = template.render(**data)
@@ -202,7 +202,7 @@ class ImageGenerationPromptGenerator:
                 'sentiment': sentiment,
                 'topic': topic,
                 'audience': audience,
-                'physical_sensation': physical_sensation}
+                'sensation': physical_sensation}
 
         print('data:', data)
         env = Environment(loader=FileSystemLoader(args.prompt_path))
@@ -246,7 +246,7 @@ class ImageGenerationPromptGenerator:
         QA = json.load(open(QA_path))
         action_reason = QA[image_filename][0]
         
-        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience, 'physical_sensation': physical_sensation}
+        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience, 'sensation': physical_sensation}
         env = Environment(loader=FileSystemLoader(args.prompt_path))
         template = env.get_template(args.T2I_prompt)
         output = template.render(**data)
