@@ -99,9 +99,9 @@ def generate_images(args):
             continue
         
         action_reasons = content[0]
-        image_sensations = sensations[filename]
+        image_sensations = sensations[filename]['image_sensations']
         for sensation in image_sensations:
-            image, prompt = AdImageGeneration(filename, sensation)
+            image, prompt = AdImageGeneration(filename, sensation.replace(' sensation', ''))
             save_image(args, filename, image, experiment_datetime, sensation)
             save_results(args, prompt, action_reasons, filename, experiment_datetime, sensation)
             print(f'image url: {filename}')
