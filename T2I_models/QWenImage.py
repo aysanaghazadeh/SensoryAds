@@ -43,7 +43,7 @@ class QWenImage(nn.Module):
             negative_prompt=negative_prompt,
             width=width,
             height=height,
-            num_inference_steps=50,
+            num_inference_steps=28,
             true_cfg_scale=4.0,
             generator=torch.Generator(device="cuda").manual_seed(0)
         ).images[0]
