@@ -9,8 +9,8 @@ class QWenImage(nn.Module):
         super(QWenImage, self).__init__()
         self.device = args.device
         quantization_config = PipelineQuantizationConfig(
-            quant_backend="bitsandbytes_8bit",
-            quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
+            quant_backend="bitsandbytes_4bit",
+            quant_kwargs={"load_in_4bit": True, "bnb_8bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
             components_to_quantize=["transformer", "text_encoder_2"],
         )
         self.pipeline = DiffusionPipeline.from_pretrained("Qwen/Qwen-Image",
