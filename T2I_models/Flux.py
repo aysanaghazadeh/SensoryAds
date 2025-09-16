@@ -9,9 +9,10 @@ class Flux(nn.Module):
         super(Flux, self).__init__()
         self.device = args.device
         quantization_config = PipelineQuantizationConfig(
-            load_in_8bit=True,
-            bnb_8bit_compute_dtype=torch.float16
-        )
+                                    quant_backend="bitsandbytes_8bit",
+                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
+                                    components_to_quantize=["transformer", "text_encoder_2"],
+                                )
         self.pipeline = DiffusionPipeline.from_pretrained("black-forest-labs/FLUX.1-dev",
                                                            torch_dtype=torch.float16,
                                                           quantization_config=quantization_config)
