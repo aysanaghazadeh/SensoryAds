@@ -35,7 +35,10 @@ def retrieve_single_level_sensation(
     for index in answer_indices_string:
         if len(index) > 0:
             answer_indices.append(int(index))
-    answers = [sensations[answer_index] for answer_index in answer_indices]
+    answers = [
+        sensations[i] for i in answer_indices
+        if 0 <= i < len(sensations)
+    ]
     return answers
 
 def get_child_sensations(
