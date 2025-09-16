@@ -1,7 +1,7 @@
 from diffusers import FluxPipeline, DiffusionPipeline
 import torch
 from torch import nn
-from transformers import PipelineQuantizationConfig
+from diffusers.quantizers import PipelineQuantizationConfig
 
 
 class Flux(nn.Module):
