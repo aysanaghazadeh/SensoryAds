@@ -38,7 +38,7 @@ class QWenImage(nn.Module):
         }
         width, height = aspect_ratios["16:9"]
 
-        image = pipe(
+        image = self.pipe(
             prompt=prompt + positive_magic["en"],
             negative_prompt=negative_prompt,
             width=width,
