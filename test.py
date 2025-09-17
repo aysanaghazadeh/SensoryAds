@@ -110,6 +110,7 @@
 
 from diffusers import DiffusionPipeline
 import torch
+from diffusers.quantizers import PipelineQuantizationConfig
 
 model_name = "Qwen/Qwen-Image"
 
@@ -120,10 +121,13 @@ if torch.cuda.is_available():
 else:
     torch_dtype = torch.float32
     device = "cpu"
-
+quantization_config = PipelineQuantizationConfig(
+            quant_backend="bitsandbytes_4bit",
+            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+        )
 pipe = DiffusionPipeline.from_pretrained(model_name,
                                          torch_dtype=torch_dtype,
-                                         device_map='balanced')
+                                         quantization_config=quantization_config)
 # pipe = pipe.to(device)
 
 positive_magic = {
