@@ -165,7 +165,7 @@ image = pipe(
     negative_prompt=negative_prompt,
     width=width,
     height=height,
-    num_inference_steps=50,
+    num_inference_steps=28,
     true_cfg_scale=4.0,
     generator=torch.Generator(device="cuda").manual_seed(42)
 ).images[0]
