@@ -164,5 +164,5 @@ image = pipe(
     generator=torch.Generator(device="cuda").manual_seed(42)
 ).images[0]
 
-image.save("example.png")
+image.save("../experiments/generated_images/SensoryAds/example.png")
 
