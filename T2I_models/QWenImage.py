@@ -20,7 +20,7 @@ class QWenImage(nn.Module):
         self.pipe = DiffusionPipeline.from_pretrained(model_name,
                                                       torch_dtype=torch_dtype,
                                                       quantization_config=quantization_config,
-                                                      device_map='balanced')
+                                                      device_map='auto')
         self.args = args
         # self.pipe = self.pipe.to(device=args.device)
 
