@@ -15,7 +15,7 @@ class QWenImage(nn.Module):
             torch_dtype = torch.bfloat16
         quantization_config = PipelineQuantizationConfig(
             quant_backend="bitsandbytes_8bit",
-            quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
+            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
         )
         self.pipe = DiffusionPipeline.from_pretrained(model_name,
                                                       torch_dtype=torch_dtype,
