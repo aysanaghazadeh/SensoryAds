@@ -17,7 +17,7 @@ class InternLM(nn.Module):
             self.model = AutoModelForCausalLM.from_pretrained("internlm/internlm3-8b-instruct",
                                                               torch_dtype=torch.float16,
                                                               load_in_8bit=True,
-                                                              trust_remote_code=True).eval()
+                                                              trust_remote_code=True)
             self.model = self.model.eval()
 
     def forward(self, prompt):
