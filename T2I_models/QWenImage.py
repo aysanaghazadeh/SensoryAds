@@ -53,3 +53,4 @@ class QWenImage(nn.Module):
             true_cfg_scale=4.0,
             generator=torch.Generator(device="cuda").manual_seed(42)
         ).images[0]
+        return image
