@@ -23,7 +23,7 @@ class QWenImage(nn.Module):
             "en": ", Ultra HD, 4K, cinematic composition.",  # for english prompt
             "zh": ", 超清，4K，电影级构图."  # for chinese prompt
         }
-        negative_prompt = " "  # using an empty string if you do not have specific concept to remove
+        negative_prompt = ""  # using an empty string if you do not have specific concept to remove
 
         # Generate with different aspect ratios
         aspect_ratios = {
@@ -35,13 +35,13 @@ class QWenImage(nn.Module):
             "3:2": (1584, 1056),
             "2:3": (1056, 1584),
         }
-        # width, height = aspect_ratios["16:9"]
+        width, height = aspect_ratios["16:9"]
 
         image = self.pipe(
             prompt=prompt + positive_magic["en"],
             negative_prompt=negative_prompt,
-            # width=width,
-            # height=height,
+            width=width,
+            height=height,
             num_inference_steps=28,
             true_cfg_scale=4.0,
             generator=torch.Generator(device="cuda").manual_seed(42)
