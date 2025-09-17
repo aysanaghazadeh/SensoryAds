@@ -1,23 +1,24 @@
 import torch
 from torch import nn
 from diffusers import AuraFlowPipeline
-from transformers import BitsAndBytesConfig
+from diffusers.quantizers import PipelineQuantizationConfig
 
 
 class AuraFlow(nn.Module):
     def __init__(self, args):
         super(AuraFlow, self).__init__()
         self.device = args.device
-        bnb_config = BitsAndBytesConfig(
-            load_in_8bit=True,
-            bnb_8bit_compute_dtype=torch.float16
+        quantization_config = PipelineQuantizationConfig(
+            quant_backend="bitsandbytes_4bit",
+            quant_kwargs={"load_in_4bit": True, "bnb_8bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+            components_to_quantize=["transformer", "text_encoder_2"],
         )
         self.pipeline = AuraFlowPipeline.from_pretrained(
             "fal/AuraFlow-v0.3",
             torch_dtype=torch.float16,
             device_map='balanced',
             # variant="fp16",
-            quantization_config=bnb_config
+            quantization_config=quantization_config
         )
 
     def forward(self, prompt):
