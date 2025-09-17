@@ -8,16 +8,16 @@ class AuraFlow(nn.Module):
     def __init__(self, args):
         super(AuraFlow, self).__init__()
         self.device = args.device
-        quantization_config = BitsAndBytesConfig(
+        bnb_config = BitsAndBytesConfig(
             load_in_8bit=True,
             bnb_8bit_compute_dtype=torch.float16
         )
         self.pipeline = AuraFlowPipeline.from_pretrained(
-            "fal/AuraFlow-v0.2",
+            "fal/AuraFlow-v0.3",
             torch_dtype=torch.float16,
-            device_map='balanced'
+            device_map='balanced',
             # variant="fp16",
-            # quantization_config=quantization_config
+            quantization_config=bnb_config
         )
 
     def forward(self, prompt):
@@ -26,7 +26,7 @@ class AuraFlow(nn.Module):
                     height=1024,
                     width=1024,
                     num_inference_steps=28,
-                    generator=torch.Generator().manual_seed(666),
+                    generator=torch.Generator().manual_seed(0),
                     guidance_scale=5,
                     ).images[0]
         return image
