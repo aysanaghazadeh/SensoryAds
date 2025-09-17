@@ -17,7 +17,7 @@ class QWenImage(nn.Module):
                                                       device_map='balanced',)
                                                       # quantization_config=quantization_config)
         self.args = args
-        self.pipe = self.pipe.to(device=args.device)
+        # self.pipe = self.pipe.to(device=args.device)
 
     def forward(self, prompt):
         positive_magic = {
