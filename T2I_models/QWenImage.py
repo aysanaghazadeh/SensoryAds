@@ -19,9 +19,10 @@ class QWenImage(nn.Module):
         )
         self.pipe = DiffusionPipeline.from_pretrained(model_name,
                                                       torch_dtype=torch_dtype,
-                                                      quantization_config=quantization_config)
+                                                      quantization_config=quantization_config,
+                                                      device_map='balanced')
         self.args = args
-        self.pipe = self.pipe.to(device=args.device)
+        # self.pipe = self.pipe.to(device=args.device)
 
     def forward(self, prompt):
         positive_magic = {
