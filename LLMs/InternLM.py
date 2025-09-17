@@ -14,8 +14,7 @@ class InternLM(nn.Module):
         if not args.train:
             self.args = args
             bnb_config = BitsAndBytesConfig(load_in_8bit=True)
-            self.tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-            self.tokenizer = AutoTokenizer.from_pretrained("internlm/internlm3-8b-instruct", trust_remote_code=True)
+            self.tokenizer = AutoTokenizer.from_pretrained("internlm/internlm3-8b-instruct")
             self.model = AutoModelForCausalLM.from_pretrained("internlm/internlm3-8b-instruct",
                                                               quantization_config=bnb_config)
             self.model = self.model.eval()
