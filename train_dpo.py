@@ -9,7 +9,7 @@ from configs.training_config import get_args
 args = get_args()
 dataset = get_train_MLLM_DPO_Dataloader(args)
 model = Qwen2_5_VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
-                                                                device_map='auto').eval()
+                                                            device_map='auto').eval()
 model.gradient_checkpointing_enable()
 model = prepare_model_for_kbit_training(model)
 peft_config = LoraConfig(inference_mode=False,
