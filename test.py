@@ -124,7 +124,7 @@ else:
 pipe = DiffusionPipeline.from_pretrained(model_name,
                                          torch_dtype=torch_dtype,
                                          device_map='balanced')
-pipe = pipe.to(device)
+# pipe = pipe.to(device)
 
 positive_magic = {
     "en": ", Ultra HD, 4K, cinematic composition.", # for english prompt
