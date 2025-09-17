@@ -121,7 +121,9 @@ else:
     torch_dtype = torch.float32
     device = "cpu"
 
-pipe = DiffusionPipeline.from_pretrained(model_name, torch_dtype=torch_dtype)
+pipe = DiffusionPipeline.from_pretrained(model_name,
+                                         torch_dtype=torch_dtype,
+                                         device_map='balanced')
 pipe = pipe.to(device)
 
 positive_magic = {
