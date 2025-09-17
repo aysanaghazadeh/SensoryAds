@@ -5,13 +5,18 @@ from peft import PeftModel
 import os
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-
+import transformers.utils as tutils
 
 class InternLM(nn.Module):
     def __init__(self, args):
         super(InternLM, self).__init__()
         self.args = args
         if not args.train:
+            if not hasattr(tutils, "LossKwargs"):
+                class LossKwargs(dict):  # minimal stand-in for typing
+                    pass
+
+                tutils.LossKwargs = LossKwargs
             self.args = args
             bnb_config = BitsAndBytesConfig(load_in_8bit=True)
             self.tokenizer = AutoTokenizer.from_pretrained("internlm/internlm3-8b-instruct",
