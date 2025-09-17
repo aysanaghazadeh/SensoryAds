@@ -8,6 +8,7 @@ from LLMs.LLAMA3_instruct import LLAMA3Instruct
 from LLMs.InternLM import InternLM
 from LLMs.QWenLM import QWenLM
 from LLMs.GPT4o import GPT4o
+from LLMs.Gemma import Gemma
 
 
 class LLM(nn.Module):
@@ -22,7 +23,8 @@ class LLM(nn.Module):
             'vicuna': Vicuna,
             'InternLM': InternLM,
             'QWenLM': QWenLM,
-            'GPT4o': GPT4o
+            'GPT4o': GPT4o,
+            'Gemma': Gemma,
         }
         self.model = model_map[args.LLM](args)
 
