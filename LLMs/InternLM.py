@@ -13,11 +13,11 @@ class InternLM(nn.Module):
         self.args = args
         if not args.train:
             self.args = args
+            bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+            self.tokenizer = AutoTokenizer.from_pretrained(args.model_name)
             self.tokenizer = AutoTokenizer.from_pretrained("internlm/internlm3-8b-instruct", trust_remote_code=True)
             self.model = AutoModelForCausalLM.from_pretrained("internlm/internlm3-8b-instruct",
-                                                              torch_dtype=torch.float16,
-                                                              load_in_8bit=True,
-                                                              trust_remote_code=True)
+                                                              quantization_config=bnb_config)
             self.model = self.model.eval()
 
     def forward(self, prompt):
