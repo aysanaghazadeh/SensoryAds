@@ -2,6 +2,7 @@ from configs.inference_config import get_args
 from utils.annotation.sensation_retreival import process_files
 from utils.data.trian_test_split import get_test_data
 from generation.image_generation import generate_images
+from generation.sensation_image_generation import generate_images as generate_sensation_images
 from generation.description_generation import generate_description
 
 if __name__ == "__main__":
@@ -10,7 +11,10 @@ if __name__ == "__main__":
         image_list = get_test_data(args)
         process_files(args, image_list)
     elif args.inference_type == 'image_generation':
-        generate_images(args)
+        if args.AD_type == 'Sensation':
+            generate_sensation_images(args)
+        else:
+            generate_images(args)
     elif args.inference_type == 'description_generation':
         generate_description(args)
     else:

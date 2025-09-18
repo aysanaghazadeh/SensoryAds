@@ -21,7 +21,7 @@ class DMD(nn.Module):
                                                       variant="fp16").to("cuda:2")
         self.pipe.scheduler = LCMScheduler.from_config(self.pipe.scheduler.config)
 
-    def forward(self, prompt):
+    def forward(self, prompt, seed=None):
         image = self.pipe(prompt=prompt,
                           num_inference_steps=4,
                           guidance_scale=0,

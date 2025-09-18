@@ -23,7 +23,8 @@ class QWenImage(nn.Module):
         self.args = args
         self.pipe = self.pipe.to(device=args.device)
 
-    def forward(self, prompt):
+    def forward(self, prompt, seed=None):
+        seed = seed if seed is not None else 0
         positive_magic = {
             "en": ", Ultra HD, 4K, cinematic composition.",  # for english prompt
             "zh": ", 超清，4K，电影级构图."  # for chinese prompt
@@ -51,6 +52,6 @@ class QWenImage(nn.Module):
             height=height,
             num_inference_steps=28,
             true_cfg_scale=4.0,
-            generator=torch.Generator(device="cuda").manual_seed(42)
+            generator=torch.Generator(device="cuda").manual_seed(seed)
         ).images[0]
         return image

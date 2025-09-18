@@ -19,8 +19,9 @@ class Flux(nn.Module):
         self.pipeline = self.pipeline.to(device=args.device)
         self.args = args
 
-    def forward(self, prompt):
+    def forward(self, prompt, seed=None):
         print(prompt)
+        seed = seed if seed is not None else 0
         image = self.pipeline(prompt,
-                              generator=torch.Generator(device=self.args.device).manual_seed(0)).images[0]
+                              generator=torch.Generator(device=self.args.device).manual_seed(seed)).images[0]
         return image

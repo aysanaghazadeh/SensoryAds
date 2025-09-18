@@ -23,5 +23,5 @@ class T2IModel(nn.Module):
         }
         self.model = model_map[args.T2I_model](args)
 
-    def forward(self, prompt):
-        return self.model(prompt)
+    def forward(self, prompt, seed=None):
+        return self.model(prompt, seed)

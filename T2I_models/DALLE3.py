@@ -12,7 +12,7 @@ class DALLE3(nn.Module):
         os.environ["OPENAI_API_KEY"] = args.api_key
         self.client = OpenAI()
 
-    def forward(self, prompt):
+    def forward(self, prompt, seed=None):
         response = self.client.images.generate(
             model="dall-e-3",
             prompt=prompt,

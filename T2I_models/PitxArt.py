@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from diffusers.quantizers import PipelineQuantizationConfig
-
+from diffusers import PixArtAlphaPipeline
 
 class PixArt(nn.Module):
     def __init__(self, args):
@@ -16,6 +16,6 @@ class PixArt(nn.Module):
                                                         torch_dtype=torch.float16)
         self.pipe = self.pipe.to(device=args.device)
 
-    def forward(self, prompt):
+    def forward(self, prompt, seed=None):
         image = self.pipe(prompt).images[0]
         return image

@@ -21,13 +21,14 @@ class AuraFlow(nn.Module):
             quantization_config=quantization_config
         )
 
-    def forward(self, prompt):
+    def forward(self, prompt, seed=None):
+        seed = seed if seed is not None else 0
         image = self.pipeline(
                     prompt=prompt,
                     height=1024,
                     width=1024,
                     num_inference_steps=28,
-                    generator=torch.Generator().manual_seed(0),
+                    generator=torch.Generator().manual_seed(seed),
                     guidance_scale=5,
                     ).images[0]
         return image
