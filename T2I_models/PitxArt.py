@@ -18,5 +18,6 @@ class PixArt(nn.Module):
         self.pipe = self.pipe.to(device=args.device)
 
     def forward(self, prompt, seed=None):
-        image = self.pipe(prompt).images[0]
+        image = self.pipe(prompt,
+                          generator=torch.Generator(device=self.args.device).manual_seed(seed)).images[0]
         return image
