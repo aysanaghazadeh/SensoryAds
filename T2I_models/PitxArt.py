@@ -13,7 +13,8 @@ class PixArt(nn.Module):
             components_to_quantize=["transformer", "text_encoder_2"],
         )
         self.pipe = PixArtAlphaPipeline.from_pretrained("PixArt-alpha/PixArt-XL-2-1024-MS",
-                                                        torch_dtype=torch.float16)
+                                                        torch_dtype=torch.float16,
+                                                        quantization_config=quantization_config)
         self.pipe = self.pipe.to(device=args.device)
 
     def forward(self, prompt, seed=None):
