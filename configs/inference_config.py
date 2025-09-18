@@ -149,10 +149,12 @@ def parse_args():
                         default='train/sensation_annotation_parsed.json')
     parser.add_argument('--text_input_type',
                         type=str,
-                        default='LLM',
-                        help='Type of the input text for T2I generation model. Choose from LLM_generated, '
+                        default='AR',
+                        options=['LLM', 'AR', 'original_description', 'Sensation'],
+                        help='Type of the input text for T2I generation model. Choose from LLM_generated (Generating image with LLM), '
                              'AR (for action-reason),'
-                             'original_description (for combine, VT, IN, and atypicality descriptions)')
+                             'original_description (for combine, VT, IN, and atypicality descriptions),'
+                             'Sensation for generating sensory images regardless of action-reason statements.')
     parser.add_argument('--description_file',
                         type=str,
                         default=None,

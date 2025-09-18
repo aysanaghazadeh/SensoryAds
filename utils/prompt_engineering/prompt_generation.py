@@ -253,7 +253,7 @@ class ImageGenerationPromptGenerator:
         print('AR prompt:', output)
         return output
 
-    def get_sensation_prompt(self, args, image_filename, sensation):
+    def get_Sensation_prompt(self, args, image_filename, sensation):
         data = {'sensation': sensation}
         env = Environment(loader=FileSystemLoader(args.prompt_path))
         template = env.get_template(args.T2I_prompt)
