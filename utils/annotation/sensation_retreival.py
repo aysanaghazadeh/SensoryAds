@@ -99,7 +99,11 @@ def retrieve_sensation_multichoice(
         image=None
     ):
     options = get_options(sensations)
-    context = '\n'.join(list(SENSATION_DEFINITION.values()))
+    definitions = []
+    for definition in SENSATION_DEFINITION.values():
+        if definition is not None:
+            definitions.append(definition)
+    context = '\n'.join(definitions)
     data = {
         'options': options,
         'context': context,
