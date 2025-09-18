@@ -3,5 +3,5 @@ python inference.py --config_type=DEFAULT \
                     --retrieval_type=multichoice \
                     --MLLM_prompt=MLLM_Sensation_Retrieval_Multichoice.jinja \
                     --model_type=MLLM \
-                    --MLLM=QWenVL \
+                    --MLLM=LLAVA16 \
                     --resume=True

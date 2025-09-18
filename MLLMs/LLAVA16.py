@@ -29,4 +29,6 @@ class LLAVA16(torch.nn.Module):
                                      max_new_tokens=generate_kwargs["max_new_tokens"])
         output = self.processor.decode(output[0], skip_special_tokens=True)
         output = output.split('ASSISTANT:')[-1]
+        print(f'User: {prompt}')
+        print(f'Assistant: {output}')
         return output
