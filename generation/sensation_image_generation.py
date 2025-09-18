@@ -10,6 +10,7 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                            'generated_images',
                            args.project_name,
                            experiment_datetime,
+                           args.T2I_model,
                            args.AD_type,
                            sensation)
     if not os.path.exists(directory):
@@ -19,6 +20,7 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                            'generated_images',
                            args.project_name,
                            experiment_datetime,
+                           args.T2I_model,
                            args.AD_type,
                            sensation,
                            filename))
@@ -45,6 +47,7 @@ def save_results(args, prompt, filename, experiment_datetime, sensation):
                                        'generated_images',
                                        args.project_name,
                                        experiment_datetime,
+                                       args.T2I_model,
                                        args.AD_type,
                                        sensation,
                                        filename)
