@@ -25,7 +25,7 @@ class ImageGenerationPromptGenerator:
             self.LLM_model = LLM(args)
 
     def set_descriptions(self, args):
-        if args.text_input_type not in ['LLM', 'AR']:
+        if args.text_input_type not in ['LLM', 'AR', 'Sensation']:
             self.descriptions = self.get_all_descriptions(args)
 
     def set_sentiments(self, args):
