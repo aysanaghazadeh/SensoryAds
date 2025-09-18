@@ -71,7 +71,10 @@ if __name__ == '__main__':
         'sensation_extraction_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_InternVL.json',
         'sensation_extraction_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_Gemma.json',
         'sensation_extraction_PittAd_ALL_InternVL_MLLM_Sensation_Retrieval.json',
-        'sensation_extraction_PittAd_ALL_Gemma_MLLM_Sensation_Retrieval.json'
+        'sensation_extraction_PittAd_ALL_Gemma_MLLM_Sensation_Retrieval.json',
+        'sensation_extraction_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_Gemma.json',
+        'sensation_extraction_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_InternVL.json',
+        'sensation_extraction_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_QWenVL.json'
     ]
     sensation_annotations = json.load(open('/Users/aysanaghazadeh/Downloads/sensation_annotations_parsed.json'))
     for filename in results:

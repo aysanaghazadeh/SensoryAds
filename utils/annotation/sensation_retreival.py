@@ -1,6 +1,6 @@
 from MLLMs.MLLM import MLLM
 from LLMs.LLM import LLM
-from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATION_DEFINITION
+from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATION_DEFINITION, SENSATIONS_PARENT_MAP
 from utils.prompt_engineering.prompt_generation import generate_text_generation_prompt
 import os
 from PIL import Image
@@ -57,7 +57,7 @@ def get_options(
     options = '\n'.join([f'{i}- {sensation}' for i, sensation in enumerate(sensations)])
     return options
 
-def retrieve_sensation(
+def retrieve_sensation_hierarchy(
         args, 
         model, 
         sensations_map,
@@ -81,7 +81,7 @@ def retrieve_sensation(
         for sensation in sensations:
             print(sensation)
             if sensation is not 'None':
-                output_list += [sensation + ',' + retrieved_sensation for retrieved_sensation in retrieve_sensation(args,
+                output_list += [sensation + ',' + retrieved_sensation for retrieved_sensation in retrieve_sensation_hierarchy(args,
                                                                                                                     model, 
                                                                                                                     image=image, 
                                                                                                                     description=description,
@@ -90,6 +90,25 @@ def retrieve_sensation(
         return output_list
     else:
         return sensations
+
+def retrieve_sensation_multichoice(
+        args,
+        model,
+        sensations,
+        description=None,
+        image=None
+    ):
+    options = get_options(sensations)
+    context = '\n'.join(list(SENSATION_DEFINITION.values()))
+    data = {
+        'options': options,
+        'context': context,
+        'description': description
+    }
+    prompt = generate_text_generation_prompt(args, data)
+    sensations = retrieve_single_level_sensation(args, model, prompt, sensations, image=image)
+    return sensations
+
 
 def process_files(
         args, 
@@ -108,6 +127,7 @@ def process_files(
                                 args.project_name,
                                 '_'.join([
                                         args.inference_type,
+                                        args.retrieval_type,
                                         args.task,
                                         args.AD_type,
                                         args.MLLM if args.model_type == 'MLLM' else args.LLM,
@@ -132,9 +152,15 @@ def process_files(
             description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0]
         sensations = SENSATION_HIERARCHY
         if args.model_type == 'MLLM':
-            image_sensations = retrieve_sensation(args, model, sensations, image=image)
+            if args.retrieval_type=='hierarchy':
+                image_sensations = retrieve_sensation_hierarchy(args, model, sensations, image=image)
+            elif args.retrieval_type=='multichoice':
+                image_sensations = retrieve_sensation_multichoice(args, model, sensations, image=image)
         elif args.model_type == 'LLM':
-            image_sensations = retrieve_sensation(args, model, sensations, description=description.split("Q2:")[-1])
+            if args.retrieval_type=='hierarchy':
+                image_sensations = retrieve_sensation_hierarchy(args, model, sensations, description=description.split("Q2:")[-1])
+            elif args.retrieval_type=='multichoice':
+                image_sensations = retrieve_sensation_multichoice(args, model, sensations, description=description)
         image_sensation_map[image_url] = image_sensations
         print(f'sensation info for image {image_url} is: \n {json.dumps(image_sensation_map[image_url], indent=4)}')
         print('-' * 100)

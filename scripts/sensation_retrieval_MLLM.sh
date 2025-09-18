@@ -1,1 +1,0 @@
-python inference.py --config_type=DEFAULT --MLLM_prompt=MLLM_Sensation_Retrieval.jinja --model_type=MLLM --MLLM=MOLMO --resume=True

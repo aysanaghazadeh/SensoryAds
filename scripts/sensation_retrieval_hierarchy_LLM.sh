@@ -1,0 +1,9 @@
+python inference.py --config_type=DEFAULT \
+                    --inference_type=sensation_extraction \
+                    --retrieval_type=hierarchy \
+                    --LLM_prompt=LLM_Sensation_Retrieval_Hierarchy.jinja \
+                    --model_type=LLM \
+                    --LLM=Gemma \
+                    --description_file=../experiments/results/SensoryAds/IN_Gemma_train_images_total_ALL_description_generation.csv \
+                    --MLLM=Gemma \
+                    --resume=True

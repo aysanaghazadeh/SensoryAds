@@ -45,7 +45,7 @@ def parse_args():
     parser.add_argument('--AD_type',
                         type=str,
                         default='ALL',
-                        choices=['COM', 'PSA', 'ALL'])
+                        choices=['COM', 'PSA', 'ALL', 'Sensation'])
     parser.add_argument('--description_goal',
                         type=str,
                         default='prompt_expansion',
@@ -177,7 +177,12 @@ def parse_args():
                         default='sensation_extraction',
                         type=str,
                         choices=['image_generation', 'sensation_extraction', 'description_generation'],
-                        help='Inference type which can be image generaiton, sensation_extraction, etc.')
+                        help='Inference type which can be image generation, sensation_extraction, etc.')
+    parser.add_argument('--retrieval_type',
+                        type=str,
+                        default='multichoice',
+                        choices=['multichoice', 'hierarchy', 'first_level'],
+                        help='Retrieval type which can be each of the retrieval task types')
     parser.add_argument('--result_filename',
                         type=str)
     return parser.parse_args()
