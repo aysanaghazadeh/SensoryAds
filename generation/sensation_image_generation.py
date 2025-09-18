@@ -10,8 +10,7 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                            'generated_images',
                            args.project_name,
                            experiment_datetime,
-                           args.T2I_model,
-                           args.AD_type,
+                           f'{args.T2I_model}_{args.AD_type}',
                            sensation)
     if not os.path.exists(directory):
         os.makedirs(directory)
