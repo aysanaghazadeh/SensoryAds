@@ -20,8 +20,7 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                            'generated_images',
                            args.project_name,
                            experiment_datetime,
-                           args.T2I_model,
-                           args.AD_type,
+                           f'{args.T2I_model}_{args.AD_type}',
                            sensation,
                            filename))
 
@@ -47,8 +46,7 @@ def save_results(args, prompt, filename, experiment_datetime, sensation):
                                        'generated_images',
                                        args.project_name,
                                        experiment_datetime,
-                                       args.T2I_model,
-                                       args.AD_type,
+                                       f'{args.T2I_model}_{args.AD_type}',
                                        sensation,
                                        filename)
     with open(csv_file, 'a', newline='', encoding='utf-8') as file:
