@@ -154,16 +154,19 @@ def process_files(
             image = Image.open(image_path)
         elif args.model_type == "LLM":
             description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0]
-        sensations = SENSATION_HIERARCHY
         if args.model_type == 'MLLM':
             if args.retrieval_type=='hierarchy':
+                sensations = SENSATION_HIERARCHY
                 image_sensations = retrieve_sensation_hierarchy(args, model, sensations, image=image)
             elif args.retrieval_type=='multichoice':
+                sensations = list(SENSATIONS_PARENT_MAP.keys())
                 image_sensations = retrieve_sensation_multichoice(args, model, sensations, image=image)
         elif args.model_type == 'LLM':
             if args.retrieval_type=='hierarchy':
+                sensations = SENSATION_HIERARCHY
                 image_sensations = retrieve_sensation_hierarchy(args, model, sensations, description=description.split("Q2:")[-1])
             elif args.retrieval_type=='multichoice':
+                sensations = list(SENSATIONS_PARENT_MAP.keys())
                 image_sensations = retrieve_sensation_multichoice(args, model, sensations, description=description)
         image_sensation_map[image_url] = image_sensations
         print(f'sensation info for image {image_url} is: \n {json.dumps(image_sensation_map[image_url], indent=4)}')
