@@ -19,7 +19,7 @@ class LLAVA16(torch.nn.Module):
                 "role": "user",
                 "content": [
                     {"type": "text", "text": f"{prompt}"},
-                    {"type": "image"},
+                    {"type": "image", "image": image},
                     ],
             },
         ]
