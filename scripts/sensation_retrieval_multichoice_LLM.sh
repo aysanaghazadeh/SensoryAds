@@ -1,7 +1,7 @@
 python inference.py --config_type=DEFAULT \
                     --inference_type=sensation_extraction \
                     --retrieval_type=multichoice \
-                    --LLM_prompt=LLM_Sensation_Retrieval.jinja \
+                    --LLM_prompt=LLM_Sensation_Retrieval_Multichoice.jinja \
                     --model_type=LLM \
                     --LLM=QWenLM \
                     --description_file=../experiments/results/SensoryAds/IN_QWenVL_train_images_total_ALL_description_generation.csv \
