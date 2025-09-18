@@ -1,7 +1,7 @@
 import pandas as pd
 from configs.inference_config import get_args
 from model.pipeline import AdvertisementImageGeneration
-from Evaluation.metrics import Metrics
+from Evaluation.AD_metrics import Metrics
 import json
 import os
 from datetime import datetime
