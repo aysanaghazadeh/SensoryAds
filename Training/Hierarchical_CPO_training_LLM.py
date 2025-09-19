@@ -37,9 +37,8 @@ class HierarchicalCPOTrainer(CPOTrainer):
             model: torch.nn.Module,
             inputs: dict,
             return_outputs: bool = False,
-            **kwargs,  # Add this to accept any extra arguments
+            **kwargs,
     ) -> torch.Tensor | tuple[torch.Tensor, dict]:
-        # ... your loss logic (no other changes needed inside the function)
         """
         Computes the CPO loss plus the hierarchical preference loss.
         """
@@ -51,7 +50,7 @@ class HierarchicalCPOTrainer(CPOTrainer):
         policy_chosen_logps, policy_rejected_logps, _, _ = self.get_batch_logps(
             model,
             inputs,
-            average_log_prob=self.loss_config.average_log_prob,
+            average_log_prob=self.average_log_prob,  # Correct: access it directly
         )
 
         # Calculate the standard CPO loss term
