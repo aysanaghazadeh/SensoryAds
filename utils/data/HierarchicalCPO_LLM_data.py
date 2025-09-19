@@ -22,16 +22,19 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
         tokenizer.chat_template = "{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{% for message in messages %}{{'<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}"
 
     def process(row):
-        # Important: The CPODataCollator expects prompts to be part of the chosen/rejected sequences
-        prompt = row['prompt'] + "\n\n"
+        # 1. Apply the chat template to format the message lists into single strings
+        chosen_str = tokenizer.apply_chat_template(row["chosen"], tokenize=False)
+        rejected_str = tokenizer.apply_chat_template(row["rejected"], tokenize=False)
+        # Don't forget the parent for your hierarchical loss!
+        parent_str = tokenizer.apply_chat_template(row["parent_of_chosen"], tokenize=False)
 
-        # Tokenize all four fields
-        tokenized_chosen = tokenizer(prompt + row['chosen'], truncation=True)
-        tokenized_rejected = tokenizer(prompt + row['rejected'], truncation=True)
-        tokenized_parent = tokenizer(prompt + row['parent_of_chosen'], truncation=True)
+        # 2. Tokenize the formatted strings to get the required input_ids and attention_masks
+        tokenized_chosen = tokenizer(chosen_str)
+        tokenized_rejected = tokenizer(rejected_str)
+        tokenized_parent = tokenizer(parent_str)
 
         return {
-            "prompt": prompt,
+            "prompt": "",  # The prompt is now part of the template, so we can leave this blank
             "chosen_input_ids": tokenized_chosen["input_ids"],
             "chosen_attention_mask": tokenized_chosen["attention_mask"],
             "rejected_input_ids": tokenized_rejected["input_ids"],
@@ -39,6 +42,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
             "parent_of_chosen_input_ids": tokenized_parent["input_ids"],
             "parent_of_chosen_attention_mask": tokenized_parent["attention_mask"],
         }
+
     LOWER_SENSATIONS_PARENT_MAP = {}
     for sensation in SENSATIONS_PARENT_MAP:
         LOWER_SENSATIONS_PARENT_MAP[sensation.lower()] = SENSATIONS_PARENT_MAP[sensation].lower()
