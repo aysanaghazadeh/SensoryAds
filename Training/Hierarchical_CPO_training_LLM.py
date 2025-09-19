@@ -52,10 +52,17 @@ class HierarchicalCPOTrainer(CPOTrainer):
         compute_loss_context_manager = (
             autocast(self.accelerator.device.type) if self._peft_has_been_casted_to_bf16 else nullcontext()
         )
-        print(inputs.keys())
         with compute_loss_context_manager:
             loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
-        print(loss, metrics)
+        forward_output = self.concatenated_forward(model, inputs)
+        print(forward_output)
+        (
+            policy_chosen_logps,
+            policy_rejected_logps,
+            policy_chosen_logits,
+            policy_rejected_logits,
+            policy_nll_loss,
+        ) = forward_output[:5]
         # force log the metrics
         self.store_metrics(metrics, train_eval="train")
 
