@@ -13,8 +13,25 @@ import torch
 import torch.nn.functional as F
 from datasets import Dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
-from trl import CPOTrainer, CPOConfig
+from trl import CPOTrainer, CPOConfigimport torch
+import torch.nn.functional as F
+from transformers import PreTrainedModel
+from torch import nn
+from typing import Union, Any
+from contextlib import nullcontext
 
+# For mixed-precision training
+try:
+    from torch.cuda.amp import autocast
+except ImportError:
+    # PyTorch < 1.6.0
+    class autocast:
+        def __init__(self, enabled=True):
+            pass
+        def __enter__(self):
+            pass
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pass
 
 # 1. Define the Custom Trainer with Hierarchical Loss
 # ----------------------------------------------------
@@ -34,93 +51,67 @@ class HierarchicalCPOTrainer(CPOTrainer):
 
     def compute_loss(
             self,
-            model: torch.nn.Module,
-            inputs: dict,
-            return_outputs: bool = False,
-            **kwargs,
-    ) -> torch.Tensor | tuple[torch.Tensor, dict]:
-        """
-        Computes the CPO loss plus the hierarchical preference loss.
-        """
-        if not self.use_dpo_data_collator:
-            raise ValueError("HierarchicalCPOTrainer requires the CPODataCollator.")
+            model: Union[PreTrainedModel, nn.Module],
+            inputs: dict[str, Union[torch.Tensor, Any]],
+            return_outputs=False,
+            **kwargs,  # Accept extra arguments
+    ) -> Union[torch.Tensor, tuple[torch.Tensor, dict[str, torch.Tensor]]]:
+        # Determine the context for mixed-precision training
+        compute_loss_context_manager = autocast() if self.use_amp else nullcontext()
 
-        # --- Standard CPO Loss Calculation ---
-        # Get log probabilities for the (chosen, rejected) pair
-        policy_chosen_logps, policy_rejected_logps, _, _ = self.get_batch_logps(
-            model,
-            inputs,
-            average_log_prob=self.args.average_log_prob,  # Correct: access it directly
-        )
-
-        # Calculate the standard CPO loss term
-        # (This is a simplified representation of the CPO loss logic)
-        logits = policy_chosen_logps - policy_rejected_logps
-        if self.loss_config.loss_type == "ipo":
-            base_loss = (logits - 1 / (2 * self.beta)).pow(2).mean()
-        else:  # sigmoid, hinge, etc. handled by the parent class's loss function
-            # For simplicity, we'll call the parent's loss function
-            # This is more robust as it respects the exact loss_type from the config
+        with compute_loss_context_manager:
+            # --- Standard CPO Loss Calculation ---
+            policy_chosen_logps, policy_rejected_logps, _, _ = self.get_batch_logps(
+                model,
+                inputs,
+                # The 'average_log_prob' parameter is REMOVED to use the default behavior
+            )
             base_loss, _ = super().loss(policy_chosen_logps, policy_rejected_logps, None, None)
 
-        # --- Hierarchical Preference Loss Calculation ---
+            # --- Hierarchical Hinge Loss Calculation ---
+            hierarchy_inputs = {
+                "prompt_input_ids": inputs["prompt_input_ids"],
+                "prompt_attention_mask": inputs["prompt_attention_mask"],
+                "chosen_input_ids": inputs["parent_of_chosen_input_ids"],
+                "chosen_attention_mask": inputs["parent_of_chosen_attention_mask"],
+                "chosen_labels": inputs["parent_of_chosen_labels"],
+                "rejected_input_ids": inputs["chosen_input_ids"],
+                "rejected_attention_mask": inputs["chosen_attention_mask"],
+                "rejected_labels": inputs["chosen_labels"],
+            }
 
-        # Create a temporary input dictionary for the hierarchical pair
-        hierarchy_inputs = {
-            "prompt": inputs["prompt"],
-            "prompt_input_ids": inputs["prompt_input_ids"],
-            "prompt_attention_mask": inputs["prompt_attention_mask"],
-            # The "parent" is the new "chosen"
-            "chosen_input_ids": inputs["parent_of_chosen_input_ids"],
-            "chosen_attention_mask": inputs["parent_of_chosen_attention_mask"],
-            "chosen_labels": inputs["parent_of_chosen_labels"],
-            # The original "chosen" is the new "rejected"
-            "rejected_input_ids": inputs["chosen_input_ids"],
-            "rejected_attention_mask": inputs["chosen_attention_mask"],
-            "rejected_labels": inputs["chosen_labels"],
-        }
+            policy_parent_logps, policy_chosen_for_hierarchy_logps, _, _ = self.get_batch_logps(
+                model,
+                hierarchy_inputs,
+                # The 'average_log_prob' parameter is REMOVED here as well
+            )
 
-        policy_parent_logps, policy_chosen_for_hierarchy_logps, _, _ = self.get_batch_logps(
-            model,
-            hierarchy_inputs,
-            average_log_prob=self.loss_config.average_log_prob,
-        )
+            logp_difference = policy_chosen_for_hierarchy_logps - policy_parent_logps
+            hierarchical_loss = F.relu(logp_difference).mean()
 
-        # Calculate the hierarchical loss term using the same CPO/DPO-style loss\
-        # method could also be used if it were refactored to be more modular.
-        # This enforces: logp(parent) >= logp(chosen)
-        # The loss is max(0, logp_chosen - logp_parent)
+            # --- Combine the Losses ---
+            loss = base_loss + self.hierarchy_loss_weight * hierarchical_loss
 
-        logp_difference = policy_chosen_for_hierarchy_logps - policy_parent_logps
-        hierarchical_loss = F.relu(logp_difference).mean()
-        # --- Combine the Losses ---
-        total_loss = base_loss + self.hierarchy_loss_weight * hierarchical_loss
+            # --- Metrics Calculation ---
+            with torch.no_grad():
+                chosen_rewards = self.beta * policy_chosen_logps.detach()
+                rejected_rewards = self.beta * policy_rejected_logps.detach()
+                parent_rewards = self.beta * policy_parent_logps.detach()
 
-        # The rest is for metrics and output handling, mirroring the parent class
-        chosen_rewards = self.beta * policy_chosen_logps.detach()
-        rejected_rewards = self.beta * policy_rejected_logps.detach()
-        parent_rewards = self.beta * policy_parent_logps.detach()
-
-        metrics = {}
-        metrics["loss/base"] = base_loss.item()
-        metrics["loss/hierarchy"] = hierarchical_loss.item()
-        metrics["loss/total"] = total_loss.item()
-        metrics["rewards/chosen"] = chosen_rewards.mean().item()
-        metrics["rewards/rejected"] = rejected_rewards.mean().item()
-        metrics["rewards/parent"] = parent_rewards.mean().item()
-        metrics["rewards/margins"] = (chosen_rewards - rejected_rewards).mean().item()
-        metrics["rewards/hierarchy_margins"] = (parent_rewards - chosen_rewards).mean().item()
-        metrics["logps/chosen"] = policy_chosen_logps.detach().mean().item()
-        metrics["logps/rejected"] = policy_rejected_logps.detach().mean().item()
-        metrics["logps/parent"] = policy_parent_logps.detach().mean().item()
-
-        # The `push_to_hub` method requires the metrics to be part of the outputs
-        outputs = {"loss_metrics": metrics}
+                metrics = {}
+                metrics["loss/base"] = base_loss.item()
+                metrics["loss/hierarchy"] = hierarchical_loss.item()
+                metrics["loss/total"] = loss.item()
+                metrics["rewards/chosen"] = chosen_rewards.mean().item()
+                metrics["rewards/rejected"] = rejected_rewards.mean().item()
+                metrics["rewards/parent"] = parent_rewards.mean().item()
+                metrics["rewards/margins"] = (chosen_rewards - rejected_rewards).mean().item()
+                metrics["rewards/hierarchy_margins"] = (parent_rewards - chosen_rewards).mean().item()
 
         if return_outputs:
-            return total_loss, outputs
+            return (loss, metrics)
 
-        return total_loss
+        return loss
 
 
 def get_model(args):
