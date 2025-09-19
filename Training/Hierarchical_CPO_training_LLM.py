@@ -63,7 +63,9 @@ class HierarchicalCPOTrainer(CPOTrainer):
                                                                                                              'chosen_input_ids': inputs['parent_of_chosen_input_ids'],
                                                                                                              'chosen_attention_mask': inputs['parent_of_chosen_attention_mask'],
                                                                                                              'rejected_input_ids': inputs['chosen_input_ids'],
-                                                                                                             'rejected_attention_mask': inputs['chosen_attention_mask']
+                                                                                                             'rejected_attention_mask': inputs['chosen_attention_mask'],
+                                                                                                             'chosen_labels': inputs['parent_of_chosen_labels'],
+                                                                                                             'rejected_labels':inputs['chosen_labels'],
                                                                                                          })
         print(parent_logps, chosen_logps)
         print('-'*100)
