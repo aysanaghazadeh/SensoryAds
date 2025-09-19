@@ -60,8 +60,8 @@ class HierarchicalCPOTrainer(CPOTrainer):
                                                                                                          batch={
                                                                                                              "prompt_input_ids":inputs["prompt_input_ids"],
                                                                                                              "prompt_attention_mask":inputs["prompt_attention_mask"],
-                                                                                                             'chosen_input_ids': inputs['parent_input_ids'],
-                                                                                                             'chosen_attention_mask': inputs['parent_attention_mask'],
+                                                                                                             'chosen_input_ids': inputs['parent_of_chosen_input_ids'],
+                                                                                                             'chosen_attention_mask': inputs['parent_of_chosen_attention_mask'],
                                                                                                              'rejected_input_ids': inputs['chosen_input_ids'],
                                                                                                              'rejected_attention_mask': inputs['chosen_attention_mask']
                                                                                                          })
