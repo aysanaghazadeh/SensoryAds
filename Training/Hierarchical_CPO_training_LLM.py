@@ -173,7 +173,7 @@ def get_training_args(args):
 def train(args):
     cpo_args = get_training_args(args)
     model, tokenizer = get_model(args)
-    train_dataset = get_train_LLM_HierarchicalCPO_Dataloader(args)
+    train_dataset = get_train_LLM_HierarchicalCPO_Dataloader(args, tokenizer)
     tmp = train_dataset.train_test_split(test_size=0.1)
     train_dataset = tmp["train"]
 

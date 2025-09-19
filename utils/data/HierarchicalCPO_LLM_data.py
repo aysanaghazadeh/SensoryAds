@@ -9,15 +9,14 @@ from LLMs.LLM import LLM
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 
 
-def get_tokenizer(args):
-    pipe = LLM(args)
-    tokenizer = pipe.model.tokenizer
-    pipe.model.model = pipe.model.model.to(device='cpu')
-    return tokenizer
+# def get_tokenizer(args):
+#     pipe = LLM(args)
+#     tokenizer = pipe.model.tokenizer
+#     # pipe.model.model = pipe.model.model.to(device='cpu')
+#     return tokenizer
 
 
-def get_LLM_HierarchicalCPO_training_data(args, image_urls):
-    tokenizer = get_tokenizer(args)
+def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
     tokenizer.pad_token = tokenizer.eos_token
     if tokenizer.chat_template is None:
         tokenizer.chat_template = "{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{% for message in messages %}{{'<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}"
@@ -83,7 +82,7 @@ def get_LLM_HierarchicalCPO_training_data(args, image_urls):
     return train_dataset
 
 
-def get_train_LLM_HierarchicalCPO_Dataloader(args):
+def get_train_LLM_HierarchicalCPO_Dataloader(args, tokenizer):
     image_urls = get_train_data(args)
-    dataset = get_LLM_HierarchicalCPO_training_data(args, image_urls)
+    dataset = get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls)
     return dataset
