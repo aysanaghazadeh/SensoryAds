@@ -73,7 +73,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
                     dataset['parent_of_chosen'].append(parent_of_chosen)
     dataset = Dataset.from_dict(dataset)
     with PartialState().local_main_process_first():
-        ds = dataset.map(process)
+        ds = dataset.map(process, batched=False)
 
     train_dataset = ds
     return train_dataset
