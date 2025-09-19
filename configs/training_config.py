@@ -183,7 +183,7 @@ def parse_args():
     parser.add_argument('--training_type',
                         type=str,
                         default='CPO_train_LLM',
-                        choices=['CPO_train_LLM', 'DPO_train_MLLM'])
+                        choices=['CPO_train_LLM', 'DPO_train_MLLM', 'HierarchicalCPO_train_LLM'])
     return parser.parse_args()
 
 
