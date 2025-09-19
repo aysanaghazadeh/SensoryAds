@@ -163,7 +163,7 @@ def parse_args():
                         help='T2I input prompt template file name.')
     parser.add_argument('--sensation_annotations',
                         type=str,
-                        default='train/50_sensation_annotation_processed.json',
+                        default='train/sensation_annotations_parsed.json',
                         help='Path to the annotations relative to the data path.')
     parser.add_argument('--api_key',
                         type=str,
