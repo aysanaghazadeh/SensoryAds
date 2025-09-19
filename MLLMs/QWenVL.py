@@ -1,16 +1,30 @@
+import os.path
+
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor, BitsAndBytesConfig
 from qwen_vl_utils import process_vision_info
 import torch
-
+from peft import PeftModel
 
 class QWenVL(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
         bnb_config = BitsAndBytesConfig(load_in_8bit=True)
-        self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
+        self.device = args.device
+        if not args.fine_tuned:
+            self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
                                                                         quantization_config=bnb_config,
                                                                         device_map='auto').eval()
+        else:
+            self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                "Qwen/Qwen2.5-VL-7B-Instruct",
+                device_map="auto",
+                torch_dtype=torch.bfloat16  # or float16 if you used that
+            )
+
+            # Load LoRA fine-tuned adapter
+            self.model = PeftModel.from_pretrained(self.model, os.path.join(args.model_path, 'checkpoint-1500'))
         # self.model = self.model.to(device=args.device)
+
 
         self.processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct")
 

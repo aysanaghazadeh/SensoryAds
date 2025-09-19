@@ -1,4 +1,6 @@
 import os
+from tkinter import Image
+
 from configs.inference_config import get_args
 import pandas as pd
 import csv
@@ -6,8 +8,7 @@ import t2v_metrics
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 
 
-def get_EvoSense_LLM(args, description, sensation):
-    from LLMs.LLM import LLM
+def get_EvoSense_LLM(args, pipe, description, sensation):
     import torch
     import torch.nn.functional as F
     def sequence_logprob(model, tokenizer, phrase: str, context: str = ""):
@@ -46,7 +47,6 @@ def get_EvoSense_LLM(args, description, sensation):
             total_logp += lp
 
         return total_logp, per_token
-    pipe = LLM(args)
     msgs = [
         dict(role="user",
              content=f"Context: Description of an image is {description}\nGiven the description of the image, the sensation that the image evokes is:")
@@ -69,4 +69,76 @@ def get_EvoSense_LLM(args, description, sensation):
     return total_logprob, selected_logprobs, selected_logprobs[-1], sum(selected_logprobs) / len(selected_logprobs)
 
 
-def get_EvoSense_MLLM(args, image, sensation):
+def get_EvoSense_MLLM(args, pipe, image, sensation):
+    import torch
+    import torch.nn.functional as F
+    image = Image.open(image)
+    user_msgs = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "image": image},
+                {"type": "text", "text": f"Given the image, the sensation that the image evokes is:"}
+            ],
+        }
+    ]
+    context_text = pipe.processor.apply_chat_template(user_msgs, add_generation_prompt=True, tokenize=False)
+
+    # Tokenize target continuation separately (no special tokens)
+    target_ids = pipe.processor.tokenizer.encode(sensation, add_special_tokens=False)
+
+    # 1) Encode context (image + text), run once to get past_key_values and last logits
+    ctx_inputs = pipe.processor(images=image, text=context_text, return_tensors="pt")
+    ctx_inputs = {k: v.to(args.device) for k, v in ctx_inputs.items()}
+
+    with torch.no_grad():
+        out = pipe.model(**ctx_inputs, use_cache=True)
+        past = out.past_key_values
+        last_logits = out.logits[:, -1, :]  # predicts the first target token
+
+    # 2) Incrementally consume target tokens to accumulate per-token logprobs
+    per_token_logprobs = []
+    total_logprob = 0.0
+
+    for tok in target_ids:
+        # log p(tok | context + previous target tokens)
+        lp = F.log_softmax(last_logits, dim=-1)[0, tok].item()
+        per_token_logprobs.append(lp)
+        total_logprob += lp
+
+        # advance the state by feeding the actual token
+        tok_tensor = torch.tensor([[tok]], device=args.device)
+        with torch.no_grad():
+            step_out = pipe.model(input_ids=tok_tensor, past_key_values=past, use_cache=True)
+        past = step_out.past_key_values
+        last_logits = step_out.logits[:, -1, :]
+
+    # Safety for empty target
+    if len(per_token_logprobs) == 0:
+        return float("-inf"), [], float("-inf"), float("-inf")
+
+    return (
+        total_logprob,
+        per_token_logprobs,
+        per_token_logprobs[-1],
+        sum(per_token_logprobs) / len(per_token_logprobs),
+    )
+
+
+def get_VQA_score(args, model, image, text):
+    try:
+        score = model(images=[image], texts=[text])
+    except Exception as e:
+        # Log the error for this (ID, sensation) and continue
+        print(f"[WARN]sensation '{text}' failed: {e}")
+        # total_logprob, selected_logprobs = float('-inf'), []
+        score = float('-inf')
+    return score
+
+
+def get_Image_Reward(args, model, image, text):
+    try:
+        score = model(text, [image])
+    except Exception as e:
+        score = -float('inf')
+    return score

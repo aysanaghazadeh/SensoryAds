@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Evaluation/sensation_alignment_metrics.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Evaluation/evaluate_images.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Training/Custome_CPO_training_LLM.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/configs/evaluation_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Evaluation/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/Evaluation/AD_metrics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generation/image_generation.py" beforeDir="false" afterPath="$PROJECT_DIR$/generation/image_generation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/AR_image_generation_with_sensation.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/AR_image_generation_with_sensation.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Evaluation/retrieval_metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/Evaluation/retrieval_metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Evaluation/sensation_alignment_metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/Evaluation/sensation_alignment_metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MLLMs/QWenVL.py" beforeDir="false" afterPath="$PROJECT_DIR$/MLLMs/QWenVL.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +47,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHELLCHECK.PATH": "/Users/aysanaghazadeh/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/aysanaghazadeh/University/Pitt/Research/Adriana/SensoryAds/utils/prompt_engineering/prompts",
+    "last_opened_file_path": "/Users/aysanaghazadeh/University/Pitt/Research/Adriana/SensoryAds/configs",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -56,6 +59,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/configs" />
       <recent name="$PROJECT_DIR$/utils/prompt_engineering/prompts" />
       <recent name="$PROJECT_DIR$/T2I_models" />
     </key>
@@ -135,7 +139,7 @@
       <option name="presentableId" value="Default" />
       <updated>1757375876349</updated>
       <workItem from="1757375877645" duration="66254000" />
-      <workItem from="1757811033144" duration="76602000" />
+      <workItem from="1757811033144" duration="87830000" />
     </task>
     <servers />
   </component>
@@ -169,7 +173,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/SensoryAds$retrieval_metrics.coverage" NAME="retrieval_metrics Coverage Results" MODIFIED="1758154583583" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Evaluation" />
+    <SUITE FILE_PATH="coverage/SensoryAds$retrieval_metrics.coverage" NAME="retrieval_metrics Coverage Results" MODIFIED="1758310764975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Evaluation" />
     <SUITE FILE_PATH="coverage/SensoryAds$parsing_human_annotations.coverage" NAME="parsing_human_annotations Coverage Results" MODIFIED="1758033443793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils/annotation" />
   </component>
 </project>

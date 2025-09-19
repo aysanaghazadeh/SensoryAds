@@ -1,4 +1,5 @@
 import json
+from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 
 def get_precision_per_image(sensation_scores, model_sensations):
     correct_count = 0
@@ -32,8 +33,34 @@ def get_recall_per_image(sensation_scores, model_sensations):
         return 1
     return float(correct_count) / target_sensation_count
 
+def get_parent_recall(model_sensations):
+    parent_sensation_count = 0
+    correct_count = 0
+    parents = {}
+    for sensation in SENSATIONS_PARENT_MAP:
+        parents[sensation.lower()] = SENSATIONS_PARENT_MAP[sensation].lower()
+    for sensation in model_sensations:
+        sensation = sensation.replace('  ', ' ')
+        sensation = sensation.replace('natural greenary smell', 'natural greenery smell')
+        if sensation.lower() == 'pouring sound':
+            sensation = 'liquid pouring sound'
+        if sensation.lower() == 'splash sound':
+            sensation = 'liquid splash sound'
+        if sensation.lower() == 'traffic jam sound':
+            sensation = 'Traffic Jam or Human Crowd Sound'.lower()
+        if sensation.lower() == 'heavinesstension':
+            sensation = 'heaviness'
+        if parents[sensation] != 'root':
+            parent_sensation_count += 1
+            parent_sensation = parents[sensation]
+            if parent_sensation in model_sensations:
+                correct_count += 1
+    if parent_sensation_count == 0:
+        return 1
+    return float(correct_count) / parent_sensation_count
+
 def evaluate_retrieval(sensation_annotations, model_results):
-    precision, recall, f1_score, count = 0, 0, 0, 0
+    precision, recall, f1_score, parent, count = 0, 0, 0, 0, 0
     for image_url in model_results:
         if image_url not in sensation_annotations:
             continue
@@ -44,6 +71,7 @@ def evaluate_retrieval(sensation_annotations, model_results):
             model_predicted_sensations.update(predictions)
         image_precision = get_precision_per_image(sensation_annotations[image_url]['sensation_scores'], model_predicted_sensations)
         image_recall = get_recall_per_image(sensation_annotations[image_url]['sensation_scores'], model_predicted_sensations)
+        image_parent_recall = get_parent_recall(model_predicted_sensations)
         if image_precision + image_recall == 0:
             image_f1_score = 0
         else:
@@ -54,34 +82,36 @@ def evaluate_retrieval(sensation_annotations, model_results):
         # print('image_f1_score', image_f1_score)
         precision += image_precision
         recall += image_recall
+        parent += image_parent_recall
         f1_score += image_f1_score
     precision /= count
     recall /= count
     f1_score /= count
-    return precision, recall, f1_score
+    parent = parent / count
+    return precision, recall, f1_score, parent
 
 if __name__ == '__main__':
     results = [
-        'sensation_extraction_PittAd_ALL_QWenVL_MLLM_Sensation_Retrieval.json',
-        'sensation_extraction_PittAd_ALL_QWenLM_LLM_Sensation_Retrieval_QWenVL.json',
-        'sensation_extraction_PittAd_ALL_QWenLM_LLM_Sensation_Retrieval_InternVL.json',
-        'sensation_extraction_PittAd_ALL_QWenLM_LLM_Sensation_Retrieval_Gemma.json',
-        'sensation_extraction_PittAd_ALL_LLAVA16_MLLM_Sensation_Retrieval.json',
-        'sensation_extraction_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_QWenVL.json',
-        'sensation_extraction_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_InternVL.json',
-        'sensation_extraction_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_Gemma.json',
-        'sensation_extraction_PittAd_ALL_InternVL_MLLM_Sensation_Retrieval.json',
-        'sensation_extraction_PittAd_ALL_Gemma_MLLM_Sensation_Retrieval.json',
-        'sensation_extraction_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_Gemma.json',
-        'sensation_extraction_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_InternVL.json',
-        'sensation_extraction_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_QWenVL.json'
+        'sensation_extraction_multichoice_PittAd_ALL_QWenVL_MLLM_Sensation_Retrieval_Multichoice_QWenVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_QWenLM_LLM_Sensation_Retrieval_Multichoice_QWenVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_QWenLM_LLM_Sensation_Retrieval_Multichoice_InternVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_QWenLM_LLM_Sensation_Retrieval_Multichoice_Gemma.json',
+        'sensation_extraction_multichoice_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_Multichoice_QWenVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_Multichoice_InternVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_LLAMA3_instruct_LLM_Sensation_Retrieval_Multichoice_Gemma.json',
+        'sensation_extraction_multichoice_PittAd_ALL_InternVL_MLLM_Sensation_Retrieval_Multichoice_InternVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_Gemma_MLLM_Sensation_Retrieval_Multichoice_Gemma.json',
+        'sensation_extraction_multichoice_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_Multichoice_QWenVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_Multichoice_InternVL.json',
+        'sensation_extraction_multichoice_PittAd_ALL_Gemma_LLM_Sensation_Retrieval_Multichoice_Gemma.json'
     ]
     sensation_annotations = json.load(open('/Users/aysanaghazadeh/Downloads/sensation_annotations_parsed.json'))
     for filename in results:
         model_results = json.load(open(f'/Users/aysanaghazadeh/experiments/results/SensoryAds/SensoryAds/{filename}'))
-        precision, recall, f1_score = evaluate_retrieval(sensation_annotations, model_results)
+        precision, recall, f1_score, parent = evaluate_retrieval(sensation_annotations, model_results)
         print(filename)
         print('precision', precision)
         print('recall', recall)
         print('f1_score', f1_score)
+        print('parent', parent)
         print('-'*100)
