@@ -54,15 +54,19 @@ class HierarchicalCPOTrainer(CPOTrainer):
         )
         with compute_loss_context_manager:
             loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
-        forward_output = self.concatenated_forward(model, inputs)
-        print(len(forward_output))
-        (
-            policy_chosen_logps,
-            policy_rejected_logps,
-            policy_chosen_logits,
-            policy_rejected_logits,
-            policy_nll_loss,
-        ) = forward_output[:5]
+        (chosen_logps, rejected_logps, chosen_logits, rejected_logits, nll_loss) = self.concatenated_forward(model, inputs)
+        print(chosen_logps, rejected_logps)
+        (parent_logps, chosen_logps, parent_logits, chosen_logits, nll_loss) = self.concatenated_forward(model,
+                                                                                                         batch={
+                                                                                                             "prompt_input_ids":inputs["prompt_input_ids"],
+                                                                                                             "prompt_attention_mask":inputs["prompt_attention_mask"],
+                                                                                                             'chosen_input_ids': inputs['parent_input_ids'],
+                                                                                                             'chosen_attention_mask': inputs['parent_attention_mask'],
+                                                                                                             'rejected_input_ids': inputs['chosen_input_ids'],
+                                                                                                             'rejected_attention_mask': inputs['chosen_attention_mask']
+                                                                                                         })
+        print(parent_logps, chosen_logps)
+        print('-'*100)
         # force log the metrics
         self.store_metrics(metrics, train_eval="train")
 
