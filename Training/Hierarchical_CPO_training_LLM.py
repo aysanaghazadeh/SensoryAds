@@ -55,7 +55,7 @@ class HierarchicalCPOTrainer(CPOTrainer):
         print(inputs.keys())
         with compute_loss_context_manager:
             loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
-
+        print(loss, metrics)
         # force log the metrics
         self.store_metrics(metrics, train_eval="train")
 
