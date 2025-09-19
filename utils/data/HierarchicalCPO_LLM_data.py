@@ -42,7 +42,6 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
     LOWER_SENSATIONS_PARENT_MAP = {}
     for sensation in SENSATIONS_PARENT_MAP:
         LOWER_SENSATIONS_PARENT_MAP[sensation.lower()] = SENSATIONS_PARENT_MAP[sensation].lower()
-    SENSATIONS_PARENT_MAP = LOWER_SENSATIONS_PARENT_MAP
     descriptions = pd.read_csv(args.description_file)
     dataset = {'prompt': [], 'chosen': [], 'rejected': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
@@ -65,7 +64,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
                     chosen = [{'content': prompt, 'role': 'user'},
                               {'content': chosen_answer, 'role': 'assistant'}]
                     parent_of_chosen = [{'content': prompt, 'role': 'user'},
-                              {'content': SENSATIONS_PARENT_MAP[chosen_answer], 'role': 'assistant'}]
+                              {'content': LOWER_SENSATIONS_PARENT_MAP[chosen_answer], 'role': 'assistant'}]
                     rejected = [{'content': prompt, 'role': 'user'},
                                 {'content': rejected_answer, 'role': 'assistant'}]
                     dataset['prompt'].append(prompt)
