@@ -25,30 +25,22 @@ from contextlib import nullcontext
 try:
     from torch.cuda.amp import autocast
 except ImportError:
-    # PyTorch < 1.6.0
     class autocast:
         def __init__(self, enabled=True):
             pass
+
         def __enter__(self):
             pass
+
         def __exit__(self, exc_type, exc_val, exc_tb):
             pass
 
-# 1. Define the Custom Trainer with Hierarchical Loss
-# ----------------------------------------------------
 
+# We will edit your provided class structure
 class HierarchicalCPOTrainer(CPOTrainer):
-    """
-    A CPOTrainer that incorporates a hierarchical preference loss.
-
-    This trainer assumes the preference is: parent_of_chosen > chosen > rejected.
-    It adds a second CPO-style loss term for the (parent, chosen) pair.
-    """
-
     def __init__(self, *args, hierarchy_loss_weight: float = 0.5, **kwargs):
         super().__init__(*args, **kwargs)
         self.hierarchy_loss_weight = hierarchy_loss_weight
-        print(f"HierarchicalCPOTrainer initialized with hierarchy_loss_weight = {self.hierarchy_loss_weight}")
 
     def compute_loss(
             self,
@@ -57,57 +49,60 @@ class HierarchicalCPOTrainer(CPOTrainer):
             return_outputs=False,
             **kwargs,  # Accept extra arguments
     ) -> Union[torch.Tensor, tuple[torch.Tensor, dict[str, torch.Tensor]]]:
-        # Determine the context for mixed-precision training
-        compute_loss_context_manager = autocast() if self.use_apex else nullcontext()
+        # This is your original mixed-precision context manager
+        compute_loss_context_manager = (
+            autocast(self.accelerator.device.type) if self._peft_has_been_casted_to_bf16 else nullcontext()
+        )
 
         with compute_loss_context_manager:
-            # --- Standard CPO Loss Calculation ---
-            policy_chosen_logps, policy_rejected_logps, _, _ = self.get_batch_logps(
-                model,
-                inputs,
-                # The 'average_log_prob' parameter is REMOVED to use the default behavior
-            )
-            base_loss, _ = super().loss(policy_chosen_logps, policy_rejected_logps, None, None)
+            # ================================================================= #
+            # START: MODIFICATION TO ADD PARENT CONSISTENCY LOSS                #
+            # ================================================================= #
 
-            # --- Hierarchical Hinge Loss Calculation ---
+            # --- 1. Calculate the Hierarchical Hinge Loss ---
+            # Create a temporary input dictionary for the (parent, chosen) pair
             hierarchy_inputs = {
                 "prompt_input_ids": inputs["prompt_input_ids"],
                 "prompt_attention_mask": inputs["prompt_attention_mask"],
+                # The "parent" is the new "chosen"
                 "chosen_input_ids": inputs["parent_of_chosen_input_ids"],
                 "chosen_attention_mask": inputs["parent_of_chosen_attention_mask"],
                 "chosen_labels": inputs["parent_of_chosen_labels"],
+                # The original "chosen" is the new "rejected"
                 "rejected_input_ids": inputs["chosen_input_ids"],
                 "rejected_attention_mask": inputs["chosen_attention_mask"],
                 "rejected_labels": inputs["chosen_labels"],
             }
 
+            # Get log probabilities for the parent and chosen sequences
             policy_parent_logps, policy_chosen_for_hierarchy_logps, _, _ = self.get_batch_logps(
                 model,
                 hierarchy_inputs,
-                # The 'average_log_prob' parameter is REMOVED here as well
             )
 
+            # Calculate the hinge loss to enforce prob(parent) >= prob(chosen)
             logp_difference = policy_chosen_for_hierarchy_logps - policy_parent_logps
             hierarchical_loss = F.relu(logp_difference).mean()
 
-            # --- Combine the Losses ---
+            # --- 2. Get the original CPO loss and metrics ---
+            # This is your original line to get the base CPO loss
+            base_loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
+
+            # --- 3. Combine the losses ---
             loss = base_loss + self.hierarchy_loss_weight * hierarchical_loss
 
-            # --- Metrics Calculation ---
+            # --- 4. Add new metrics for logging ---
+            # We add our new loss component to the metrics dictionary from your original code
             with torch.no_grad():
-                chosen_rewards = self.beta * policy_chosen_logps.detach()
-                rejected_rewards = self.beta * policy_rejected_logps.detach()
-                parent_rewards = self.beta * policy_parent_logps.detach()
-
-                metrics = {}
                 metrics["loss/base"] = base_loss.item()
                 metrics["loss/hierarchy"] = hierarchical_loss.item()
-                metrics["loss/total"] = loss.item()
-                metrics["rewards/chosen"] = chosen_rewards.mean().item()
-                metrics["rewards/rejected"] = rejected_rewards.mean().item()
-                metrics["rewards/parent"] = parent_rewards.mean().item()
-                metrics["rewards/margins"] = (chosen_rewards - rejected_rewards).mean().item()
-                metrics["rewards/hierarchy_margins"] = (parent_rewards - chosen_rewards).mean().item()
+
+            # ================================================================= #
+            # END: MODIFICATION                                                 #
+            # ================================================================= #
+
+        # This is your original code for storing metrics
+        self.store_metrics(metrics, train_eval="train")
 
         if return_outputs:
             return (loss, metrics)
