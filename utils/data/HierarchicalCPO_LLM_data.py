@@ -43,17 +43,12 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
     descriptions = pd.read_csv(args.description_file)
     dataset = {'prompt': [], 'chosen': [], 'rejected': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
-    options = '-'.join([f'{i}. {option}' for i, option in enumerate(SENSATIONS_PARENT_MAP.keys())])
-    sensation_index_map = {}
-    for i, option in enumerate(SENSATIONS_PARENT_MAP.keys()):
-        sensation_index_map[option.lower()] = str(i)
     for image_url in image_urls:
         if image_url in sensations:
             sensation_scores = sensations[image_url]['sensation_scores']
             description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0].split('Q2:')[-1]
             prompt = f"""Context: Description of an image is {description}.
-                        options: {options}
-                        Given the description of the image, the index of sensation evoked by the image the most is:"""
+                         Sensation that the image evokes the most is: """
             for sensation1 in sensation_scores:
                 for sensation2 in sensation_scores:
                     sensation1 = sensation1.strip()
@@ -61,8 +56,8 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
                     if sensation_scores[sensation1] == sensation_scores[sensation2]:
                         continue
 
-                    chosen_answer = sensation_index_map[sensation1] if sensation_scores[sensation1] > sensation_scores[sensation2] else sensation_index_map[sensation2]
-                    rejected_answer = sensation_index_map[sensation1] if sensation_scores[sensation1] < sensation_scores[sensation2] else sensation_index_map[sensation2]
+                    chosen_answer = sensation1 if sensation_scores[sensation1] > sensation_scores[sensation2] else sensation2
+                    rejected_answer = sensation1 if sensation_scores[sensation1] < sensation_scores[sensation2] else sensation2
 
                     chosen = [{'content': prompt, 'role': 'user'},
                               {'content': chosen_answer, 'role': 'assistant'}]
