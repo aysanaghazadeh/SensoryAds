@@ -56,17 +56,18 @@ class HierarchicalCPOTrainer(CPOTrainer):
             loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
         (chosen_logps, rejected_logps, chosen_logits, rejected_logits, nll_loss) = self.concatenated_forward(model, inputs)
         print(chosen_logps, rejected_logps)
-        (parent_logps, chosen_logps, parent_logits, chosen_logits, nll_loss) = self.concatenated_forward(model,
-                                                                                                         batch={
-                                                                                                             "prompt_input_ids":inputs["prompt_input_ids"],
-                                                                                                             "prompt_attention_mask":inputs["prompt_attention_mask"],
-                                                                                                             'chosen_input_ids': inputs['parent_of_chosen_input_ids'],
-                                                                                                             'chosen_attention_mask': inputs['parent_of_chosen_attention_mask'],
-                                                                                                             'rejected_input_ids': inputs['chosen_input_ids'],
-                                                                                                             'rejected_attention_mask': inputs['chosen_attention_mask'],
-                                                                                                             'chosen_labels': inputs['parent_of_chosen_labels'],
-                                                                                                             'rejected_labels':inputs['chosen_labels'],
-                                                                                                         })
+        # (parent_logps, chosen_logps, parent_logits, chosen_logits, nll_loss) = self.concatenated_forward(model,
+        #                                                                                                  batch={
+        #                                                                                                      "prompt_input_ids":inputs["prompt_input_ids"],
+        #                                                                                                      "prompt_attention_mask":inputs["prompt_attention_mask"],
+        #                                                                                                      'chosen_input_ids': inputs['parent_of_chosen_input_ids'],
+        #                                                                                                      'chosen_attention_mask': inputs['parent_of_chosen_attention_mask'],
+        #                                                                                                      'rejected_input_ids': inputs['chosen_input_ids'],
+        #                                                                                                      'rejected_attention_mask': inputs['chosen_attention_mask'],
+        #                                                                                                      'chosen_labels': inputs['parent_of_chosen_labels'],
+        #                                                                                                      'rejected_labels':inputs['chosen_labels'],
+        #                                                                                                  })
+        parent_logps = model.generate(input_ids=inputs["parent_of_chosen_input_ids"], attention_mask=inputs["parent_of_chosen_attention_mask"])
         print(parent_logps, chosen_logps)
         print('-'*100)
         # force log the metrics

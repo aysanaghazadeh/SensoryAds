@@ -34,7 +34,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
         tokenized_parent = tokenizer(parent_str)
 
         return {
-            "prompt": "",  # Prompt is now part of the template
+            "prompt": "",
             "chosen_input_ids": tokenized_chosen["input_ids"],
             "chosen_attention_mask": tokenized_chosen["attention_mask"],
             "rejected_input_ids": tokenized_rejected["input_ids"],
@@ -77,7 +77,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
                     dataset['parent_of_chosen'].append(parent_of_chosen)
     dataset = Dataset.from_dict(dataset)
     with PartialState().local_main_process_first():
-        ds = dataset.map(process, batched=False, remove_columns=dataset.column_names)
+        ds = dataset.map(process, batched=False)
 
     train_dataset = ds
     return train_dataset
