@@ -13,7 +13,8 @@ import torch
 import torch.nn.functional as F
 from datasets import Dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
-from trl import CPOTrainer, CPOConfigimport torch
+from trl import CPOTrainer, CPOConfig
+import torch
 import torch.nn.functional as F
 from transformers import PreTrainedModel
 from torch import nn
