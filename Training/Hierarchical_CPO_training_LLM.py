@@ -37,7 +37,9 @@ class HierarchicalCPOTrainer(CPOTrainer):
             model: torch.nn.Module,
             inputs: dict,
             return_outputs: bool = False,
+            **kwargs,  # Add this to accept any extra arguments
     ) -> torch.Tensor | tuple[torch.Tensor, dict]:
+        # ... your loss logic (no other changes needed inside the function)
         """
         Computes the CPO loss plus the hierarchical preference loss.
         """
