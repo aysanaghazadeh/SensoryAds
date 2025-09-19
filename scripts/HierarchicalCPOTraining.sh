@@ -1,0 +1,1 @@
+python train.py --config_type=DEFAULT --training_type=HierarchicalCPO_train_LLM --batch_size=1
