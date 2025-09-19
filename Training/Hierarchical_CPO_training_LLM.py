@@ -52,7 +52,7 @@ class HierarchicalCPOTrainer(CPOTrainer):
         compute_loss_context_manager = (
             autocast(self.accelerator.device.type) if self._peft_has_been_casted_to_bf16 else nullcontext()
         )
-        print(inputs)
+        print(inputs.keys())
         with compute_loss_context_manager:
             loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
 
