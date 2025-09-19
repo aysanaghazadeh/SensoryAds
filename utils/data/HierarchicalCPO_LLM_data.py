@@ -16,16 +16,30 @@ def get_tokenizer(args):
     return tokenizer
 
 
-def get_LLM_CPO_training_data(args, image_urls):
+def get_LLM_HierarchicalCPO_training_data(args, image_urls):
     tokenizer = get_tokenizer(args)
     tokenizer.pad_token = tokenizer.eos_token
     if tokenizer.chat_template is None:
         tokenizer.chat_template = "{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{% for message in messages %}{{'<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}"
 
     def process(row):
-        row["chosen"] = tokenizer.apply_chat_template(row["chosen"], tokenize=False)
-        row["rejected"] = tokenizer.apply_chat_template(row["rejected"], tokenize=False)
-        return row
+        # Important: The CPODataCollator expects prompts to be part of the chosen/rejected sequences
+        prompt = row['prompt'] + "\n\n"
+
+        # Tokenize all four fields
+        tokenized_chosen = tokenizer(prompt + row['chosen'], truncation=True)
+        tokenized_rejected = tokenizer(prompt + row['rejected'], truncation=True)
+        tokenized_parent = tokenizer(prompt + row['parent_of_chosen'], truncation=True)
+
+        return {
+            "prompt": prompt,
+            "chosen_input_ids": tokenized_chosen["input_ids"],
+            "chosen_attention_mask": tokenized_chosen["attention_mask"],
+            "rejected_input_ids": tokenized_rejected["input_ids"],
+            "rejected_attention_mask": tokenized_rejected["attention_mask"],
+            "parent_of_chosen_input_ids": tokenized_parent["input_ids"],
+            "parent_of_chosen_attention_mask": tokenized_parent["attention_mask"],
+        }
 
     descriptions = pd.read_csv(args.description_file)
     dataset = {'prompt': [], 'chosen': [], 'rejected': []}
@@ -69,7 +83,7 @@ def get_LLM_CPO_training_data(args, image_urls):
     return train_dataset
 
 
-def get_train_LLM_CPO_Dataloader(args):
+def get_train_LLM_HierarchicalCPO_Dataloader(args):
     image_urls = get_train_data(args)
-    dataset = get_LLM_CPO_training_data(args, image_urls)
+    dataset = get_LLM_HierarchicalCPO_training_data(args, image_urls)
     return dataset
