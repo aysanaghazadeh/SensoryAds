@@ -50,7 +50,7 @@ class HierarchicalCPOTrainer(CPOTrainer):
         policy_chosen_logps, policy_rejected_logps, _, _ = self.get_batch_logps(
             model,
             inputs,
-            average_log_prob=self.average_log_prob,  # Correct: access it directly
+            average_log_prob=self.args.average_log_prob,  # Correct: access it directly
         )
 
         # Calculate the standard CPO loss term
