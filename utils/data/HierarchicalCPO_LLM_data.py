@@ -43,7 +43,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
     for sensation in SENSATIONS_PARENT_MAP:
         LOWER_SENSATIONS_PARENT_MAP[sensation.lower()] = SENSATIONS_PARENT_MAP[sensation].lower()
     descriptions = pd.read_csv(args.description_file)
-    dataset = {'prompt': [], 'chosen': [], 'rejected': []}
+    dataset = {'prompt': [], 'chosen': [], 'rejected': [], 'parent_of_chosen': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
     for image_url in image_urls:
         if image_url in sensations:
