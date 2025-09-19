@@ -58,7 +58,7 @@ class HierarchicalCPOTrainer(CPOTrainer):
             **kwargs,  # Accept extra arguments
     ) -> Union[torch.Tensor, tuple[torch.Tensor, dict[str, torch.Tensor]]]:
         # Determine the context for mixed-precision training
-        compute_loss_context_manager = autocast() if self.use_amp else nullcontext()
+        compute_loss_context_manager = autocast() if self.use_apex else nullcontext()
 
         with compute_loss_context_manager:
             # --- Standard CPO Loss Calculation ---
