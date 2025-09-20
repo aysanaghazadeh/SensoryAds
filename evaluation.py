@@ -23,7 +23,7 @@ class SensationEvaluation:
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv', '.json')
-        result_file = os.path.join(args.results_path, args.project_name, args.evaluation_type, result_filename)
+        result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for row in descriptions.iterrows():
             image_url = row['ID']
@@ -37,12 +37,12 @@ class SensationEvaluation:
     def evaluate_Evosense_MLLM(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv', '.json')
-        result_file = os.path.join(args.results_path, args.project_name, args.evaluation_type, result_filename)
+        result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for row in descriptions.iterrows():
             image_url = row['ID']
             if args.Image_type == 'generated':
-                image = Image.open(os.path.join(args.results_path, 'generated_images', args.project_name, image_url))
+                image = Image.open(os.path.join(args.result_path, 'generated_images', args.project_name, image_url))
             else:
                 image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
             description = row['description']
