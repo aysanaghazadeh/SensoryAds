@@ -180,6 +180,9 @@ def parse_args():
                         type=str,
                         choices=['VQA_score', 'Image_Reward', 'Evosense_LLM', 'Evosense_MLLM'],
                         help='Choose the evaluation metric')
+    parser.add_argument('--model_checkpoint',
+                        type=str,
+                        default='3000')
     parser.add_argument('--retrieval_type',
                         type=str,
                         default='multichoice',

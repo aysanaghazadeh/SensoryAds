@@ -21,7 +21,7 @@ SENSATION_HIERARCHY = {
             'Dryness'
         ],
         'Motion and Weight': [
-            'A',
+            'High Speed and Acceleration',
             'Weightlessness',
             'Heaviness',
             'Tension',
