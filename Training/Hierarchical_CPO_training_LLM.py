@@ -149,7 +149,7 @@ def train(args):
 
     # train and save the model
     if args.model_checkpoint is not None:
-        trainer.train(resume_from_checkpoint=args.model_path+f'/my_HierarchicalCPO_{args.LLM}/{args.model_checkpoint}')
+        trainer.train(resume_from_checkpoint=args.model_path+f'/my_HierarchicalCPO_{args.LLM}/checkpoint-{args.model_checkpoint}')
     else:
         trainer.train()
     trainer.save_model(cpo_args.output_dir)
