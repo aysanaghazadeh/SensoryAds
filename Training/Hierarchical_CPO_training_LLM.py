@@ -61,7 +61,10 @@ class HierarchicalCPOTrainer(CPOTrainer):
             attention_mask=inputs["parent_of_chosen_attention_mask"]
         )
         parent_logps = self.get_batch_logps(
-            parent_outputs.logits, inputs["parent_of_chosen_input_ids"], inputs["parent_of_chosen_attention_mask"]
+            logits=parent_outputs.logits,
+            labels=inputs["parent_of_chosen_input_ids"],
+            attention_mask=inputs["parent_of_chosen_attention_mask"],
+            average_log_prob=True  # or False, depending on what you want
         )
         print(parent_logps)
         # Hierarchy loss = ReLU(logp(parent) - logp(chosen))

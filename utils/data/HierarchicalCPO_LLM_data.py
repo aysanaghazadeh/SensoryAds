@@ -32,7 +32,6 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
         tokenized_chosen = tokenizer(chosen_str)
         tokenized_rejected = tokenizer(rejected_str)
         tokenized_parent = tokenizer(parent_str)
-        print(tokenized_chosen, tokenized_rejected, tokenized_parent)
         return {
             "prompt": "",
             "chosen_input_ids": tokenized_chosen["input_ids"],
