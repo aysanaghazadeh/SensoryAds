@@ -54,8 +54,6 @@ class HierarchicalCPOTrainer(CPOTrainer):
         )
         with compute_loss_context_manager:
             loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
-        (chosen_logps, rejected_logps, chosen_logits, rejected_logits, nll_loss) = self.concatenated_forward(model, inputs)
-        print(chosen_logps, rejected_logps)
         parent_outputs = model(
             input_ids=inputs["parent_of_chosen_input_ids"],
             attention_mask=inputs["parent_of_chosen_attention_mask"]
@@ -72,16 +70,14 @@ class HierarchicalCPOTrainer(CPOTrainer):
         chosen_logps = self.get_batch_logps(
             logits=chosen_outputs.logits,
             labels=inputs["chosen_input_ids"],
-            average_log_prob=True  # or False, depending on what you want
+            average_log_prob=True
         )
-        print(parent_logps, chosen_logps)
         # Hierarchy loss = ReLU(logp(parent) - logp(chosen))
         hierarchy_loss = torch.relu(parent_logps - chosen_logps).mean()
-        print(hierarchy_loss)
-        print('-'*100)
         # force log the metrics
         self.store_metrics(metrics, train_eval="train")
         loss = loss + self.hierarchy_loss_weight * hierarchy_loss
+        metrics["hierarchy_loss"] = hierarchy_loss
         if return_outputs:
             return (loss, metrics)
         return loss
