@@ -3,6 +3,8 @@ from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 import json
 from PIL import Image
 from configs.evaluation_config import get_args
+import pandas as pd
+import os
 
 class SensationEvaluation:
     def __init__(self, args):
@@ -52,6 +54,7 @@ class SensationEvaluation:
 
 
     def evaluate(self, args):
+        print(args.evaluation_type)
         evaluation_name = 'evaluate_' + args.evaluation_type
         print(f'evaluation method: {evaluation_name}')
         evaluation_method = getattr(self, evaluation_name)
