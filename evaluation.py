@@ -26,6 +26,7 @@ class SensationEvaluation:
         result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for row in descriptions.iterrows():
+            print(row)
             image_url = row['ID']
             description = row['description']
             scores[image_url] = {}
