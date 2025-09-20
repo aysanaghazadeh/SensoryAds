@@ -110,6 +110,6 @@
 
 import json
 file = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/IN_InternVL_train_images_total_ALL_description_generation.json'))
-data = file['10/173268.png']
+data = file['10/177623.png']
 sorted_dict = dict(sorted(data.items(), key=lambda item: item[1][2], reverse=True))
 print(sorted_dict)
