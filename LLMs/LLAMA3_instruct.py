@@ -25,6 +25,7 @@ class LLAMA3Instruct(nn.Module):
                 self.model = PeftModel.from_pretrained(self.model,
                                                        os.path.join(args.model_path,
                                                                     f'my_HierarchicalCPO_LLAMA3_instruct/checkpoint-{args.model_checkpoint}'))
+                print(f'model loaded from my_HierarchicalCPO_LLAMA3_instruct/checkpoint-{args.model_checkpoint}')
             else:
                 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
 

@@ -1,3 +1,5 @@
+from os.path import exists
+
 from Evaluation.sensation_alignment_metrics import *
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 import json
@@ -23,6 +25,8 @@ class SensationEvaluation:
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
+        directory_path = os.path.join(args.result_path, args.project_name, args.evaluation_type)
+        os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for index, row in descriptions.iterrows():
