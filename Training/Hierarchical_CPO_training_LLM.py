@@ -63,7 +63,6 @@ class HierarchicalCPOTrainer(CPOTrainer):
         parent_logps = self.get_batch_logps(
             logits=parent_outputs.logits,
             labels=inputs["parent_of_chosen_input_ids"],
-            attention_mask=inputs["parent_of_chosen_attention_mask"],
             average_log_prob=True  # or False, depending on what you want
         )
         print(parent_logps)
