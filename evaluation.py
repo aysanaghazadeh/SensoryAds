@@ -24,10 +24,10 @@ class SensationEvaluation:
 
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
-        result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
-        directory_path = os.path.join(args.result_path, args.project_name, args.evaluation_type)
+        result_filename = args.description_file.replace('.csv', f'_{args.LLM}_finetuned{args.fine_tuned}{f"_{args.model_checkpoint}" if args.fine_tuned else ""}.json').split('/')[-1]
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
         os.makedirs(directory_path, exist_ok=True)
-        result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
+        result_file = os.path.join(directory_path, result_filename)
         if os.path.exists(result_file) and args.resume:
             scores = json.load(open(result_file))
         else:
@@ -47,8 +47,12 @@ class SensationEvaluation:
 
     def evaluate_Evosense_MLLM(self, args):
         descriptions = pd.read_csv(args.description_file)
-        result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
-        result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
+        result_filename = args.description_file.replace('.csv',
+                                                        f'_{args.MLLM}_finetuned{args.fine_tuned}{f"_{args.model_checkpoint}" if args.fine_tuned else ""}.json').split(
+            '/')[-1]
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        os.makedirs(directory_path, exist_ok=True)
+        result_file = os.path.join(directory_path, result_filename)
         scores = {}
         for row in descriptions.iterrows():
             print(row)
