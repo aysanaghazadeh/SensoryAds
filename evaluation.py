@@ -30,13 +30,13 @@ class SensationEvaluation:
         result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for index, row in descriptions.iterrows():
-            print(row)
             image_url = row.ID
             description = row.description
             scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
                 total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description, sensation)
                 scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
+            print(image_url)
             print(json.dumps(scores[image_url], indent=4))
             json.dump(scores, open(result_file, 'w'))
 
