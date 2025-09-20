@@ -1,12 +1,3 @@
-import os
-from tkinter import Image
-
-from configs.inference_config import get_args
-import pandas as pd
-import csv
-import t2v_metrics
-from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
-
 
 def get_EvoSense_LLM(args, pipe, description, sensation):
     import torch

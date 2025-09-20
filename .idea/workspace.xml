@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/evaluation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Evaluation/evaluate_images.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/generated_sensation_image_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/generated_sensation_image_descriptor.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/data/physical_sensations.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/data/physical_sensations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +134,7 @@
       <option name="presentableId" value="Default" />
       <updated>1757375876349</updated>
       <workItem from="1757375877645" duration="66254000" />
-      <workItem from="1757811033144" duration="120055000" />
+      <workItem from="1757811033144" duration="120385000" />
     </task>
     <servers />
   </component>
