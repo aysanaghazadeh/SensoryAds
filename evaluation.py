@@ -27,8 +27,8 @@ class SensationEvaluation:
         scores = {}
         for row in descriptions.iterrows():
             print(row)
-            image_url = row['ID']
-            description = row['description']
+            image_url = row.ID
+            description = row.description
             scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
                 total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description, sensation)
