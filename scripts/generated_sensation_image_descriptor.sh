@@ -1,0 +1,12 @@
+python inference.py \
+--config_type=DEFAULT \
+--AD_type=Sensation \
+--Image_type=generated \
+--inference_type=description_generation \
+--MLLM_prompt=description_generation.jinja \
+--model_type=MLLM \
+--MLLM=QWenVL \
+--description_goal=image_descriptor \
+--test_set_images=../experiments/generated_images/SensoryAds/20250918_122338/Sensation_AuraFlow \
+--test_set_QA=../experiments/results/SensoryAds/Sensation_AuraFlow_20250918_122338.csv \
+--resume=True

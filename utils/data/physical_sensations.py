@@ -9,7 +9,7 @@ SENSATION_HIERARCHY = {
         'Texture': [
             'Softness',
             'Silky Smoothness',
-            'Stickiness',
+            'Stickinenss',
             'Roughness',
             'Sharpness',
             'Wrinkly'
@@ -21,7 +21,7 @@ SENSATION_HIERARCHY = {
             'Dryness'
         ],
         'Motion and Weight': [
-            'High Speed and Acceleration',
+            'A',
             'Weightlessness',
             'Heaviness',
             'Tension',

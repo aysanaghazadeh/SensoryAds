@@ -145,16 +145,16 @@ def get_llm_generated_prompt(args, test_images):
 
 
 def generate_description(args):
-    if args.AD_type == 'Sensation':
-        test_images = []
-        for sensation in SENSATIONS_PARENT_MAP:
-            for i in range(10):
-                test_images.append(f'{sensation}/{str(i)}.png')
+    # if args.AD_type == 'Sensation':
+    #     test_images = []
+    #     for sensation in SENSATIONS_PARENT_MAP:
+    #         for i in range(10):
+    #             test_images.append(f'{sensation}/{str(i)}.png')
+    # else:
+    if args.Image_type == 'generated':
+        test_images = pd.read_csv(args.test_set_QA).generated_image_url.values
     else:
-        if args.Image_type == 'generated':
-            test_images = pd.read_csv(args.test_set_QA).generated_image_url.values
-        else:
-            test_images = get_test_data(args)
+        test_images = get_test_data(args)
     if args.description_goal == 'image_descriptor':
         descriptions = get_descriptions(args, test_images)
     if args.description_goal == 'prompt_expansion':
