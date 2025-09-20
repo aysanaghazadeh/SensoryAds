@@ -5,8 +5,8 @@ python inference.py \
 --inference_type=description_generation \
 --MLLM_prompt=description_generation.jinja \
 --model_type=MLLM \
---MLLM=Gemma \
+--MLLM=InternVL \
 --description_goal=image_descriptor \
---test_set_images=../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux \
---test_set_QA=../experiments/results/SensoryAds/AR_ALL_Flux_20250916_122348.csv \
+--test_set_images=../experiments/generated_images/SensoryAds/20250917_185403/AR_ALL_QWenImage \
+--test_set_QA=../experiments/results/SensoryAds/AR_ALL_QWenImage_20250917_185403.csv \
 --resume=True
