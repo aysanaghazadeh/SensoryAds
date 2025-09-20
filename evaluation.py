@@ -37,6 +37,7 @@ class SensationEvaluation:
             for sensation in SENSATIONS_PARENT_MAP:
                 total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description, sensation)
                 scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
+            print(json.dumps(scores[image_url], indent=4))
             json.dump(scores, open(result_file, 'w'))
 
     def evaluate_Evosense_MLLM(self, args):
