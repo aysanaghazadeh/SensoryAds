@@ -38,7 +38,7 @@ except ImportError:
 
 # We will edit your provided class structure
 class HierarchicalCPOTrainer(CPOTrainer):
-    def __init__(self, *args, hierarchy_loss_weight: float = 0.5, **kwargs):
+    def __init__(self, *args, hierarchy_loss_weight: float = 1, **kwargs):
         super().__init__(*args, **kwargs)
         self.hierarchy_loss_weight = hierarchy_loss_weight
 
@@ -81,7 +81,7 @@ class HierarchicalCPOTrainer(CPOTrainer):
         print('-'*100)
         # force log the metrics
         self.store_metrics(metrics, train_eval="train")
-
+        loss = loss + self.hierarchy_loss_weight * hierarchy_loss
         if return_outputs:
             return (loss, metrics)
         return loss
