@@ -1,6 +1,7 @@
 python inference.py \
 --config_type=DEFAULT \
 --AD_type=ALL \
+--Image_type=generated \
 --inference_type=description_generation \
 --MLLM_prompt=description_generation.jinja \
 --model_type=MLLM \

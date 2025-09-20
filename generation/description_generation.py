@@ -96,7 +96,7 @@ def get_descriptions(args, images):
         print(f'processing {image_url}')
         if image_url in processed_images:
             continue
-        if not os.path.exists(os.path.join(args.data_path, args.test_set_images, image_url)):
+        if args.Image_type != 'generated' and not os.path.exists(os.path.join(args.data_path, args.test_set_images, image_url)):
             continue
         processed_images.add(image_url)
         if args.description_type == 'combine':
