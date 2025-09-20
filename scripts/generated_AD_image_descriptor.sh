@@ -6,4 +6,6 @@ python inference.py \
 --model_type=MLLM \
 --MLLM=Gemma \
 --description_goal=image_descriptor \
+--test_set_images=../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux \
+--test_set_QA=../experiments/results/SensoryAds/AR_ALL_Flux_20250916_122348.csv \
 --resume=True

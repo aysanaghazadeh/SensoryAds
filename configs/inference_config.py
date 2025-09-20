@@ -46,6 +46,11 @@ def parse_args():
                         type=str,
                         default='ALL',
                         choices=['COM', 'PSA', 'ALL', 'Sensation'])
+    parser.add_argument('--Image_type',
+                        type=str,
+                        default='real',
+                        choices=['real', 'generated']
+                        )
     parser.add_argument('--description_goal',
                         type=str,
                         default='prompt_expansion',

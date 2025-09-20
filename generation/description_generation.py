@@ -28,7 +28,10 @@ def get_llm(args):
 
 
 def get_single_description(args, image_url, pipe):
-    image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
+    if args.Image_type == 'generated':
+        image = Image.open(image_url)
+    else:
+        image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
     env = Environment(loader=FileSystemLoader(args.prompt_path))
     template = env.get_template(args.MLLM_prompt)
     prompt = template.render()
@@ -102,7 +105,8 @@ def get_descriptions(args, images):
             description = get_single_description(args, image_url, pipe)
         print(f'description of image {image_url} is:\n {description}')
         print('-' * 80)
-        pair = [image_url, description]
+        image_ID = '/'.join(image_url.split('/')[-3:])
+        pair = [image_ID, description]
         with open(description_file, 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(pair)
@@ -147,7 +151,10 @@ def generate_description(args):
             for i in range(10):
                 test_images.append(f'{sensation}/{str(i)}.png')
     else:
-        test_images = get_test_data(args)
+        if args.Image_type == 'generated':
+            test_images = pd.read_csv(args.test_set_QA).generated_image_url.values
+        else:
+            test_images = get_test_data(args)
     if args.description_goal == 'image_descriptor':
         descriptions = get_descriptions(args, test_images)
     if args.description_goal == 'prompt_expansion':
