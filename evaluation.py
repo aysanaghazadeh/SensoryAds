@@ -40,6 +40,7 @@ class SensationEvaluation:
         result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for row in descriptions.iterrows():
+            print(row)
             image_url = row['ID']
             if args.Image_type == 'generated':
                 image = Image.open(os.path.join(args.result_path, 'generated_images', args.project_name, image_url))
