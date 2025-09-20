@@ -12,7 +12,7 @@ def get_train_data(args):
     if args.AD_type=='ALL':
         train_file = os.path.join(args.data_path, f'train/SensoryAd_image_list_all.csv')
     if os.path.exists(train_file):
-        return pd.read_csv(train_file).ID.values[:2]
+        return pd.read_csv(train_file).ID.values[:100]
     if os.path.exists(os.path.join(args.data_path, 'Action_Reason_statements.json')):
         QA_base = json.load(open(os.path.join(args.data_path, 'Action_Reason_statements.json')))
     else:
