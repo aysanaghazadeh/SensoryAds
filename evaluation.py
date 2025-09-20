@@ -22,7 +22,7 @@ class SensationEvaluation:
 
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
-        result_filename = args.description_file.replace('.csv', '.json')
+        result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
         result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for index, row in descriptions.iterrows():
@@ -37,7 +37,7 @@ class SensationEvaluation:
 
     def evaluate_Evosense_MLLM(self, args):
         descriptions = pd.read_csv(args.description_file)
-        result_filename = args.description_file.replace('.csv', '.json')
+        result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
         result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
         scores = {}
         for row in descriptions.iterrows():
