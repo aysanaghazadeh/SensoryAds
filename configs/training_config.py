@@ -42,6 +42,9 @@ def parse_args():
                         type=str,
                         default='prompt_expansion',
                         choices=['prompt_expansion', 'image_descriptor'])
+    parser.add_argument('--model_checkpoint',
+                        type=str,
+                        default=None)
     parser.add_argument('--model_path',
                         type=str,
                         default='../models',

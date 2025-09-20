@@ -121,7 +121,7 @@ def parse_args():
                         )
     parser.add_argument('--sensation_annotations',
                         type=str,
-                        default='train/50_sensation_annotation_processed.json',
+                        default='train/sensation_annotations_parsed.json',
                         help='Path to the annotations relative to the data path.')
     parser.add_argument('--train_ratio',
                         type=float,
