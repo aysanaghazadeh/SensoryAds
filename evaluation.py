@@ -28,12 +28,17 @@ class SensationEvaluation:
         directory_path = os.path.join(args.result_path, args.project_name, args.evaluation_type)
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(args.result_path, args.project_name, args.evaluation_type, result_filename)
-        scores = {}
+        if os.path.exists(result_file) and args.resume:
+            scores = json.load(open(result_file))
+        else:
+            scores = {}
         for index, row in descriptions.iterrows():
             image_url = row.ID
             description = row.description
             scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
+                if image_url in scores and sensation in scores[image_url]:
+                    continue
                 total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description, sensation)
                 scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
             print(image_url)
@@ -61,7 +66,6 @@ class SensationEvaluation:
 
 
     def evaluate(self, args):
-        print(args.evaluation_type)
         evaluation_name = 'evaluate_' + args.evaluation_type
         print(f'evaluation method: {evaluation_name}')
         evaluation_method = getattr(self, evaluation_name)
