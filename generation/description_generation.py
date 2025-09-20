@@ -9,6 +9,7 @@ import pandas as pd
 from utils.prompt_engineering.prompt_generation import ImageGenerationPromptGenerator
 from LLMs.LLM import LLM
 from MLLMs.MLLM import MLLM
+from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 
 
 def get_model(args):
@@ -139,51 +140,16 @@ def get_llm_generated_prompt(args, test_images):
     return pd.read_csv(description_file)
 
 
-def get_negative_descriptions(args):
-    train_images = get_train_data(args)['ID'].values
-    QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
-    print(f'number of images in train set: {len(train_images)}')
-    print('*' * 100)
-    product_file = os.path.join(args.data_path, 'train/product_name_train_set.csv')
-    if os.path.exists(product_file):
-        return pd.read_csv(product_file)
-    with open(product_file, 'w', newline='') as file:
-        writer = csv.writer(file)
-        # Write the header
-        writer.writerow(['ID', 'description'])
-    negative_file = os.path.join(args.data_path, 'train/negative_prompt_train_set.csv')
-    if os.path.exists(negative_file):
-        return pd.read_csv(negative_file)
-    with open(negative_file, 'w', newline='') as file:
-        writer = csv.writer(file)
-        # Write the header
-        writer.writerow(['ID', 'description'])
-    prompt_generator = get_llm(args)
-    for image_url in train_images:
-        action_reason = '\n'.join(QA[image_url][0])
-        print(f'action reason for image {image_url} is {action_reason}')
-        args.T2I_prompt = 'product_image_generation.jinja'
-        args.llm_prompt = 'product_detector.jinja'
-        product_names = prompt_generator.generate_prompt(args, image_url)
-        print(f'products in image {image_url} is {product_names}')
-        pair = [image_url, product_names]
-        with open(product_file, 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(pair)
-        args.T2I_prompt = 'adjective_only.jinja'
-        args.llm_prompt = 'negative_adjective_detector.jinja'
-        adjective = prompt_generator.generate_prompt(args, image_url)
-        print(f'negative adjective in image {image_url} is {adjective}')
-        pair = [image_url, adjective]
-        with open(negative_file, 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(pair)
-
-
 def generate_description(args):
-    test_images = get_test_data(args)
+    if args.AD_type == 'Sensation':
+        test_images = []
+        for sensation in SENSATIONS_PARENT_MAP:
+            for i in range(10):
+                test_images.append(f'{sensation}/{str(i)}.png')
+    else:
+        test_images = get_test_data(args)
     if args.description_goal == 'image_descriptor':
         descriptions = get_descriptions(args, test_images)
     if args.description_goal == 'prompt_expansion':
         descriptions = get_llm_generated_prompt(args, test_images)
-    # get_negative_descriptions(args)
+
