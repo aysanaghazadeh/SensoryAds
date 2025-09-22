@@ -52,10 +52,10 @@ def get_human_score_agreement(metric_scores, human_annotations):
             sensation_list.append(sensation)
     count = 0
     for image_url in metric_scores:
-        if image_url not in human_annotations or count > 10:
+        if image_url not in human_annotations or count > 100:
             continue
         count += 1
-        if count < 0:
+        if count < 47:
             continue
         human_scores_per_image = get_human_scores_per_image(human_annotations, image_url, sensation_list)
         metrics_scores_per_image = get_scores_per_image(metric_scores, image_url, sensation_list)

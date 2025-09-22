@@ -116,7 +116,7 @@ def get_EvoSense_MLLM(args, pipe, image, sensation):
     )
 
 
-def get_VQA_score(args, model, image, text):
+def get_T2V_score(args, model, image, text):
     try:
         score = model(images=[image], texts=[text])
     except Exception as e:
@@ -124,12 +124,4 @@ def get_VQA_score(args, model, image, text):
         print(f"[WARN]sensation '{text}' failed: {e}")
         # total_logprob, selected_logprobs = float('-inf'), []
         score = float('-inf')
-    return score
-
-
-def get_Image_Reward(args, model, image, text):
-    try:
-        score = model(text, [image])
-    except Exception as e:
-        score = -float('inf')
     return score

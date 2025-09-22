@@ -21,6 +21,15 @@ class SensationEvaluation:
         if self.args.evaluation_type == 'VQA_score':
             import t2v_metrics
             self.model = t2v_metrics.VQAScore(model='clip-flant5-xxl')
+        if self.args.evaluation_type == 'ImageReward':
+            import t2v_metrics
+            self.model = t2v_metrics.ITMScore(model='image-reward-v1')
+        if self.args.evaluation_type == 'PickScore':
+            import t2v_metrics
+            self.model = t2v_metrics.CLIPScore(model='pickscore-v1')
+        if self.args.evaluation_type == 'CLIPScore':
+            import t2v_metrics
+            self.model = t2v_metrics.CLIPScore(model='openai:ViT-B-32')
 
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
@@ -68,9 +77,30 @@ class SensationEvaluation:
                 scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
             json.dump(scores, open(result_file, 'w'))
 
+    def evaluate_T2V(self, args):
+        descriptions = pd.read_csv(args.description_file)
+        result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        os.makedirs(directory_path, exist_ok=True)
+        result_file = os.path.join(directory_path, result_filename)
+        scores = {}
+        for row in descriptions.iterrows():
+            print(row)
+            image_url = row['ID']
+            if args.Image_type == 'generated':
+                image = Image.open(os.path.join(args.result_path, 'generated_images', args.project_name, image_url))
+            else:
+                image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
+            scores[image_url] = {}
+            for sensation in SENSATIONS_PARENT_MAP:
+                score = get_T2V_score(args, self.model, image, sensation)
+                scores[image_url][sensation] = score
+            json.dump(scores, open(result_file, 'w'))
 
     def evaluate(self, args):
         evaluation_name = 'evaluate_' + args.evaluation_type
+        if evaluation_name in ['VQA', 'ImageReward', 'PickScore', 'CLIPScore']:
+            evaluation_name = 'T2V'
         print(f'evaluation method: {evaluation_name}')
         evaluation_method = getattr(self, evaluation_name)
         evaluation_method(args)
