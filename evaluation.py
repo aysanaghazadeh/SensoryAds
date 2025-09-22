@@ -84,9 +84,15 @@ class SensationEvaluation:
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)
         scores = {}
+        if os.path.exists(result_file) and args.resume:
+            scores = json.load(open(result_file))
+            print(f'{result_file} already exists and {len(scores)} scores will be loaded.')
         for row in descriptions.iterrows():
             print(row)
             image_url = row['ID']
+            if image_url in scores:
+                print(f'{image_url} is already processed: {scores[image_url]}')
+                continue
             if args.Image_type == 'generated':
                 image = Image.open(os.path.join(args.result_path, 'generated_images', args.project_name, image_url))
             else:
