@@ -100,6 +100,7 @@ class SensationEvaluation:
             for sensation in SENSATIONS_PARENT_MAP:
                 score = get_T2V_score(args, self.model, image, sensation)
                 scores[image_url][sensation] = score.item()
+            print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
             json.dump(scores, open(result_file, 'w'))
 
     def evaluate(self, args):
