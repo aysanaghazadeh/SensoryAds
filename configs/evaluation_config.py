@@ -178,8 +178,13 @@ def parse_args():
     parser.add_argument('--evaluation_type',
                         default='sensation_extraction',
                         type=str,
-                        choices=['VQA_score', 'Image_Reward', 'Evosense_LLM', 'Evosense_MLLM'],
+                        choices=['VQA_score', 'Image_Reward', 'PickScore', 'CLIPScore', 'Evosense_LLM', 'Evosense_MLLM'],
                         help='Choose the evaluation metric')
+    parser.add_argument('--Image_type',
+                        type=str,
+                        default='real',
+                        choices=['real', 'generated']
+                        )
     parser.add_argument('--model_checkpoint',
                         type=str,
                         default='3000')
