@@ -21,7 +21,7 @@ class SensationEvaluation:
         if self.args.evaluation_type == 'VQA_score':
             import t2v_metrics
             self.model = t2v_metrics.VQAScore(model='clip-flant5-xxl')
-        if self.args.evaluation_type == 'ImageReward':
+        if self.args.evaluation_type == 'Image_Reward':
             import t2v_metrics
             self.model = t2v_metrics.ITMScore(model='image-reward-v1')
         if self.args.evaluation_type == 'PickScore':
