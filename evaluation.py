@@ -88,7 +88,6 @@ class SensationEvaluation:
             scores = json.load(open(result_file))
             print(f'{result_file} already exists and {len(scores)} scores will be loaded.')
         for index, row in descriptions.iterrows():
-            print(row)
             image_url = row['ID']
             if image_url in scores:
                 print(f'{image_url} is already processed: {scores[image_url]}')
@@ -100,7 +99,7 @@ class SensationEvaluation:
             scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
                 score = get_T2V_score(args, self.model, image, sensation)
-                scores[image_url][sensation] = score
+                scores[image_url][sensation] = score.item()
             json.dump(scores, open(result_file, 'w'))
 
     def evaluate(self, args):
