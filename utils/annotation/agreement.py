@@ -38,18 +38,8 @@ def get_scores_per_image(metric_scores, image_url, sensation_list):
 def get_human_score_agreement(metric_scores, human_annotations):
     human_scores_list = []
     metrics_score_list = []
-    ignore_sensations = ['Wrinkly',
-                        'Pressure',
-                        'Medicine and Antiseptic Smell',
-                        'Traffic Jam or Human Crowd Sound',
-                        'Human Crowd Noises',
-                        'None',
-                        'Bursting Sound']
 
-    sensation_list = []
-    for sensation in SENSATIONS_PARENT_MAP.keys():
-        if sensation not in ignore_sensations:
-            sensation_list.append(sensation)
+    sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
     for image_url in metric_scores:
         if image_url not in human_annotations or count > 100:
