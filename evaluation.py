@@ -105,7 +105,7 @@ class SensationEvaluation:
 
     def evaluate(self, args):
         evaluation_name = 'evaluate_' + args.evaluation_type
-        if evaluation_name in ['VQA', 'ImageReward', 'PickScore', 'CLIPScore']:
+        if evaluation_name in ['VQA_score', 'ImageReward_score', 'PickScore_score', 'CLIPScore_score']:
             evaluation_name = 'T2V'
         print(f'evaluation method: {evaluation_name}')
         evaluation_method = getattr(self, evaluation_name)
