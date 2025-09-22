@@ -87,7 +87,7 @@ class SensationEvaluation:
         if os.path.exists(result_file) and args.resume:
             scores = json.load(open(result_file))
             print(f'{result_file} already exists and {len(scores)} scores will be loaded.')
-        for row in descriptions.iterrows():
+        for index, row in descriptions.iterrows():
             print(row)
             image_url = row['ID']
             if image_url in scores:
