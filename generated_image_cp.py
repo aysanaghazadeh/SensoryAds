@@ -21,7 +21,7 @@ image_list = ['freezing cold/1/166611.jpg',
               'spicy taste/1/67121.jpg',
               'cool and refreshing/1/34881.jpg',
               'darkness/4/154234.jpg',
-              'aching pain/4/41434.jpg'
+              'aching pain/4/41434.jpg',
               'pungent smell/9/116199.jpg'
               ]
 public_path = '../../public/html/generated_images'
