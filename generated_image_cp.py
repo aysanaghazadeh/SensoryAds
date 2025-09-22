@@ -29,6 +29,6 @@ for model_id in models_paths:
     model_path = models_paths[model_id]
     for image_url in image_list:
         image_path = os.path.join(model_path, image_url)
-        shutil.copy(image_path, os.path.join(public_path, f'{model_id}_{image_url}'))
+        shutil.copy(image_path, os.path.join(public_path, f'{model_id}_{image_url.split("/")[-1]}'))
 for filename in os.listdir(public_path):
     print(filename, 'copied')
