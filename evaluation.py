@@ -94,9 +94,9 @@ class SensationEvaluation:
                 print(f'{image_url} is already processed: {scores[image_url]}')
                 continue
             if args.Image_type == 'generated':
-                image = Image.open(os.path.join(args.result_path, 'generated_images', args.project_name, image_url))
+                image = os.path.join(args.result_path, 'generated_images', args.project_name, image_url)
             else:
-                image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
+                image = os.path.join(args.data_path, args.test_set_images, image_url)
             scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
                 score = get_T2V_score(args, self.model, image, sensation)
@@ -105,7 +105,7 @@ class SensationEvaluation:
 
     def evaluate(self, args):
         evaluation_name = 'evaluate_' + args.evaluation_type
-        if evaluation_name in ['VQA_score', 'ImageReward_score', 'PickScore_score', 'CLIPScore_score']:
+        if evaluation_name in ['VQA_score', 'Image_Reward', 'PickScore_score', 'CLIPScore_score']:
             evaluation_name = 'T2V'
         print(f'evaluation method: {evaluation_name}')
         evaluation_method = getattr(self, evaluation_name)
