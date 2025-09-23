@@ -15,6 +15,9 @@ class SensationEvaluation:
         if self.args.evaluation_type == 'Evosense_LLM':
             from LLMs.LLM import LLM
             self.model = LLM(args)
+        if self.args.evaluation_type == 'Evosense_GT_Sensation':
+            from LLMs.LLM import LLM
+            self.model = LLM(args)
         if self.args.evaluation_type == 'Evosense_MLLM':
             from MLLMs.MLLM import MLLM
             self.model = MLLM(args)
@@ -55,6 +58,7 @@ class SensationEvaluation:
                 if image_url in scores and sensation in scores[image_url]:
                     continue
                 total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description, sensation)
+                average_logprob = (average_logprob - (-38.970709800720215)) / (-2.043711707713487 - (-38.970709800720215)) #the values are to normalize the log probabilities based on the train images.
                 scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
             print(image_url)
             print(json.dumps(scores[image_url], indent=4))
