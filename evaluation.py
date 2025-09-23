@@ -85,7 +85,7 @@ class SensationEvaluation:
         for index, row in descriptions.iterrows():
             image_url = '/'.join(row.ID.split('/')[-2:])
             sensation = row.ID.split('/')[0]
-            description = row.description
+            description = row.description.split('Q2:')[-1]
             if image_url not in scores:
                 scores[image_url] = {}
             if image_url in scores and sensation in scores[image_url]:
