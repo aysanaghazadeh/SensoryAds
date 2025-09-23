@@ -79,8 +79,8 @@ class ImageGenerationPromptGenerator:
         return descriptions.loc[descriptions['ID'] == image_filename]['description'].values[0]
 
     @staticmethod
-    def get_LLM_input_prompt(args, action_reason, sentiment=None, topic=None, audience=None):
-        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience}
+    def get_LLM_input_prompt(args, action_reason, sentiment=None, topic=None, audience=None, sensation=None):
+        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience, 'sensation': sensation}
         env = Environment(loader=FileSystemLoader(args.prompt_path))
         template = env.get_template(args.llm_prompt)
         output = template.render(**data)

@@ -39,7 +39,13 @@ class SensationEvaluation:
         result_file = os.path.join(directory_path, result_filename)
         if os.path.exists(result_file) and args.resume:
             scores = json.load(open(result_file))
+            print(f'{result_file} already exists and {len(scores)} images are processed and will be skipped.')
         else:
+            if os.path.exists(result_file):
+                scores = json.load(open(result_file))
+                print(f'{result_file} already exists, and {len(scores)} images will be overwritten.')
+            else:
+                print(f'{result_file} does not exist and will be created.')
             scores = {}
         for index, row in descriptions.iterrows():
             image_url = row.ID
@@ -54,6 +60,39 @@ class SensationEvaluation:
             print(json.dumps(scores[image_url], indent=4))
             json.dump(scores, open(result_file, 'w'))
 
+    def evaluate_Evosense_GT_Sensation(self, args):
+        descriptions = pd.read_csv(args.description_file)
+        result_filename = args.description_file.replace('.csv',
+                                                        f'_{args.LLM}_finetuned{args.fine_tuned}{f"_{args.model_checkpoint}" if args.fine_tuned else ""}.json').split(
+            '/')[-1]
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        os.makedirs(directory_path, exist_ok=True)
+        result_file = os.path.join(directory_path, result_filename)
+        if os.path.exists(result_file) and args.resume:
+            scores = json.load(open(result_file))
+            print(f'{result_file} already exists and {len(scores)} images are processed and will be skipped.')
+        else:
+            if os.path.exists(result_file):
+                scores = json.load(open(result_file))
+                print(f'{result_file} already exists, and {len(scores)} images will be overwritten.')
+            else:
+                print(f'{result_file} does not exist and will be created.')
+            scores = {}
+        for index, row in descriptions.iterrows():
+            image_url = '/'.join(row.ID.split('/')[-2:])
+            sensation = row.ID.split('/')[0]
+            description = row.description
+            if image_url not in scores:
+                scores[image_url] = {}
+            if image_url in scores and sensation in scores[image_url]:
+                continue
+            total_logprob, _, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description,
+                                                                                     sensation)
+            scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
+            print(image_url)
+            print(json.dumps(scores[image_url], indent=4))
+            json.dump(scores, open(result_file, 'w'))
+
     def evaluate_Evosense_MLLM(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv',
@@ -62,17 +101,28 @@ class SensationEvaluation:
         directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)
-        scores = {}
+        if os.path.exists(result_file) and args.resume:
+            scores = json.load(open(result_file))
+            print(f'{result_file} already exists and {len(scores)} images are processed and will be skipped.')
+        else:
+            if os.path.exists(result_file):
+                scores = json.load(open(result_file))
+                print(f'{result_file} already exists, and {len(scores)} images will be overwritten.')
+            else:
+                print(f'{result_file} does not exist and will be created.')
+            scores = {}
         for row in descriptions.iterrows():
-            print(row)
             image_url = row['ID']
             if args.Image_type == 'generated':
                 image = Image.open(os.path.join(args.result_path, 'generated_images', args.project_name, image_url))
             else:
                 image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
             description = row['description']
-            scores[image_url] = {}
+            if image_url not in scores:
+                scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
+                if image_url in scores and sensation in scores[image_url]:
+                    continue
                 total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_MLLM(args, self.model, image, sensation)
                 scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
             json.dump(scores, open(result_file, 'w'))
