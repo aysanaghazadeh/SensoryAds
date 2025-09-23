@@ -92,6 +92,8 @@ class SensationEvaluation:
                 continue
             total_logprob, _, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description,
                                                                                      sensation)
+            average_logprob = (average_logprob - (-38.970709800720215)) / (-2.043711707713487 - (
+                -38.970709800720215))  # the values are to normalize the log probabilities based on the train images.
             scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
             print(image_url)
             print(json.dumps(scores[image_url], indent=4))
