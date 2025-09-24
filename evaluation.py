@@ -26,13 +26,13 @@ class SensationEvaluation:
             self.model = t2v_metrics.VQAScore(model='clip-flant5-xxl', cache_dir=os.getenv('HF_HOME'))
         if 'Image_Reward' in self.args.evaluation_type:
             import t2v_metrics
-            self.model = t2v_metrics.ITMScore(model='image-reward-v1')
+            self.model = t2v_metrics.ITMScore(model='image-reward-v1', cache_dir=os.getenv('HF_HOME'))
         if 'PickScore' in self.args.evaluation_type:
             import t2v_metrics
-            self.model = t2v_metrics.CLIPScore(model='pickscore-v1')
+            self.model = t2v_metrics.CLIPScore(model='pickscore-v1', cache_dir=os.getenv('HF_HOME'))
         if 'CLIPScore' in self.args.evaluation_type:
             import t2v_metrics
-            self.model = t2v_metrics.CLIPScore(model='openai:ViT-B-32')
+            self.model = t2v_metrics.CLIPScore(model='openai:ViT-B-32', cache_dir=os.getenv('HF_HOME'))
 
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
