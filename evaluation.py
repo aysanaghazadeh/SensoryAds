@@ -23,7 +23,7 @@ class SensationEvaluation:
             self.model = MLLM(args)
         if 'VQA_score' in self.args.evaluation_type:
             import t2v_metrics
-            self.model = t2v_metrics.VQAScore(model='clip-flant5-xxl')
+            self.model = t2v_metrics.VQAScore(model='clip-flant5-xxl', cache_dir=os.getenv('HF_HOME'))
         if 'Image_Reward' in self.args.evaluation_type:
             import t2v_metrics
             self.model = t2v_metrics.ITMScore(model='image-reward-v1')
