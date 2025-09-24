@@ -190,8 +190,10 @@ class SensationEvaluation:
                 image = os.path.join(args.result_path, 'generated_images', args.project_name, args.test_set_images, row.ID)
             else:
                 image = os.path.join(args.data_path, args.test_set_images, row.ID)
-            scores[image_url] = {}
+            if image_url not in scores:
+                scores[image_url] = {}
             score = get_T2V_score(args, self.model, image, sensation)
+            # print(score)
             scores[image_url][sensation] = score.item()
             print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
             json.dump(scores, open(result_file, 'w'))
