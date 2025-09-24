@@ -189,7 +189,6 @@ class SensationEvaluation:
             else:
                 image = os.path.join(args.data_path, args.test_set_images, row.ID)
             if image_url not in scores:
-                print(scores)
                 scores[image_url] = {}
             score = get_T2V_score(args, self.model, image, sensation)
             scores[image_url][sensation] = score.item()
