@@ -21,16 +21,16 @@ class SensationEvaluation:
         if self.args.evaluation_type == 'Evosense_MLLM':
             from MLLMs.MLLM import MLLM
             self.model = MLLM(args)
-        if self.args.evaluation_type == 'VQA_score':
+        if 'VQA_score' in self.args.evaluation_type:
             import t2v_metrics
             self.model = t2v_metrics.VQAScore(model='clip-flant5-xxl')
-        if self.args.evaluation_type == 'Image_Reward':
+        if 'Image_Reward' in self.args.evaluation_type:
             import t2v_metrics
             self.model = t2v_metrics.ITMScore(model='image-reward-v1')
-        if self.args.evaluation_type == 'PickScore':
+        if 'PickScore' in self.args.evaluation_type:
             import t2v_metrics
             self.model = t2v_metrics.CLIPScore(model='pickscore-v1')
-        if self.args.evaluation_type == 'CLIPScore':
+        if 'CLIPScore' in self.args.evaluation_type:
             import t2v_metrics
             self.model = t2v_metrics.CLIPScore(model='openai:ViT-B-32')
 
