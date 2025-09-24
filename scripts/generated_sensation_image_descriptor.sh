@@ -5,8 +5,8 @@ python inference.py \
 --inference_type=description_generation \
 --MLLM_prompt=description_generation.jinja \
 --model_type=MLLM \
---MLLM=InternVL \
+--MLLM=QWenVL \
 --description_goal=image_descriptor \
---test_set_images=../experiments/generated_images/SensoryAds/20250918_034952/Sensation_SD3 \
---test_set_QA=../experiments/results/SensoryAds/Sensation_SD3_20250918_034952.csv \
+--test_set_images=../experiments/generated_images/SensoryAds/20250918_122527/Sensation_QWenImage \
+--test_set_QA=../experiments/results/SensoryAds/Sensation_QWenImage_20250918_122527.csv \
 --resume=True

@@ -73,7 +73,7 @@ class HierarchicalCPOTrainer(CPOTrainer):
             average_log_prob=True
         )
         # Hierarchy loss = ReLU(logp(parent) - logp(chosen))
-        hierarchy_loss = torch.relu(parent_logps - chosen_logps).mean()
+        hierarchy_loss = torch.relu(chosen_logps - parent_logps).mean()
         # force log the metrics
         self.store_metrics(metrics, train_eval="train")
         loss = loss + self.hierarchy_loss_weight * hierarchy_loss

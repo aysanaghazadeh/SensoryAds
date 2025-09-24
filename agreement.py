@@ -14,26 +14,3 @@ if __name__ == '__main__':
     # get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     # get_krippendorff_agreement(metrics, human_annotations)
-
-    import numpy as np
-    import math
-
-    # values = []
-    # for image_url in metrics:
-    #     for sensation in metrics[image_url]:
-    #         values.append(metrics[image_url][sensation][-1])
-    # #
-    # min_val, max_val = min(values), max(values)
-    # print('maximum', max(values))
-    # print('minimum', min(values))
-    # print('mean', sum(values) / len(values))
-    # print('median', np.median(values))
-    # print('stdev', np.std(values))
-    # # print((math.exp(metrics['2/39922.jpg']['Dryness'][-1]) - min_val) / (max_val - min_val))
-    # # print(1 / (1 + math.exp(-(metrics['2/39922.jpg']['Moisture and Dryness'][-1] - min_val) / (max_val - min_val))))
-    # print((metrics['2/39922.jpg']['Touch'][-1] - min_val) / (max_val - min_val))
-    data = metrics['2/39922.jpg']
-    # print(data)
-    # print(metrics.keys())
-    sorted_dict = dict(sorted(data.items(), key=lambda item: item[1][2], reverse=True))
-    print(sorted_dict)

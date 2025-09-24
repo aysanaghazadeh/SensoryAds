@@ -5,10 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/score_process.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/evaluate_VQA_single_sensation.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Training/Hierarchical_CPO_training_LLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Training/Hierarchical_CPO_training_LLM.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agreement.py" beforeDir="false" afterPath="$PROJECT_DIR$/agreement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/evaluation_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs/evaluation_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/evaluate_Evosense_single_sensation.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/evaluate_Evosense_single_sensation.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/generated_sensation_image_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/generated_sensation_image_descriptor.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +44,7 @@
     "Python.agreement.executor": "Run",
     "Python.parsing_human_annotations.executor": "Run",
     "Python.retrieval_metrics.executor": "Run",
+    "Python.score_process.executor": "Run",
     "Python.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -68,7 +74,7 @@
       <recent name="$PROJECT_DIR$/utils/annotation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.agreement">
+  <component name="RunManager" selected="Python.score_process">
     <configuration name="agreement" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SensoryAds" />
       <option name="ENV_FILES" value="" />
@@ -138,6 +144,29 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="score_process" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SensoryAds" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/score_process.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SensoryAds" />
       <option name="ENV_FILES" value="" />
@@ -163,6 +192,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.score_process" />
         <item itemvalue="Python.agreement" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.retrieval_metrics" />
@@ -186,7 +216,7 @@
       <option name="presentableId" value="Default" />
       <updated>1757375876349</updated>
       <workItem from="1757375877645" duration="66254000" />
-      <workItem from="1757811033144" duration="206105000" />
+      <workItem from="1757811033144" duration="225220000" />
     </task>
     <servers />
   </component>
@@ -220,6 +250,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/SensoryAds$score_process.coverage" NAME="score_process Coverage Results" MODIFIED="1758692614584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SensoryAds$retrieval_metrics.coverage" NAME="retrieval_metrics Coverage Results" MODIFIED="1758310764975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Evaluation" />
     <SUITE FILE_PATH="coverage/SensoryAds$parsing_human_annotations.coverage" NAME="parsing_human_annotations Coverage Results" MODIFIED="1758033443793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils/annotation" />
     <SUITE FILE_PATH="coverage/SensoryAds$test.coverage" NAME="test Coverage Results" MODIFIED="1758394703763" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
