@@ -182,8 +182,6 @@ class SensationEvaluation:
             sensation = row.ID.split('/')[0]
             if args.AD_type == 'Sensation':
                 sensation = row.ID.split('/')[1]
-            if image_url not in scores:
-                scores[image_url] = {}
             if image_url in scores and sensation in scores[image_url]:
                 continue
             if args.Image_type == 'generated':
@@ -191,9 +189,9 @@ class SensationEvaluation:
             else:
                 image = os.path.join(args.data_path, args.test_set_images, row.ID)
             if image_url not in scores:
+                print(scores)
                 scores[image_url] = {}
             score = get_T2V_score(args, self.model, image, sensation)
-            # print(score)
             scores[image_url][sensation] = score.item()
             print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
             json.dump(scores, open(result_file, 'w'))
