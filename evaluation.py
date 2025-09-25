@@ -85,7 +85,6 @@ class SensationEvaluation:
             scores = {}
         for index, row in descriptions.iterrows():
             image_url = row.ID
-            print(image_url)
             if image_url not in human_annotated_gen_images:
                 continue
             description = row.description
@@ -260,6 +259,7 @@ class SensationEvaluation:
             image_url = '_'.join([model_name, image_url.split('/')[-1]])
             for sensation in SENSATIONS_PARENT_MAP:
                 if image_url in scores and sensation in scores[image_url]:
+                    print(image_url)
                     continue
                 image = os.path.join(args.result_path, 'generated_images', args.project_name, args.test_set_images, row.ID)
                 if image_url not in scores:

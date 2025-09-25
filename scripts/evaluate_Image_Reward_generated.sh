@@ -1,8 +1,7 @@
 python evaluation.py --config_type=DEFAULT \
---evaluation_type=Evosense_LLM_generated \
+--evaluation_type=Image_Reward_generated \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generation.csv \
---LLM=LLAMA3_instruct \
---fine_tuned=True \
---model_checkpoint=21000 \
+--test_set_images=20250918_122434/AR_ALL_PixArt \
 --T2I_model=PixArt \
+--Image_type=generated \
 --resume=True
