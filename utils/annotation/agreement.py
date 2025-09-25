@@ -26,10 +26,15 @@ def get_preference_per_image(human_annotations, metric_annotations, sensation_li
     human_preferences = []
     for sensation1 in sensation_list:
         for sensation2 in sensation_list:
-            if sensation1 == sensation2:
+            if (sensation1 == sensation2
+                    or sensation1.lower() not in human_annotations[image_url]['sensation_scores']
+                    or sensation1 not in metric_annotations[image_url]
+                    or sensation2 not in metric_annotations[image_url]
+                    or sensation2.lower() not in human_annotations[image_url]['sensation_scores']) :
                 continue
             human_score_sensation1 = human_annotations[image_url]['sensation_scores'][sensation1.lower()]
             human_score_sensation2 = human_annotations[image_url]['sensation_scores'][sensation2.lower()]
+
             sensation_scores1 = metric_annotations[image_url][sensation1]
             sensation_scores2 = metric_annotations[image_url][sensation2]
             if isinstance(sensation_scores1, list):
@@ -57,7 +62,6 @@ def get_scores_per_image(metric_scores, image_url, sensation_list):
         for sensation in sensation_list:
             if sensation not in metric_scores[image_url]:
                 score = 0.00001
-                print(sensation)
             else:
                 sensation_scores = metric_scores[image_url][sensation]
                 if isinstance(sensation_scores, list):
@@ -135,7 +139,7 @@ def get_kappa_agreement(metric_scores, human_annotations):
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
-        print(f'Kappa score for image {image_url} is', compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image))
-        print('-'*100)
+        # print(f'Kappa score for image {image_url} is', compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image))
+        # print('-'*100)
 
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))

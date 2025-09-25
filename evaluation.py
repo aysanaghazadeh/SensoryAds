@@ -69,7 +69,7 @@ class SensationEvaluation:
 
     def evaluate_Evosense_LLM_generated(self, args):
         descriptions = pd.read_csv(args.description_file)
-        result_filename = 'gen_images_human_annotated_images.json'
+        result_filename = f'gen_images_human_annotated_images_{args.MLLM}_{args.LLM}_isFineTuned{args.fine_tuned}.json'
         directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)
