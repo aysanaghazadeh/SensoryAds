@@ -85,6 +85,7 @@ class SensationEvaluation:
             scores = {}
         for index, row in descriptions.iterrows():
             image_url = row.ID
+            print(image_url)
             if image_url not in human_annotated_gen_images:
                 continue
             description = row.description
