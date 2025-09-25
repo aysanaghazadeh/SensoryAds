@@ -75,3 +75,21 @@ TOPIC_MAP = {
     '37': ["Political candidates", "support or opposition"],
     '38': ["Charities"],
     '39': ["Unclear"]}
+
+
+image_list = ['freezing cold/1/166611.jpg',
+              'brilliance and glow/0/101660.jpg',
+              'sweet taste/2/36282.jpg',
+              'natural greenery smell/0/103010.jpg',
+              'dryness/2/39922.jpg',
+              'culinary smell/0/56910.jpg',
+              'roughness/3/133973.jpg',
+              'liquid splash sound/10/175992.png',
+              'soaking wetness/3/105563.jpg',
+              'high speed and acceleration/0/119030.jpg',
+              'spicy taste/1/67121.jpg',
+              'cool and refreshing/1/34881.jpg',
+              'darkness/4/154234.jpg',
+              'aching pain/4/41434.jpg',
+              'pungent smell/9/116199.jpg'
+              ]

@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="" />
+    <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/score_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/score_process.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/evaluate_VQA_single_sensation.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/evaluate_VQA_single_sensation.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/annotation/parsing_human_annotations.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/annotation/parsing_human_annotations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/data/mapping.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/data/mapping.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -64,7 +71,7 @@
       <recent name="$PROJECT_DIR$/utils/annotation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.score_process">
+  <component name="RunManager" selected="Python.parsing_human_annotations">
     <configuration name="agreement" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="SensoryAds" />
       <option name="ENV_FILES" value="" />
@@ -182,11 +189,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.parsing_human_annotations" />
         <item itemvalue="Python.score_process" />
         <item itemvalue="Python.agreement" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.retrieval_metrics" />
-        <item itemvalue="Python.parsing_human_annotations" />
       </list>
     </recent_temporary>
   </component>
@@ -206,7 +213,7 @@
       <option name="presentableId" value="Default" />
       <updated>1757375876349</updated>
       <workItem from="1757375877645" duration="66254000" />
-      <workItem from="1757811033144" duration="235765000" />
+      <workItem from="1757811033144" duration="243071000" />
     </task>
     <servers />
   </component>
@@ -240,9 +247,9 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/SensoryAds$score_process.coverage" NAME="score_process Coverage Results" MODIFIED="1758704989681" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SensoryAds$score_process.coverage" NAME="score_process Coverage Results" MODIFIED="1758760274523" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SensoryAds$retrieval_metrics.coverage" NAME="retrieval_metrics Coverage Results" MODIFIED="1758310764975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Evaluation" />
-    <SUITE FILE_PATH="coverage/SensoryAds$parsing_human_annotations.coverage" NAME="parsing_human_annotations Coverage Results" MODIFIED="1758033443793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils/annotation" />
+    <SUITE FILE_PATH="coverage/SensoryAds$parsing_human_annotations.coverage" NAME="parsing_human_annotations Coverage Results" MODIFIED="1758760360020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils/annotation" />
     <SUITE FILE_PATH="coverage/SensoryAds$test.coverage" NAME="test Coverage Results" MODIFIED="1758394703763" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SensoryAds$agreement.coverage" NAME="agreement Coverage Results" MODIFIED="1758611828782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

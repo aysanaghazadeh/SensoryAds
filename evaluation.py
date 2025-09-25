@@ -1,5 +1,5 @@
 from os.path import exists
-
+from utils.data.mapping import image_list as human_annotated_gen_images
 from Evaluation.sensation_alignment_metrics import *
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 import json
@@ -16,6 +16,9 @@ class SensationEvaluation:
             from LLMs.LLM import LLM
             self.model = LLM(args)
         if self.args.evaluation_type == 'Evosense_GT_Sensation':
+            from LLMs.LLM import LLM
+            self.model = LLM(args)
+        if self.args.evaluation_type == 'Evosense_LLM_generated':
             from LLMs.LLM import LLM
             self.model = LLM(args)
         if self.args.evaluation_type == 'Evosense_MLLM':
@@ -54,6 +57,41 @@ class SensationEvaluation:
             image_url = row.ID
             description = row.description
             scores[image_url] = {}
+            for sensation in SENSATIONS_PARENT_MAP:
+                if image_url in scores and sensation in scores[image_url]:
+                    continue
+                total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description, sensation)
+                average_logprob = (average_logprob - (-38.970709800720215)) / (-2.043711707713487 - (-38.970709800720215)) #the values are to normalize the log probabilities based on the train images.
+                scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
+            print(image_url)
+            print(json.dumps(scores[image_url], indent=4))
+            json.dump(scores, open(result_file, 'w'))
+
+    def evaluate_Evosense_LLM_generated(self, args):
+        descriptions = pd.read_csv(args.description_file)
+        result_filename = 'gen_images_human_scores.json'
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        os.makedirs(directory_path, exist_ok=True)
+        result_file = os.path.join(directory_path, result_filename)
+        if os.path.exists(result_file) and args.resume:
+            scores = json.load(open(result_file))
+            print(f'{result_file} already exists and {len(scores)} images are processed and will be skipped.')
+        else:
+            if os.path.exists(result_file):
+                scores = json.load(open(result_file))
+                print(f'{result_file} already exists, and {len(scores)} images will be overwritten.')
+            else:
+                print(f'{result_file} does not exist and will be created.')
+            scores = {}
+        for index, row in descriptions.iterrows():
+            image_url = row.ID
+            if image_url not in human_annotated_gen_images:
+                continue
+            description = row.description
+            model_name = args.T2I_model
+            image_url = '_'.join([model_name, image_url.split('/')[-1]])
+            if image_url not in scores:
+                scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
                 if image_url in scores and sensation in scores[image_url]:
                     continue

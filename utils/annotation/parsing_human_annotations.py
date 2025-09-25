@@ -1,7 +1,7 @@
 import pandas as pd
 from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATIONS_PARENT_MAP
 import json
-from configs.inference_config import get_args
+# from configs.inference_config import get_args
 
 def parse_sensation_annotations(annotation_file):
     sensation_annotation = pd.read_csv(annotation_file).values
@@ -88,8 +88,9 @@ def get_SENSATIONS_PARENT_MAP(sensations, parent='root'):
 
 if __name__ == '__main__':
 
-    args = get_args()
+    # args = get_args()
     # sensation_parent_map = get_SENSATIONS_PARENT_MAP(SENSATION_HIERARCHY)
     # print(sensation_parent_map)
-    annotation_file = args.description_file
+    # annotation_file = args.description_file
+    annotation_file = '/Users/aysanaghazadeh/Downloads/gen_images_annotations.csv'
     parse_sensation_annotations(annotation_file)
