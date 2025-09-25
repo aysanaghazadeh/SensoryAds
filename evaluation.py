@@ -254,6 +254,8 @@ class SensationEvaluation:
             scores = {}
         for index, row in descriptions.iterrows():
             image_url = row.ID
+            if image_url not in human_annotated_gen_images:
+                continue
             model_name = args.T2I_model
             image_url = '_'.join([model_name, image_url.split('/')[-1]])
             for sensation in SENSATIONS_PARENT_MAP:
