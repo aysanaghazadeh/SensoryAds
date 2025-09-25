@@ -122,6 +122,8 @@ class SensationEvaluation:
                 print(f'{result_file} does not exist and will be created.')
             scores = {}
         for index, row in descriptions.iterrows():
+            if image_url not in human_annotated_gen_images:
+                continue
             image_url = '/'.join(row.ID.split('/')[-2:])
             sensation = row.ID.split('/')[0]
             if args.AD_type == 'Sensation':
@@ -234,12 +236,46 @@ class SensationEvaluation:
             print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
             json.dump(scores, open(result_file, 'w'))
 
+    def evaluate_T2V_generated(self, args):
+        descriptions = pd.read_csv(args.description_file)
+        result_filename = 'gen_images_human_annotated_images.json'
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        os.makedirs(directory_path, exist_ok=True)
+        result_file = os.path.join(directory_path, result_filename)
+        if os.path.exists(result_file) and args.resume:
+            scores = json.load(open(result_file))
+            print(f'{result_file} already exists and {len(scores)} images are processed and will be skipped.')
+        else:
+            if os.path.exists(result_file):
+                scores = json.load(open(result_file))
+                print(f'{result_file} already exists, and {len(scores)} images will be overwritten.')
+            else:
+                print(f'{result_file} does not exist and will be created.')
+            scores = {}
+        for index, row in descriptions.iterrows():
+            image_url = row.ID
+            model_name = args.T2I_model
+            image_url = '_'.join([model_name, image_url.split('/')[-1]])
+            for sensation in SENSATIONS_PARENT_MAP:
+                if image_url in scores and sensation in scores[image_url]:
+                    continue
+                image = os.path.join(args.result_path, 'generated_images', args.project_name, args.test_set_images, row.ID)
+                if image_url not in scores:
+                    scores[image_url] = {}
+                score = get_T2V_score(args, self.model, image, sensation)
+                scores[image_url][sensation] = score.item()
+                print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
+                json.dump(scores, open(result_file, 'w'))
+
     def evaluate(self, args):
         evaluation_name = 'evaluate_' + args.evaluation_type
         if evaluation_name in ['evaluate_VQA_score', 'evaluate_Image_Reward', 'evaluate_PickScore', 'evaluate_CLIPScore']:
             evaluation_name = 'evaluate_T2V'
-        if evaluation_name in ['evaluate_VQA_score_GT_Sensation', 'evaluate_Image_Reward_GT_Sensation', 'evaluate_PickScore_GT_Sensation', 'evaluate_CLIPScore_GT_Sensation']:
+        elif evaluation_name in ['evaluate_VQA_score_GT_Sensation', 'evaluate_Image_Reward_GT_Sensation', 'evaluate_PickScore_GT_Sensation', 'evaluate_CLIPScore_GT_Sensation']:
             evaluation_name = 'evaluate_T2V_GT_Sensation'
+        elif evaluation_name.split('_generated')[0] in ['evaluate_VQA_score', 'evaluate_Image_Reward', 'evaluate_PickScore',
+                               'evaluate_CLIPScore']:
+            evaluation_name = 'evaluate_T2V_generated'
         print(f'evaluation method: {evaluation_name}')
         evaluation_method = getattr(self, evaluation_name)
         evaluation_method(args)

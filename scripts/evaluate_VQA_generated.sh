@@ -1,8 +1,6 @@
 python evaluation.py --config_type=DEFAULT \
---evaluation_type=Evosense_LLM_generated \
+--evaluation_type=VQA_score_generated \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generation.csv \
---LLM=LLAMA3_instruct \
---fine_tuned=True \
---model_checkpoint=21000 \
+--test_set_images=20250916_130149/AR_ALL_SD3 \
 --T2I_model=SD3 \
---resume=True
+--Image_type=generated
