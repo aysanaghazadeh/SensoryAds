@@ -187,6 +187,7 @@ def parse_args():
                                  'PickScore_GT_Sensation',
                                  'CLIPScore_GT_Sensation',
                                  'Evosense_LLM',
+                                 'Evosense_LLM_generated',
                                  'Evosense_MLLM',
                                  'Evosense_GT_Sensation',],
                         help='Choose the evaluation metric')
