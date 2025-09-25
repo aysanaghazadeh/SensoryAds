@@ -121,8 +121,6 @@ class SensationEvaluation:
                 print(f'{result_file} does not exist and will be created.')
             scores = {}
         for index, row in descriptions.iterrows():
-            if image_url not in human_annotated_gen_images:
-                continue
             image_url = '/'.join(row.ID.split('/')[-2:])
             sensation = row.ID.split('/')[0]
             if args.AD_type == 'Sensation':

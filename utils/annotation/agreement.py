@@ -139,7 +139,8 @@ def get_kappa_agreement(metric_scores, human_annotations):
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
-        # print(f'Kappa score for image {image_url} is', compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image))
-        # print('-'*100)
+        # if compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image) > 0.7:
+        #     print(f'Kappa score for image {image_url} is', compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image))
+        # # print('-'*100)
 
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))
