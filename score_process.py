@@ -11,6 +11,7 @@ def average_score(metrics_scores):
                 values.append(scores[-1])
             else:
                 values.append(scores)
+    print(len(values))
     return sum(values) / len(values)
 
 def compute_average_scores_per_file(metrics_file):
@@ -20,6 +21,9 @@ def compute_average_scores_per_file(metrics_file):
 
 def compute_all_average_scores_all_files(directory):
     for filename in os.listdir(directory):
+        if filename == '.DS_Store':
+            continue
+        metrics_file = os.path.join(directory, filename)
         metrics_file = os.path.join(directory, filename)
         compute_average_scores_per_file(metrics_file)
 
@@ -40,9 +44,12 @@ def compute_average_per_sensation(metrics_scores):
 
 def compute_average_per_sensations_all_files(directory):
     for filename in os.listdir(directory):
+        if filename == '.DS_Store':
+            continue
+        print(filename)
         metrics_file = os.path.join(directory, filename)
         metric_scores = json.load(open(metrics_file))
-        saving_path = os.path.join('/'.join(directory.split('/')[:-1]), 'average_scores', filename.replace('.json', '_average.json'))
+        saving_path = os.path.join('/'.join(directory.split('/')[:-1]), 'average_scores_'+ filename.replace('.json', '_average.json'))
         average_score_per_sensation = compute_average_per_sensation(metric_scores)
         json.dump(average_score_per_sensation, open(saving_path, 'w'))
 
@@ -90,20 +97,20 @@ def compute_real_images_scores(real_ads, generated_ads):
 
 
 if __name__ == '__main__':
-    # directory = '/Users/aysanaghazadeh/experiments/SensoryAds/Evosense_GT_Sensation'
-    # compute_all_average_scores_all_files(directory)
-    # compute_average_per_sensations_all_files(directory)
-    generated_ads = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
-    real_ads = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
-    image_url = '0/56910.jpg'
-    print(generated_ads.keys())
-    print(real_ads[image_url])
-    print(generated_ads[image_url])
-    print('-' * 100)
-    generated_ads = json.load(open(
-        '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/VQA_score_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation.json'))
-    real_ads = json.load(open(
-        '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/VQA_score_GT_Sensation/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generation.json'))
-    print(real_ads[image_url])
-    print(generated_ads[image_url])
-    # print(SD3_ads['2/39922.jpg'])
+    directory = '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Evosense_GT_Sensation'
+    compute_all_average_scores_all_files(directory)
+    compute_average_per_sensations_all_files(directory)
+    # generated_ads = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
+    # real_ads = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
+    # image_url = '0/56910.jpg'
+    # print(generated_ads.keys())
+    # print(real_ads[image_url])
+    # print(generated_ads[image_url])
+    # print('-' * 100)
+    # generated_ads = json.load(open(
+    #     '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/VQA_score_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation.json'))
+    # real_ads = json.load(open(
+    #     '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/VQA_score_GT_Sensation/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generation.json'))
+    # print(real_ads[image_url])
+    # print(generated_ads[image_url])
+    # # print(SD3_ads['2/39922.jpg'])
