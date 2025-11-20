@@ -1211,7 +1211,7 @@ def train(args):
                 break
 
         if accelerator.is_main_process:
-            if args.validation_prompt is not None and epoch % args.validation_epochs == 0:
+            if args.validation_prompt is not None and step % args.validation_epochs == 0:
                 if not args.train_text_encoder:
                     # create pipeline
                     text_encoder_one, text_encoder_two, text_encoder_three = load_text_encoders(
