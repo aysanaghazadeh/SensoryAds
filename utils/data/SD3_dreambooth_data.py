@@ -44,7 +44,7 @@ class DreamBoothDataset(Dataset):
                 open(os.path.join(args.data_path, 'train/reason_hard_QA_Combined_Action_Reason_train.json')))
 
             for image_url in train_set_images:
-                if image_url in sensations:
+                if image_url in sensations and image_url in QAs:
                     AR = '\n-'.join(QAs[image_url][0])
                     for sensation in sensations[image_url]['image_sensations']:
                         dataset['image'].append(
