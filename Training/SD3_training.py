@@ -65,7 +65,7 @@ from diffusers.utils import (
 )
 from diffusers.utils.hub_utils import load_or_create_model_card, populate_model_card
 from diffusers.utils.torch_utils import is_compiled_module
-from utils.data.SD3_dreambooth_data import *
+from utils.data.SD3_dreambooth_data import collate_fn, DreamBoothDataset, PromptDataset
 
 if is_wandb_available():
     import wandb
@@ -168,7 +168,7 @@ Please adhere to the licensing terms as described [here]({license_url}).
     model_card.save(os.path.join(repo_folder, "README.md"))
 
 
-def load_text_encoders(class_one, class_two, class_three):
+def load_text_encoders(args, class_one, class_two, class_three):
     text_encoder_one = class_one.from_pretrained(
         args.pretrained_model_name_or_path, subfolder="text_encoder", revision=args.revision, variant=args.variant
     )
@@ -527,7 +527,7 @@ def train(args):
     )
     noise_scheduler_copy = copy.deepcopy(noise_scheduler)
     text_encoder_one, text_encoder_two, text_encoder_three = load_text_encoders(
-        text_encoder_cls_one, text_encoder_cls_two, text_encoder_cls_three
+        args, text_encoder_cls_one, text_encoder_cls_two, text_encoder_cls_three
     )
     vae = AutoencoderKL.from_pretrained(
         args.pretrained_model_name_or_path,
@@ -1215,7 +1215,7 @@ def train(args):
                 if not args.train_text_encoder:
                     # create pipeline
                     text_encoder_one, text_encoder_two, text_encoder_three = load_text_encoders(
-                        text_encoder_cls_one, text_encoder_cls_two, text_encoder_cls_three
+                        args, text_encoder_cls_one, text_encoder_cls_two, text_encoder_cls_three
                     )
                     text_encoder_one.to(weight_dtype)
                     text_encoder_two.to(weight_dtype)
