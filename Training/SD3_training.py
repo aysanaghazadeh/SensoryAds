@@ -385,6 +385,7 @@ def encode_prompt(
 
 
 def train(args):
+    args.output_dir = os.path.join(args.model_path, args.output_dir)
     if args.report_to == "wandb" and args.hub_token is not None:
         raise ValueError(
             "You cannot use both --report_to=wandb and --hub_token due to a security risk of exposing your token."

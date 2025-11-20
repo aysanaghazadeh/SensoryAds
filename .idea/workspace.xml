@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Training/SD3_training.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/configs/T2I_training_config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/data/SD3_dreambooth_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs/training_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs/training_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -217,7 +215,7 @@
       <workItem from="1759263740933" duration="6091000" />
       <workItem from="1759795683314" duration="7000" />
       <workItem from="1762437899480" duration="289000" />
-      <workItem from="1763490014315" duration="9411000" />
+      <workItem from="1763490014315" duration="10956000" />
     </task>
     <servers />
   </component>
@@ -246,6 +244,10 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LLMs/LLM.py</url>
           <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/configs/training_config.py</url>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
