@@ -195,7 +195,6 @@ def parse_args():
         "--pretrained_model_name_or_path",
         type=str,
         default=None,
-        required=True,
         help="Path to pretrained model or model identifier from huggingface.co/models.",
     )
     parser.add_argument(
@@ -269,7 +268,6 @@ def parse_args():
         "--instance_prompt",
         type=str,
         default=None,
-        required=True,
         help="The prompt with identifier specifying the instance, e.g. 'photo of a TOK dog', 'in the style of TOK'",
     )
     parser.add_argument(
@@ -654,17 +652,17 @@ def get_args():
     if env_local_rank != -1 and env_local_rank != args.local_rank:
         args.local_rank = env_local_rank
 
-    if args.with_prior_preservation:
-        if args.class_data_dir is None:
-            raise ValueError("You must specify a data directory for class images.")
-        if args.class_prompt is None:
-            raise ValueError("You must specify prompt for class images.")
-    else:
-        # logger is not available yet
-        if args.class_data_dir is not None:
-            warnings.warn("You need not use --class_data_dir without --with_prior_preservation.")
-        if args.class_prompt is not None:
-            warnings.warn("You need not use --class_prompt without --with_prior_preservation.")
+    # if args.with_prior_preservation:
+    #     if args.class_data_dir is None:
+    #         raise ValueError("You must specify a data directory for class images.")
+    #     if args.class_prompt is None:
+    #         raise ValueError("You must specify prompt for class images.")
+    # else:
+    #     # logger is not available yet
+    #     if args.class_data_dir is not None:
+    #         warnings.warn("You need not use --class_data_dir without --with_prior_preservation.")
+    #     if args.class_prompt is not None:
+    #         warnings.warn("You need not use --class_prompt without --with_prior_preservation.")
     print("Arguments are:\n", args, '\n', '-'*40)
 
     return args
