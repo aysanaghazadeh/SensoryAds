@@ -134,7 +134,7 @@ def get_MMLM_Judge_Score(args, model, image, text):
         }
         prompt = generate_text_generation_prompt(args, data)
         output = model(image, prompt)
-        score = int(output.split(':')[-1])
+        score = int(output.split(':')[-1]) / 5
     except Exception as e:
         # Log the error for this (ID, sensation) and continue
         print(f"[WARN]sensation '{text}' failed: {e}")
