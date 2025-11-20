@@ -641,28 +641,28 @@ def get_args():
         print(f"Number of GPUs available: {torch.cuda.device_count()}")
         print(f"devices: {[torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())]}")
     args.device = device
+    if args.training_type == 'SD3_dreambooth':
+        if args.dataset_name is None and args.instance_data_dir is None:
+            raise ValueError("Specify either `--dataset_name` or `--instance_data_dir`")
 
-    if args.dataset_name is None and args.instance_data_dir is None:
-        raise ValueError("Specify either `--dataset_name` or `--instance_data_dir`")
+        if args.dataset_name is not None and args.instance_data_dir is not None:
+            raise ValueError("Specify only one of `--dataset_name` or `--instance_data_dir`")
 
-    if args.dataset_name is not None and args.instance_data_dir is not None:
-        raise ValueError("Specify only one of `--dataset_name` or `--instance_data_dir`")
+        env_local_rank = int(os.environ.get("LOCAL_RANK", -1))
+        if env_local_rank != -1 and env_local_rank != args.local_rank:
+            args.local_rank = env_local_rank
 
-    env_local_rank = int(os.environ.get("LOCAL_RANK", -1))
-    if env_local_rank != -1 and env_local_rank != args.local_rank:
-        args.local_rank = env_local_rank
-
-    # if args.with_prior_preservation:
-    #     if args.class_data_dir is None:
-    #         raise ValueError("You must specify a data directory for class images.")
-    #     if args.class_prompt is None:
-    #         raise ValueError("You must specify prompt for class images.")
-    # else:
-    #     # logger is not available yet
-    #     if args.class_data_dir is not None:
-    #         warnings.warn("You need not use --class_data_dir without --with_prior_preservation.")
-    #     if args.class_prompt is not None:
-    #         warnings.warn("You need not use --class_prompt without --with_prior_preservation.")
+        if args.with_prior_preservation:
+            if args.class_data_dir is None:
+                raise ValueError("You must specify a data directory for class images.")
+            if args.class_prompt is None:
+                raise ValueError("You must specify prompt for class images.")
+        else:
+            # logger is not available yet
+            if args.class_data_dir is not None:
+                warnings.warn("You need not use --class_data_dir without --with_prior_preservation.")
+            if args.class_prompt is not None:
+                warnings.warn("You need not use --class_prompt without --with_prior_preservation.")
     print("Arguments are:\n", args, '\n', '-'*40)
 
     return args
