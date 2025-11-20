@@ -1,7 +1,7 @@
 # from configs.inference_config import get_args
 import numpy as np
 
-from utils.annotation.agreement import get_human_score_agreement, get_kappa_agreement, get_krippendorff_agreement
+from utils.annotation.agreement import get_human_score_agreement, get_kappa_agreement, get_krippendorff_agreement, get_per_class_krippendorff_agreement
 import json
 
 
@@ -10,68 +10,101 @@ if __name__ == '__main__':
     # human_annotations = json.load(open(args.sensation_annotations))
     # metrics = json.load(open(args.description_file))
 
-    human_annotations = json.load(open('/Users/aysanaghazadeh/Downloads/gen_images_annotations_parsed.json'))
+    human_annotations = json.load(open('../Data/PittAd/train/sensation_annotations_parsed.json'))
+    print('Agreement Computation Started')
+
+    print('-' * 100)
     print('Evosense-LLAMA3-InternVL')
-    metrics = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Evosense_LLM_generated/gen_images_human_annotated_images.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('Evosense-QWenLM-InternVL')
-    metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Evosense_LLM_generated/gen_images_human_annotated_images_InternVL_QWenLM_isFineTunedTrue.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_QWenLM_finetunedTrue_17500.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('Evosense-LLAMA3-QWenVL')
-    metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Evosense_LLM_generated/gen_images_human_annotated_images_QWenVL_LLAMA3_instruct_isFineTunedTrue.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_QWenVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('Evosense-QWenLM-QWenVL')
-    metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Evosense_LLM_generated/gen_images_human_annotated_images_QWenVL_QWenLM_isFineTunedTrue.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_QWenVL_train_images_total_ALL_description_generation_QWenLM_finetunedTrue_17500.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('Evosense-QWenLM-InternVL_Zeroshot')
-    metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Evosense_LLM_generated/gen_images_human_annotated_images_InternVL_QWenLM_isFineTunedFalse.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_QWenLM_finetunedFalse.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('Evosense-LLAMA3-InternVL_Zeroshot')
-    metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Evosense_LLM_generated/gen_images_human_annotated_images_InternVL_LLAMA3_instruct_isFineTunedFalse.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedFalse.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('VQAScore')
-    metrics = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/VQA_score_generated/gen_images_human_annotated_images.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/VQA_score/IN_InternVL_train_images_total_ALL_description_generation.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('PickScore')
-    metrics = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/PickScore_generated/gen_images_human_annotated_images.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/PickScore/IN_InternVL_train_images_total_ALL_description_generation.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('Image-Reward')
-    metrics = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/Image_Reward_generated/gen_images_human_annotated_images.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Image_Reward/IN_InternVL_train_images_total_ALL_description_generation.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
 
+    print('-' * 100)
     print('CLIP-score')
-    metrics = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/SensoryAds/CLIPScore_generated/gen_images_human_annotated_images.json'))
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/CLIPScore/IN_InternVL_train_images_total_ALL_description_generation.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
-    # get_krippendorff_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+
+    print('-' * 100)
+    print('MLLM - InternVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/MLLM/IN_InternVL_train_images_total_ALL_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+
+    print('-'*100)
+    print('MLLM - QWenVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/MLLM/IN_InternVL_train_images_total_ALL_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)

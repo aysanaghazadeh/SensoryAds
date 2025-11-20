@@ -43,7 +43,7 @@ def get_preference_per_image(human_annotations, metric_annotations, sensation_li
             else:
                 metric_score_sensation1 = sensation_scores1
                 metric_score_sensation2 = sensation_scores2
-            if human_score_sensation1 == human_score_sensation2 or metric_score_sensation1 == metric_score_sensation2:
+            if human_score_sensation1 == human_score_sensation2:# or metric_score_sensation1 == metric_score_sensation2:
                 continue
             if human_score_sensation1 > human_score_sensation2:
                 human_preferences.append(0)
@@ -51,8 +51,10 @@ def get_preference_per_image(human_annotations, metric_annotations, sensation_li
                 human_preferences.append(1)
             if metric_score_sensation1 > metric_score_sensation2:
                 metric_preferences.append(0)
-            else:
+            elif metric_score_sensation1 < metric_score_sensation2:
                 metric_preferences.append(1)
+            else:
+                metric_preferences.append(2)
     return human_preferences, metric_preferences
 
 
@@ -86,20 +88,20 @@ def get_human_score_agreement(metric_scores, human_annotations):
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
     for image_url in metric_scores:
-        if 'PixArt' in image_url:
-            continue
         if image_url not in human_annotations:
             continue
         count += 1
-        # if count < 47:
-        #     continue
+        if count < 40:
+            continue
+        if count > 140:
+            break
         human_scores_per_image = get_human_scores_per_image(human_annotations, image_url, sensation_list)
         metrics_scores_per_image = get_scores_per_image(metric_scores, image_url, sensation_list)
         # print(f'agreement on image {image_url}', compute_pearson_correlation(metrics_scores_per_image, human_scores_per_image))
         human_scores_list += human_scores_per_image
         metrics_score_list += metrics_scores_per_image
         # print('-'*100)
-    print(f'overall agreement for {count} images is:', compute_pearson_correlation(metrics_score_list, human_scores_list))
+    print(f'overall correlation for {count} images is:', compute_pearson_correlation(metrics_score_list, human_scores_list))
 
 def get_krippendorff_agreement(metric_scores, human_annotations):
     human_preferences = []
@@ -107,20 +109,81 @@ def get_krippendorff_agreement(metric_scores, human_annotations):
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
     for image_url in metric_scores:
-        if 'PixArt' in image_url:
-            continue
         if image_url not in human_annotations:
             continue
         count += 1
-        # if count < 47:
-        #     continue
+        if count < 40:
+            continue
+        if count > 140:
+            break
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
-        # print(f'Krippendorff score for image {image_url} is', compute_krippendorff(metrics_preferences_per_image, human_preferences_per_image))
-        # print('-'*100)
 
     print(f'overall alpha agreement for {count} images is:', compute_krippendorff(metrics_preferences, human_preferences))
+
+def get_per_class_krippendorff_agreement(metric_scores, human_annotations):
+    human_preferences = {
+                             'touch': [],
+                             'smell': [],
+                             'sound': [],
+                             'taste': [],
+                             'sight': [],
+                             'none': [],
+                             'all': []
+                        }
+    metrics_preferences = {
+                             'touch': [],
+                             'smell': [],
+                             'sound': [],
+                             'taste': [],
+                             'sight': [],
+                             'none': [],
+                             'all': []
+                        }
+    sensation_count = {
+                         'touch': 0,
+                         'smell': 0,
+                         'sound': 0,
+                         'taste': 0,
+                         'sight': 0,
+                         'none': 0,
+                         'all': 0
+                       }
+    sensation_list = list(SENSATIONS_PARENT_MAP)
+    count = -1
+    for image_url in metric_scores:
+        count += 1
+        if count < 40:
+            continue
+        if count > 140:
+            continue
+        if image_url not in human_annotations:
+            continue
+        sensation_category = None
+        maximum_score = max(human_annotations[image_url]['sensation_scores'].values())
+        if maximum_score > 0:
+            for sensation in human_preferences:
+                if human_annotations[image_url]['sensation_scores'][sensation] == maximum_score:
+                    sensation_category = sensation
+                    sensation_count[sensation] += 1
+                    break
+        else:
+            sensation_count['none'] += 1
+            sensation_category = 'none'
+            human_annotations[image_url]['sensation_scores']['none'] = 5
+
+        human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
+        metrics_preferences[sensation_category] += metrics_preferences_per_image
+        human_preferences[sensation_category] += human_preferences_per_image
+        if sensation_category != 'none':
+            metrics_preferences['all'] += metrics_preferences_per_image
+            human_preferences['all'] += human_preferences_per_image
+            sensation_count['all'] += 1
+
+    for sensation in human_preferences:
+        if sensation_count[sensation] > 0:
+            print(f'overall alpha agreement for {sensation_count[sensation]} images evoking {sensation} sensation is:', compute_krippendorff(metrics_preferences[sensation], human_preferences[sensation]))
 
 
 def get_kappa_agreement(metric_scores, human_annotations):
@@ -129,13 +192,13 @@ def get_kappa_agreement(metric_scores, human_annotations):
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
     for image_url in metric_scores:
-        if 'PixArt' in image_url:
-            continue
         if image_url not in human_annotations:
             continue
         count += 1
-        # if count < 47:
-        #     continue
+        if count < 40:
+            continue
+        if count > 140:
+            break
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image

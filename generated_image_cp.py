@@ -8,22 +8,32 @@ models_paths = {
     'PixArt': '../experiments/generated_images/SensoryAds/20250918_122434/AR_ALL_PixArt',
     'AuraFlow': '../experiments/generated_images/SensoryAds/20250916_220717/AR_ALL_AuraFlow'
 }
-image_list = ['freezing cold/1/166611.jpg',
-              'brilliance and glow/0/101660.jpg',
-              'sweet taste/2/36282.jpg',
-              'natural greenery smell/0/103010.jpg',
-              'dryness/2/39922.jpg',
-              'culinary smell/0/56910.jpg',
-              'roughness/3/133973.jpg',
-              'liquid splash sound/10/175992.png',
-              'soaking wetness/3/105563.jpg',
-              'high speed and acceleration/0/119030.jpg',
-              'spicy taste/1/67121.jpg',
-              'cool and refreshing/1/34881.jpg',
-              'darkness/4/154234.jpg',
-              'aching pain/4/41434.jpg',
-              'pungent smell/9/116199.jpg'
-              ]
+image_list = [
+            'freezing cold/1/166611.jpg',
+            'brilliance and glow/0/101660.jpg',
+            'sweet taste/2/36282.jpg',
+            'natural greenery smell/0/103010.jpg',
+            'dryness/2/39922.jpg',
+            'culinary smell/0/56910.jpg',
+            'roughness/3/133973.jpg',
+            'liquid splash sound/10/175992.png',
+            'soaking wetness/3/105563.jpg',
+            'high speed and acceleration/0/119030.jpg',
+            'spicy taste/1/67121.jpg',
+            'cool and refreshing/1/34881.jpg',
+            'darkness/4/154234.jpg',
+            'aching pain/4/41434.jpg',
+            'pungent smell/9/116199.jpg',
+            'sight/3/9923.jpg',
+            'temperature/1/98281.jpg',
+            'sight/0/10060.jpg',
+            'refreshing ocean smell/2/163572.jpg',
+            'refreshing minty smell/0/12050.jpg',
+            'freezing cold/0/32760.jpg',
+            'touch/0/32750.jpg',
+            'brilliance and glow/0/89050.jpg',
+            'sweet taste/10/176176.png',
+            'temperature/0/125600.jpg']
 public_path = '../../public/html/generated_images'
 for model_id in models_paths:
     model_path = models_paths[model_id]
