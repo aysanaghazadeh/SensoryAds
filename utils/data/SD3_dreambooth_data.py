@@ -48,7 +48,7 @@ class DreamBoothDataset(Dataset):
                     AR = '\n-'.join(QAs[image_url][0])
                     for sensation in sensations[image_url]['image_sensations']:
                         dataset['image'].append(
-                            Image.open(os.path.join(args.data_path, args.train_set_images, image_url)))
+                            Image.open(os.path.join(args.data_path, args.test_set_images, image_url)))
                         prompt = f"""Generate an advertisement image that evokes {sensation} sensation and coveys the following messages:"""
                         positive = f'{prompt}\n{AR}'
                         negative = f'Not persuasive'
