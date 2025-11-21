@@ -74,6 +74,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
                     dataset['chosen'].append(chosen)
                     dataset['rejected'].append(rejected)
                     dataset['parent_of_chosen'].append(parent_of_chosen)
+    print(f'total number of sensation pairs: {len(dataset["prompt"])}')
     dataset = Dataset.from_dict(dataset)
     with PartialState().local_main_process_first():
         ds = dataset.map(process, batched=False)

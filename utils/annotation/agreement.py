@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
 import krippendorff
@@ -91,7 +93,7 @@ def get_human_score_agreement(metric_scores, human_annotations):
         if image_url not in human_annotations:
             continue
         count += 1
-        if count < 40:
+        if count < 10:
             continue
         if count > 140:
             break
@@ -100,7 +102,9 @@ def get_human_score_agreement(metric_scores, human_annotations):
         # print(f'agreement on image {image_url}', compute_pearson_correlation(metrics_scores_per_image, human_scores_per_image))
         human_scores_list += human_scores_per_image
         metrics_score_list += metrics_scores_per_image
-        # print('-'*100)
+        if count == 12:
+            print(image_url)
+            print(compute_pearson_correlation(metrics_scores_per_image, human_scores_per_image))
     print(f'overall correlation for {count} images is:', compute_pearson_correlation(metrics_score_list, human_scores_list))
 
 def get_krippendorff_agreement(metric_scores, human_annotations):
@@ -195,15 +199,21 @@ def get_kappa_agreement(metric_scores, human_annotations):
         if image_url not in human_annotations:
             continue
         count += 1
-        if count < 40:
+        if count < 10:
             continue
         if count > 140:
             break
+
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
         # if compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image) > 0.7:
         #     print(f'Kappa score for image {image_url} is', compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image))
         # # print('-'*100)
-
+        if count == 12:
+            metric_human_scores = {}
+            for sensation in metric_scores[image_url]:
+                metric_human_scores[sensation] = [human_annotations[image_url]['sensation_scores'][sensation.lower()], metric_scores[image_url][sensation][-1]]
+            # print(json.dumps(metric_human_scores, indent=4))
+            print(compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image))
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))
