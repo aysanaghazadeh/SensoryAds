@@ -18,7 +18,7 @@ class SD3(nn.Module):
                                                                  torch_dtype=torch.float16,
                                                                  quantization_config=quantization_config)
         else:
-            self.pipeline = StableDiffusion3Pipeline.from_pretrained(f"{args.model_path}/trained-sd3/checkpoint-{args.model_checkpoint}.pth",
+            self.pipeline = StableDiffusion3Pipeline.from_pretrained(f"{args.model_path}/trained-sd3/checkpoint-{args.model_checkpoint}",
                                                                      torch_dtype=torch.float16,
                                                                      quantization_config=quantization_config)
         self.pipeline = self.pipeline.to(device=args.device)
