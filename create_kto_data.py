@@ -44,7 +44,7 @@ for image_url in flux_images_aim:
     auraflow_data = {'file_name': file_name_auraflow, 'caption': prompt, 'split': auraflow_split, 'prompt': prompt}
     data.append(flux_data)
     data.append(auraflow_data)
-with open('output_dicts.csv', 'w', newline='') as csvfile:
+with open(saving_file, 'w', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader() # Write the header row
     writer.writerows(data)
