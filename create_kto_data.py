@@ -39,8 +39,8 @@ for image_url in flux_images_aim:
     file_name_auraflow = f'train/AuraFlow/{image_url}'
     file_name_flux = f'train/Flux/{image_url}'
     folder_id = image_url.split('/')[0]
-    os.makedirs(f'../Data/RLHF_DATA_sensation_aim/train/Flux/{image_url}', exist_ok=True)
-    os.makedirs(f'../Data/RLHF_DATA_sensation_aim/train/AuraFlow/{image_url}', exist_ok=True)
+    os.makedirs(f'../Data/RLHF_DATA_sensation_aim/train/Flux/{folder_id}', exist_ok=True)
+    os.makedirs(f'../Data/RLHF_DATA_sensation_aim/train/AuraFlow/{folder_id}', exist_ok=True)
     shutil.copyfile(f'{auraflow_image_path}/{sensation}/{image_url}', f'{saving_path}/{file_name_auraflow}')
     shutil.copyfile(f'{flux_image_path}/{sensation}/{image_url}', f'{saving_path}/{file_name_flux}')
     aim_score_auraflow = auraflow_images_aim[f'{sensation}/{image_url}'][1]
