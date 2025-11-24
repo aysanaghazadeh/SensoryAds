@@ -34,11 +34,13 @@ for image_url in flux_images_aim:
         print('not in QA')
         continue
     AR = QA[image_url][0]
-    print(AR)
     AR = '\n -'.join(AR)
     prompt = f'Generate an advertisement image that evokes the {sensation} sensation and conveys the following messages: \n {AR}'
     file_name_auraflow = f'train/AuraFlow/{image_url}'
     file_name_flux = f'train/Flux/{image_url}'
+    folder_id = image_url.split('/')[0]
+    os.makedirs(f'../Data/RLHF_DATA_sensation_aim/train/Flux/{image_url}', exist_ok=True)
+    os.makedirs(f'../Data/RLHF_DATA_sensation_aim/train/AuraFlow/{image_url}', exist_ok=True)
     shutil.copyfile(f'{auraflow_image_path}/{sensation}/{image_url}', f'{saving_path}/{file_name_auraflow}')
     shutil.copyfile(f'{flux_image_path}/{sensation}/{image_url}', f'{saving_path}/{file_name_flux}')
     aim_score_auraflow = auraflow_images_aim[f'{sensation}/{image_url}'][1]
