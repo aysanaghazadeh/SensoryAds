@@ -13,9 +13,14 @@ class SD3(nn.Module):
                                     quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
                                     components_to_quantize=["transformer", "text_encoder_2"],
                                 )
-        self.pipeline = StableDiffusion3Pipeline.from_pretrained("stabilityai/stable-diffusion-3-medium-diffusers",
+        if not args.fine_tuned:
+            self.pipeline = StableDiffusion3Pipeline.from_pretrained("stabilityai/stable-diffusion-3-medium-diffusers",
                                                                  torch_dtype=torch.float16,
                                                                  quantization_config=quantization_config)
+        else:
+            self.pipeline = StableDiffusion3Pipeline.from_pretrained(f"{args.model_path}/trained-sd3/checkpoint-{args.checkpoint}.pth",
+                                                                     torch_dtype=torch.float16,
+                                                                     quantization_config=quantization_config)
         self.pipeline = self.pipeline.to(device=args.device)
         self.args = args
 

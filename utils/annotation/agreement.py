@@ -93,7 +93,7 @@ def get_human_score_agreement(metric_scores, human_annotations):
         if image_url not in human_annotations:
             continue
         count += 1
-        if count < 10:
+        if count < 40:
             continue
         if count > 140:
             break
@@ -199,7 +199,7 @@ def get_kappa_agreement(metric_scores, human_annotations):
         if image_url not in human_annotations:
             continue
         count += 1
-        if count < 10:
+        if count < 40:
             continue
         if count > 140:
             break
