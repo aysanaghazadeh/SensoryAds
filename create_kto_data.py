@@ -23,10 +23,11 @@ for image_url in flux_images_aim:
     if f'{sensation}/{image_url}' not in auraflow_images_aim:
         print('not in aim auraflow')
         continue
-    if f'{sensation}/{image_url}' not in auraflow_images_sensation:
+    if f'{image_url}' not in auraflow_images_sensation:
+        print()
         print('not in sensation auraflow')
         continue
-    if f'{sensation}/{image_url}' not in flux_images_sensation:
+    if f'{image_url}' not in flux_images_sensation:
         print('not in sensation flux')
         continue
     if image_url not in QA:
@@ -42,8 +43,8 @@ for image_url in flux_images_aim:
     shutil.copyfile(f'{flux_image_path}/{sensation}/{image_url}', f'{saving_path}/{file_name_flux}')
     aim_score_auraflow = auraflow_images_aim[f'{sensation}/{image_url}'][1]
     aim_score_flux = flux_images_aim[f'{sensation}/{image_url}'][1]
-    sensation_score_auraflow = auraflow_images_sensation[f'{sensation}/{image_url}'][-1]
-    sensation_score_flux = flux_images_sensation[f'{sensation}/{image_url}'][-1]
+    sensation_score_auraflow = auraflow_images_sensation[image_url][sensation][-1]
+    sensation_score_flux = flux_images_sensation[image_url][sensation][-1]
     auraflow_score = (aim_score_auraflow * 3 + sensation_score_auraflow) / 4
     flux_score = (aim_score_flux * 3 + sensation_score_flux) / 4
     flux_split = 'exclusive_lose' if flux_score < auraflow_score else 'exclusive_win'
