@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/scripts/evaluate_evosense_no_sensation.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/agreement.py" beforeDir="false" afterPath="$PROJECT_DIR$/agreement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM_generated.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/evaluate_evosense_LLM_generated.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/generated_AD_image_descriptor.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/generated_AD_image_descriptor.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/annotation/agreement.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/annotation/agreement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/annotation/parsing_human_annotations.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/annotation/parsing_human_annotations.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,8 +193,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.agreement" />
-        <item itemvalue="Python.score_process" />
         <item itemvalue="Python.parsing_human_annotations" />
+        <item itemvalue="Python.score_process" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.retrieval_metrics" />
       </list>
@@ -213,7 +220,7 @@
       <workItem from="1759263740933" duration="6091000" />
       <workItem from="1759795683314" duration="7000" />
       <workItem from="1762437899480" duration="289000" />
-      <workItem from="1763490014315" duration="48913000" />
+      <workItem from="1763490014315" duration="75205000" />
     </task>
     <servers />
   </component>
@@ -253,8 +260,8 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/SensoryAds$score_process.coverage" NAME="score_process Coverage Results" MODIFIED="1758793592884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SensoryAds$retrieval_metrics.coverage" NAME="retrieval_metrics Coverage Results" MODIFIED="1758310764975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Evaluation" />
-    <SUITE FILE_PATH="coverage/SensoryAds$parsing_human_annotations.coverage" NAME="parsing_human_annotations Coverage Results" MODIFIED="1758784696771" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils/annotation" />
+    <SUITE FILE_PATH="coverage/SensoryAds$parsing_human_annotations.coverage" NAME="parsing_human_annotations Coverage Results" MODIFIED="1764020749728" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils/annotation" />
     <SUITE FILE_PATH="coverage/SensoryAds$test.coverage" NAME="test Coverage Results" MODIFIED="1758394703763" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/SensoryAds$agreement.coverage" NAME="agreement Coverage Results" MODIFIED="1763961676904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SensoryAds$agreement.coverage" NAME="agreement Coverage Results" MODIFIED="1764024994496" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -1,11 +1,11 @@
 python evaluation.py --config_type=DEFAULT \
 --evaluation_type=Evosense_LLM_generated \
---description_file=../experiments/results/SensoryAds/IN_QWenVL_20250917_185403_AR_ALL_QWenImage_ALL_description_generation.csv \
---MLLM=QWenVL \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20251123_225258_AR_ALL_SD3_ALL_description_generation.csv \
+--MLLM=InternVL \
 --LLM=LLAMA3_instruct \
 --fine_tuned=True \
 --model_checkpoint=21000 \
---T2I_model=QWenImage \
+--T2I_model=SD3 \
 --resume=True
 
 python evaluation.py --config_type=DEFAULT \

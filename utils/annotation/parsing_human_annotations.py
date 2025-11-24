@@ -84,6 +84,71 @@ def get_SENSATIONS_PARENT_MAP(sensations, parent='root'):
             SENSATIONS_PARENT_MAP.update(get_SENSATIONS_PARENT_MAP(sensations[sense], sense))
         return SENSATIONS_PARENT_MAP
 
+def get_human_human_annotations(human_annotations, sensations):
+    human1_scores = {}
+    human2_scores = {}
+    for i in range(0, len(human_annotations), 2):
+        human_annotations_1 = human_annotations[i]
+        human_annotations_2 = human_annotations[i + 1]
+        if human_annotations_1[0] != human_annotations_2[0]:
+            print('not the same image')
+        scores1, scores2 = {}, {}
+        for sensation in sensations:
+            scores1[sensation.lower()], scores2[sensation.lower()] = 0, 0
+        for sensation_annotation in human_annotations_1[1:]:
+            if str(sensation_annotation) == 'nan':
+                continue
+            if 'other' in sensation_annotation.lower():
+                continue
+            sensation_list, score = sensation_annotation.split('-')[:-3], sensation_annotation.split('-')[-3]
+            for sensation in sensation_list:
+                if sensation.lower() == 'motion and weight  sensation':
+                    sensation = 'Motion and Weight'
+                if sensation.lower() == 'atmospheric phenomena':
+                    sensation = 'Atmospheric Phenomena Sound'
+                if sensation.lower() == 'chemical and pungent':
+                    sensation = 'chemical and pungent smell'
+                if sensation.lower() == 'pungent':
+                    sensation = 'pungent smell'
+                if sensation.lower() == 'cooling minty tast':
+                    sensation = 'Cooling Minty Taste'
+                if sensation.lower() == 'sour':
+                    sensation = 'Sour Taste'
+                if sensation.lower() == 'texture sensation':
+                    sensation = 'Texture'
+                if sensation.lower() == 'splash':
+                    sensation = 'Liquid Splash Sound'
+
+                scores1[sensation.lower()] = max(scores1[sensation.lower()], int(score))
+        for sensation_annotation in human_annotations_2[1:]:
+            if str(sensation_annotation) == 'nan':
+                continue
+            if 'other' in sensation_annotation.lower():
+                continue
+            sensation_list, score = sensation_annotation.split('-')[:-3], sensation_annotation.split('-')[-3]
+            for sensation in sensation_list:
+                if sensation.lower() == 'motion and weight  sensation':
+                    sensation = 'Motion and Weight'
+                if sensation.lower() == 'atmospheric phenomena':
+                    sensation = 'Atmospheric Phenomena Sound'
+                if sensation.lower() == 'chemical and pungent':
+                    sensation = 'chemical and pungent smell'
+                if sensation.lower() == 'pungent':
+                    sensation = 'pungent smell'
+                if sensation.lower() == 'cooling minty tast':
+                    sensation = 'Cooling Minty Taste'
+                if sensation.lower() == 'sour':
+                    sensation = 'Sour Taste'
+                if sensation.lower() == 'texture sensation':
+                    sensation = 'Texture'
+                if sensation.lower() == 'splash':
+                    sensation = 'Liquid Splash Sound'
+                scores2[sensation.lower()] = max(scores2[sensation.lower()], int(score))
+        human1_scores[human_annotations_1[0]] = scores1
+        human2_scores[human_annotations_2[0]] = scores2
+        json.dump(human1_scores, open(annotation_file.replace('.csv', 'human_1_parsed.json'), 'w'))
+        json.dump(human2_scores, open(annotation_file.replace('.csv', 'human_2_parsed.json'), 'w'))
+    return human1_scores, human2_scores
 
 
 if __name__ == '__main__':
@@ -92,5 +157,7 @@ if __name__ == '__main__':
     # sensation_parent_map = get_SENSATIONS_PARENT_MAP(SENSATION_HIERARCHY)
     # print(sensation_parent_map)
     # annotation_file = args.description_file
-    annotation_file = '/Users/aysanaghazadeh/Downloads/gen_images_annotations.csv'
-    parse_sensation_annotations(annotation_file)
+    annotation_file = '/Users/aysanaghazadeh/Downloads/human_human_data.csv'
+    annotations = pd.read_csv(annotation_file).values
+    # parse_sensation_annotations(annotation_file)
+    human_score1, human_score2 = get_human_human_annotations(annotations, SENSATIONS_PARENT_MAP.keys())
