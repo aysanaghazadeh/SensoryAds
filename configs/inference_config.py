@@ -172,6 +172,9 @@ def parse_args():
                         type=bool,
                         default=False,
                         help='True if you want to use the fine-tuned model')
+    parser.add_argument('--model_checkpoint',
+                        type=str,
+                        help='checkpoint to be loaded when fine-tuned')
     parser.add_argument('--api_key',
                         type=str,
                         default=None,
