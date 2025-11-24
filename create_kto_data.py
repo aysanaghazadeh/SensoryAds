@@ -20,12 +20,15 @@ data = []
 for image_url in flux_images_aim:
     sensation = image_url.split('/')[0]
     image_url = '/'.join(image_url.split('/')[-2:])
+    print(image_url)
+    print(sensation)
     if (f'{sensation}/ {image_url}' not in auraflow_images_aim
             or f'{sensation}/ {image_url}' not in auraflow_images_sensation
             or f'{sensation}/ {image_url}' not in flux_images_sensation
             or image_url not in QA):
         continue
     AR = QA[image_url][0]
+    print(AR)
     AR = '\n -'.join(AR)
     prompt = f'Generate an advertisement image that evokes the {sensation} sensation and conveys the following messages: \n {AR}'
     file_name_auraflow = f'train/AuraFlow/{image_url}'
