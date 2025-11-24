@@ -15,13 +15,15 @@ class SD3(nn.Module):
                                 )
         self.pipeline = StableDiffusion3Pipeline.from_pretrained("stabilityai/stable-diffusion-3-medium-diffusers",
                                                                  torch_dtype=torch.float16,
-                                                                 quantization_config=quantization_config)
+                                                                 quantization_config=quantization_config,
+                                                                 device_map='auto')
         if args.fine_tuned:
             self.pipeline.load_lora_weights(
                 f'{args.model_path}/trained-sd3/checkpoint-{args.model_checkpoint}',
-                weight_name="pytorch_lora_weights.safetensors"
+                weight_name="pytorch_lora_weights.safetensors",
+                prefix=None,
             )
-        self.pipeline = self.pipeline.to(device=args.device)
+        # self.pipeline = self.pipeline.to(device=args.device)
         self.args = args
 
     def forward(self, prompt, seed=None):
