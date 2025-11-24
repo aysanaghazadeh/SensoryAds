@@ -20,15 +20,13 @@ data = []
 for image_url in flux_images_aim:
     sensation = image_url.split('/')[0]
     image_url = '/'.join(image_url.split('/')[-2:])
-    print(image_url)
-    print(sensation)
-    if f'{sensation}/ {image_url}' not in auraflow_images_aim:
+    if f'{sensation}/{image_url}' not in auraflow_images_aim:
         print('not in aim auraflow')
         continue
-    if f'{sensation}/ {image_url}' not in auraflow_images_sensation:
+    if f'{sensation}/{image_url}' not in auraflow_images_sensation:
         print('not in sensation auraflow')
         continue
-    if f'{sensation}/ {image_url}' not in flux_images_sensation:
+    if f'{sensation}/{image_url}' not in flux_images_sensation:
         print('not in sensation flux')
         continue
     if image_url not in QA:
