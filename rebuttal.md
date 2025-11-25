@@ -131,7 +131,6 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 ---
 ## Reviewer FpSs
 
----
 We thank the reviewer for the constructive feedbacks. We are happy they found our research angle genuinely novel and the qualitative analysis insightful. We are glad they find the benchmarks cohesive and useful for creating the foundation for future research 
 
 ---
@@ -436,8 +435,6 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 
 ---
 ## Reviewer dfxP
-
----
 
 We thank you for your constructive feedbacks and suggestion. We are happy you found the idea nice to explore.
 
