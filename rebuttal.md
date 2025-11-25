@@ -128,7 +128,6 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 * We have added an example sensation score for an image to the appendix showing the problem of correlation because of the **sparsity of the human scores**. The figure represents while high scores assigned by metric represent the chosen categories, because of the sudden drop in the values of human scores, correlation becomes lower.
 ---
 
----
 ## Reviewer FpSs
 
 We thank the reviewer for the constructive feedbacks. We are happy they found our research angle genuinely novel and the qualitative analysis insightful. We are glad they find the benchmarks cohesive and useful for creating the foundation for future research 
@@ -275,7 +274,6 @@ The table, shows that our metric agreement is fairly consistent over different s
 
 ---
 
----
 ## Reviewer S1yq
 
 We thank you for the constructive feedbacks and suggestions. We are happy you found our research direction novel. We appreciate the acknowledgement of our systematic exploration on evaluation and understanding of sensory ads. We are thrilled that you found our work possibly serving as  cornerstone of future research. 
@@ -433,7 +431,6 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 
 ---
 
----
 ## Reviewer dfxP
 
 We thank you for your constructive feedbacks and suggestion. We are happy you found the idea nice to explore.
