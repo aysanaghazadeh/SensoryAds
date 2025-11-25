@@ -19,6 +19,15 @@ if __name__ == '__main__':
     # get_human_human_score_agreement(human_1_annotations, human_2_annotations)
 
     print('-' * 100)
+    print('Evosense-LLAMA3-InternVL-40000')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+
+    print('-' * 100)
     print('Evosense-LLAMA3-InternVL-30000')
     metrics = json.load(open('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_30000.json'))
     get_human_score_agreement(metrics, human_annotations)
