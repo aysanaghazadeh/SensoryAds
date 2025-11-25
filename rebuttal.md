@@ -52,15 +52,16 @@ Lindstrom in his book (Lindstrom M., 2006) cited over 1400 times, shows the rela
 > If such a relation exists, the authors should discuss the ethical implications of sensory ad generation.
 
  There are two main implications: 
-   * First generation of adversarial persuasive content such as encouraging the audience to drink alcohol more often. **This is a general problem with any T2I model.** 
-   * Second **(motivation for classification tasks)**, the model may generate sensitive content for a certain group of audience and this is one of the motivations for classification tasks. While automatically generating the Sensory Ads can be helpful, some sensitive sensations (for example pain) should be detected and prevented from showing to a specific group of audience. This is why it is also important to be able to classify the sensations evoked by the image.
+   * First, in overall the advertisement (especially commercial advertisements) are not always following ethical goals. However, **this is a general problem with any T2I model generating persuasive content.**
+   * Second, the model might generate sensitive content (e.g. pain sensation in advertisement) for a certain group of audience and this is one of the motivations for classification tasks. While automatically generating the Sensory Ads can be helpful, some sensitive sensations should be detected and prevented from showing to a specific group of audience. This is why it is also important to be able to classify the sensations evoked by the image.
  
- We have added these implications to the discussion in the appendix.
+ We have added these implications as the ethical implication discussion in the appendix.
 
 ---
 
 ### [W3] Number of Images in the Fine-tuning Set
 > The authors report that they trained EvoSense on only 50 images which is quite surprising to me.
+
 While there are only 50 images, each image is paired with negative and positive sensation, which expands the data to 21000 samples that the models have been fine-tuned on.  
  
 **Number of image-(positive, negative, parent of positive) pairs**
@@ -74,6 +75,8 @@ While there are only 50 images, each image is paired with negative and positive 
   * Given that there are 96 sensations in our taxonomy, and maximum of 9 sensations are only selected to be evoked the minimum pairs created for each image is 522: 
     * 87 negative sensation for each positive sensation x 6 positive sensation which also have a parent which is required for our hierarchical loss
 
+Also, results on classification task in Table 1 represents that the precision of LLMs/MLLMs is much lower than recall, suggesting the rejecting the incorrect sensations is the main issue of these models, and our fine-tuning setup teaches the model to reject the negative sensations by first pairing each positive sensation with 95 negative sensations and utilizing Contrastive Preference Optimization.
+
 #### Generalization of EvoSense:
 > I wonder if there is enough signal in this data to help the model demonstrate generalisation.
 
@@ -85,7 +88,7 @@ Two results supports generalization of our fine-tuned LLM:
 
 **Fine-tuning LLMs on more data**
  
-We also, increased number of steps to 40000 (x2 data points) and here are the new results showing minimum changes in the agreement of the model with human annotations:
+We also, increased number of steps to 40000 and the number of images to 100 and here are the new results showing consistency in the agreement of the model with human annotations over different number of fine-tuning steps:
 
  |                 Metric                 | #steps | touch | smell | sound | taste | sight | All |
  |:--------------------------------------:| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -93,6 +96,8 @@ We also, increased number of steps to 40000 (x2 data points) and here are the ne
  | EvoSense (LLAMA3-instruct + DInternVL) | **25000** | 0.80 | 0.82 | 0.78 | 0.83 | 0.88 | 0.81 |
  | EvoSense (LLAMA3-instruct + DInternVL) | **30000** | 0.80 | 0.82 | 0.78 | 0.84 | 0.88 | 0.81 |
  | EvoSense (LLAMA3-instruct + DInternVL) | **40000** | 0.80 | 0.81 | 0.78 | 0.84 | 0.87 | 0.80 |
+
+While the results are consistent over different fine-tuning steps in the table, our initial experiments with few number of images (upto 10 images) showed low agreement with human annotations suggesting there is a minimum number of images/steps required to reach high agreement with human.
 
 ### [W4] Dataset Size
 >The authors sampled only 670 real ad images from the Pitts Ad dataset which is quite modest in size. 
@@ -128,13 +133,13 @@ The following tables show the diversity of images over 10 most frequent topics, 
 **Sensation diversity:**
 
 | Sensation | %images evoking the sensation |
-|----------|-----------|
-| touch    | 40.144230769230774 |
-| sound    | 26.442307692307693 |
-| smell    | 31.73076923076923 |
-| taste    | 12.980769230769232 |
-| sight    | 19.71153846153846 |
-| none     | 28.94230769230769 |
+|----------|----------|
+| touch    | 40.14 |
+| sound    | 26.44 |
+| smell    | 31.73 |
+| taste    | 12.98 |
+| sight    | 19.71 |
+| none     | 28.94 |
 
 ---
 
@@ -189,16 +194,14 @@ Our EvoSense metric improves the agreement with human compared to **0-shot instr
 > Dataset scale and diversity remain limited. The core corpus of 670 PittAd images (plus a small generated subset) is too small for training robust perception or evaluation models and risks domain bias.
 
 Due to **annotation cost**, we only introduce the **evaluation dataset** for sensory advertisement. Compared to the recent evaluation dataset, our dataset scale is not small. Some of the recent similar publications with similar scale of dataset:
-  * "An image speaks a thousand words, but can everyone listen? on image transcreation for cultural relevance."  **(Winner of EMNLP 2024 Best Paper Award) with 600 images in the introduced evaluation dataset**.
-    * Khanuja, Simran, et al. "An image speaks a thousand words, but can everyone listen? On image transcreation for cultural relevance." Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing. 2024.
-  * "Breaking Common Sense: WHOOPS! A Vision-and-Language Benchmark of Synthetic and Compositional Images" **(ICCV 2023) with 500 synthetic images in the introduced dataset.** 
-    * Bitton-Guetta, Nitzan, et al. "Breaking common sense: Whoops! a vision-and-language benchmark of synthetic and compositional images." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2023.
+  * Khanuja, Simran, et al. "An image speaks a thousand words, but can everyone listen? on image transcreation for cultural relevance."  **(Winner of EMNLP 2024 Best Paper Award) with 600 images in the introduced evaluation dataset**.
+  * Bitton-Guetta, Nitzan, et al. "Breaking Common Sense: WHOOPS! A Vision-and-Language Benchmark of Synthetic and Compositional Images" **(ICCV 2023) with 500 synthetic images in the introduced dataset.**
 
 > The reported 21k datapoints are augmented variations of this same source, limiting diversity rather than expanding it. Furthermore, there is a risk of evaluation circularity: EvoSense is fine-tuned on the same annotation distribution that it later evaluates. 
 
 The images in the **train and test set are not the same.** 
-For the train we use 50 images, and use the annotations to use each image multiple times. 
-**We do not use the augmentation method;** we only use the different annotations within our data. We explain the fine-tuning data creation utilzing each images' annotations:
+For the train we use 50 images (and ablate the fine-tuning on 100 images), and use the annotations to use each image multiple times. 
+**We do not use the augmentation method;** we only use the different annotations within our data. We explain the fine-tuning data creation utilizing each images' annotations:
 * Each image in our fine-tuning setting is paired with negative and positive sensation, which expands the data to 21000 samples that the models have been fine-tuned on.  
 * Each image is annotated with a maximum of 9 sensations that the image evokes. 
 * Each sensation is associated with a score on the quality of the sensation evocation. 
@@ -219,21 +222,25 @@ Two results supports generalization of our fine-tuned LLM:
 
 **Description Generation Leakage**
 
-We respectfully disagree with the leakage possibility hypothesis. **We compare our metric with the same setup but utilizing the zero-shot LLMs**. Since the exact same descriptions are given to both fine-tuned and zero-shot LLMs, the agreement of zero-shot version should be high as well given the hypothesis on the leakage possibility from description generation stage. However, the **zero-shot version results in negative agreement** highlighting the importance of fine-tuning.
+If the performance of EvoSense was the result of sensation information (interpretation) leakage by MLLMs, the 0-shot LLM should have performed as well as our metric. **We compare our metric with the same setup but utilizing the zero-shot LLMs**. Since the exact same descriptions are given to both fine-tuned and zero-shot LLMs, the agreement of zero-shot version should be high as well. However, the **zero-shot version results in negative agreement** highlighting the importance of fine-tuning.
 * We have added qualitative examples of MLLM generated descriptions to appendix - A4 - Figure 12. In the examples, we show that the MLLMs only provide the detailed description for the image without further interpretations of the image itself or the sensation that it evokes. Unfortunately, since we cannot attach images to the comments, we could not include the example in the comment as well.
 
 ---
 
 ### [W3] Novelty of Research Direction
 
-> The claim that this is “the first investigation of how ads evoke the senses” is inaccurate. Prior work such as Behavior-LLaVA (ICLR) and related multimodal behavior modeling studies have already explored the link between generated content and human reactions, across a broader behavioral space—including Reddit upvotes, YouTube likes, replay rates, saliency, memorability, and comment patterns. Those efforts provide a more comprehensive foundation for connecting visual content to audience response.
+> The claim that this is “the first investigation of how ads evoke the senses” is inaccurate. Prior works such as Behavior-LLaVA (ICLR) and related multimodal behavior modeling studies have already explored the link between generated content and human reactions, across a broader behavioral space—including Reddit upvotes, YouTube likes, replay rates, saliency, memorability, and comment patterns. Those efforts provide a more comprehensive foundation for connecting visual content to audience response.
 
-We respectfully disagree; however, we thank the reviewer for mentioning this related-work, while not targeting the same research aspect, it is related to our work, and we have added to our related works. 
+We respectfully disagree; however, we thank the reviewer for mentioning this related-work. While not targeting the same research aspect, it is related to our work, and we have added to our related works. 
 
 Prior multimodal behavior-prediction models (e.g., Behavior-LLaVA) study observable behavioral reactions such as likes, upvotes, or memorability. 
 These are external outcomes and do not indicate what sensory experiences an image evokes. 
 Our work instead focuses on sensations evoked by the image, which can result in different behaviours in different individuals.
-Quoting from the Behaviour-LLAVA paper itself “Perceptual signals, like seeing, touching, and hearing, help a receiver primarily sense the world around her, ultimately guiding her actions.” which is different from the focus of the Behaviour-LLAVA which is on the actions after receiving the signals. Moreover, **Behaviour-LLAVA focuses on the side of the receivers' actions** (understanding their action) while **our work is focused on the sender of signals**. The images that evoke the sensations (both generating and understanding).
+Quoting from the Behaviour-LLAVA paper itself “Humans produce two kinds of behavioral signals upon observing a message: 
+perceptual signals and actions as behavior. Perceptual signals, like seeing, touching, and
+hearing, help a receiver primarily sense the world around her, ultimately guiding her actions. Actions
+are how a receiver acts on the outside world.” this part of Behaviour-LLAVA paper indicates the difference between the sensation signals and actions which is the focus of Behaviour-LLAVA. 
+Moreover, **Behaviour-LLAVA focuses on the side of the receivers' actions** (understanding their action) while **our work is focused on the sender of signals**. The images that evoke the sensations (both generating and understanding).
 Crucially, to the best of our knowledge no prior dataset provides sensory-evocation annotations, nor do existing models attempt to predict or quantify sensory cues in images. Behavioral metrics cannot serve as proxies for sensory perception because different users may behave differently despite experiencing similar sensory impressions, and sensory cues may lead to overlapping behaviors. 
 This establishes sensory evocation as a distinct and previously unmodeled problem, and our contributions directly address that gap.
 
@@ -245,7 +252,7 @@ This establishes sensory evocation as a distinct and previously unmodeled proble
 
 * **Marketing Publications**
 
-    Our claim on the effect of sensation on persuasion is not a contribution of this paper, and it is not just a claim. As also referenced in the paper, Sensory Advertisement is a well-studied concept in marketing research. We do not claim that we find out this is the effect of sensation nor hypothesize. We only use the outcome of following marketing research papers. Since this has been previously extensively studied we rely on and trust the outcome of previous marketing and psychology works.
+    We are not discovering (claiming) the relation between the sensation and persuasion, instead we are building on prior marketing and psychology publications to explore the machine learning techniques in this area. As also referenced in the paper, Sensory Advertisement is a well-studied concept in marketing research. Since this has been previously extensively studied we rely on and trust the outcome of previous marketing and psychology works.
     The claim is already supported by the following papers, and books from marketing research including the user study.  
 Lindstrom in his book (Lindstrom M., 2006) cited over 1400 times, shows the relation between the sensory appeal and brand effectiveness, and shows that the brands should use senses based on their products. They further suggest that the sensory perception in marketing results in consumers’ loyalty to the brand. 
 (Yoon S., et al., 2012) cited over 130 times, designs two studies on relation between sensory advertisements and attitude toward the brand. They show sensory ads increase positive attitude toward the brand (increasing the effectiveness of advertisement) and the reason for why sensory advertisement works is that it triggers the self-referencing, i.e.  audience imagining using the product.
@@ -267,9 +274,10 @@ Lindstrom in his book (Lindstrom M., 2006) cited over 1400 times, shows the rela
 
 > The T2I benchmarking is shallow. Only five models are tested, with approximately 75 images per model, fixed random seeds, and some quantization. This limited scope is insufficient to draw generalizable conclusions across a rapidly evolving T2I ecosystem, especially given the variation in prompt formats, diffusion steps, and stylistic priors across models.
 
+* We find this in contradiction with second strength point, and would appreciate it if you could explain and resolve the contradiction. In second strength point, the benchmarked is recognized as cohesive with a complete setup and here it is called shallow.
 * We annotated 75 images, the number of images generated by each model in our evaluation setup is 700 for Sensory Ad generation and 960 for Sensory Image Generation. 
-* We have annotated 50 more generated images. However, the goal of annotated images is solely for evaluation of our EvoSense metric and we rely on the metric for evaluation of the models in the benchmark.
-* We agree that with the current rapidly evolving T2I ecosystem, no finding is guaranteed to stay the same. In fact, we believe the big part of the contribution of benchmarks to the field is to find the shortcoming of current methods, to address them and evolve the methods. 
+* We have annotated 50 more generated images which will release with the previously annotated images upon the acceptance of paper. However, the goal of annotated images is solely for evaluation of our EvoSense metric, and we rely on the metric for evaluation of the models in the benchmark.
+* We agree that with the current rapidly evolving T2I ecosystem, no finding is guaranteed to stay the same. In fact, we believe the big part of the contribution of benchmarks to the field is to find the shortcoming of current methods, to address them and evolve the methods. And we hope with this benchmark we introduce a significantly underexplored research for future research.
 
 ### [W6] Agreement Evaluation
 
@@ -305,7 +313,7 @@ We thank the reviewer for the constructive feedback and the opportunity to respo
 ### [W1] EvoSense Evaluation
 > EvoSense first obtains an image description from an MLLM, then asks a text-only LLM to score the likelihood of the sensation term, reporting “average log-probability” as intensity. This setup may conflate lexical plausibility of captions with actual perceptual evocation in images. 
 
-* We respectfully disagree that the accuracy of EvoSense comes from lexical plausibility of captions with actual perceptual evocation. We compare our metric **with the same setup but utilizing the zero-shot LLMs**. Since the **exact same descriptions** are given to both fine-tuned and zero-shot LLMs, the agreement of zero-shot version should be high as well given the hypothesis on the direct effect of descriptions on the probabilities. However, **the zero-shot version results in negative agreement** highlighting the importance of the fine-tuning. 
+If the performance of EvoSense was the result of lexical plausibility of captions with actual perceptual evocation, the 0-shot LLMs in the same setting as EvoSense should have high agreement with human as well. However, we compare our metric **with the same setup but utilizing the zero-shot LLMs**. Since the **exact same descriptions** are given to both fine-tuned and zero-shot LLMs, the agreement of zero-shot version should be high as well given the hypothesis. However, **the zero-shot version results in negative agreement** highlighting the importance of the fine-tuning. 
 
 * We have also added two examples on how MLLMs generate detailed descriptions of images without including the interpretation of the image or the sensation that the image evokes. 
 
@@ -336,7 +344,7 @@ The difference **(as also reflected on baseline metrics)** is because the annota
 ### [W2] T2I Fine-tuning on SensoryAd Generation
 >The SensoryAd Generation experiments rely entirely on textual prompting of existing models without any fine-tuning or conditioning on the SensoryAd dataset. Consequently, the results mostly reflect the models’ inherent prompt-following ability rather than learned sensation-aware generation.
 
-Thank you so much for the insightful suggestion of fine-tuning. The goal of this benchmark is to show the need for more sensory image data or further improvement in the generalizability of models. We have fine-tuned the SD3 on the sensory ad data and the AIM (Alignment of Image and Message) was increased from 0.61 to 0.62 while EvoSense stayed on unchanged 0.89 for fine-tuned SD3. This result suggests that the challenge is in the task/data and not simply model application. We've included this ablation discussion to the appendix.
+Thank you so much for the insightful suggestion of fine-tuning. The goal of this benchmark is to show the need for more sensory image data or further improvement in the generalizability of models. We have fine-tuned the SD3 on the sensory ad data and the AIM (Alignment of Image and Message) was increased from 0.61 to 0.62 while EvoSense stayed on unchanged 0.89 for fine-tuned SD3. We've included this ablation discussion to the appendix.
 
 ---
 
@@ -363,7 +371,8 @@ We have added the plot (Fig. 7 - a) showing the relation between the alignment a
 
 * **Marketing Publications**
 
-    This claim is not the contribution of this work and has been previously studied in marketing research papers. The claim is already supported by the following papers, and books from marketing research including the user study.  
+    We are not discovering the relation between the sensation and persuasion, instead we are building on prior marketing and psychology publications to explore the machine learning techniques in this area. As also referenced in the paper, Sensory Advertisement is a well-studied concept in marketing research. Since this has been previously extensively studied we rely on and trust the outcome of previous marketing and psychology works.
+    The claim is already supported by the following papers, and books from marketing research including the user study.  
     Lindstrom in his book (Lindstrom M., 2006) cited over 1400 times, shows the relation between the sensory appeal and brand effectiveness, and shows that the brands should use senses based on their products. They further suggest that the sensory perception in marketing results in consumers’ loyalty to the brand. 
     (Yoon S., et al., 2012) cited over 130 times, designs two studies on relation between sensory advertisements and attitude toward the brand. They show sensory ads increase positive attitude toward the brand (increasing the effectiveness of advertisement) and the reason for why sensory advertisement works is that it triggers the self-referencing, i.e.  audience imagining using the product.
     (Krishna A.,  et al., 2016) cited over 380 times, discusses how Sensory Marketing influences the effectiveness of the advertisement highlighting improvement in the effectiveness of ads by evoking mental simulation. (Elder R.,  et al., 2022) cited over 130 times, reviewed the existing works in sensory images and their effects on consumer behavior, and their findings suggest that sensory advertisements increase the mental imagery in consumers and mental imagery can enhance the ad persuasion. 
@@ -464,7 +473,7 @@ We thank the reviewer for the constructive feedback and the opportunity to respo
 
 The annotations were done by 12 annotators from different genders, within the age range of 25–60, and with education level of minimum high school diploma, achieving approval rate above 90% on more than 1000 annotations, and located in the United States. The 12 annotators were selected in the test phase of annotation where the annotators were provided with a detailed definition of the sensations and an example for each annotation and then were asked to annotate the images on sensation information. 
 For each image, 1 annotator annotated the image, then the quality of annotations were approved by a skilled annotator (author). If there was a disagreement on the annotation, the annotator was asked to explain the reasons for choosing a specific sensation (this happened very rarely), and if the second annotator was not convinced the annotation was ignored and the image was available in the pool for the new annotation.
-* To further confirm the agreement and prevent the bias we compute the human - human agreement on 60 images (5760 image-sensation pairs) and the kappa agreement between the human annotators is 0.83 with 95% CI = [0.831, 0.838].
+* To further confirm the agreement and prevent the bias, for 60 images we use two annotators, and we compute the human - human agreement on 60 images (5760 image-sensation pairs) and the kappa agreement between the human annotators is 0.83 with 95% CI = [0.831, 0.838].
 
 ---
 
@@ -490,12 +499,10 @@ Also, we respectfully disagree that our metric is passive and purely descriptive
 * We respectfully disagree, as our first contribution we introduce new tasks that have not been explored in the field while useful for media content generation and understanding. Our dataset is an evaluation dataset which considering previous evaluation datasets should not be a big concern. We also introduce an evaluation metric achieving high agreement with humans and showing improvement of +30% compared to baseline metrics.
 * The goal of this paper as a paper submitted to the benchmark track, was addressing the underexplored tasks of understanding and generating sensory images, benchmarking the T2I models on the generation of Sensory Ads and LLMs/MLLMs on Sensation classification tasks. The goal of this paper was not the introduction of new methods for generation nor classification.
 * **Size of Dataset**: Due to **annotation cost**, we only introduce the **evaluation dataset** for sensory advertisement. Compared to the recent evaluation dataset, our dataset scale is not small. Some of the recent similar publications with similar scale of dataset:
-  * "An image speaks a thousand words, but can everyone listen? on image transcreation for cultural relevance."  **(Winner of EMNLP 2024 Best Paper Award) with 600 images in the introduced evaluation dataset**.
-    * Khanuja, Simran, et al. "An image speaks a thousand words, but can everyone listen? On image transcreation for cultural relevance." Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing. 2024.
-  * "Breaking Common Sense: WHOOPS! A Vision-and-Language Benchmark of Synthetic and Compositional Images" **(ICCV 2023) with 500 synthetic images in the introduced dataset.** 
-    * Bitton-Guetta, Nitzan, et al. "Breaking common sense: Whoops! a vision-and-language benchmark of synthetic and compositional images." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2023.
+  * Khanuja, Simran, et al. "An image speaks a thousand words, but can everyone listen? on image transcreation for cultural relevance."  **(Winner of EMNLP 2024 Best Paper Award) with 600 images in the introduced evaluation dataset**.
+  * Bitton-Guetta, Nitzan, et al. "Breaking Common Sense: WHOOPS! A Vision-and-Language Benchmark of Synthetic and Compositional Images" **(ICCV 2023) with 500 synthetic images in the introduced dataset.**
 
-* We would greatly appreciate it if you could also elaborate on the analysis that is expected for our paper, and it is currently missed. So, we can address and improve the quality of the paper.
+* We would greatly appreciate it if you could also elaborate on the in-depth analysis that is expected for our paper, and it is currently missed. So, we can address and improve the quality of the paper.
 
 ---
 
