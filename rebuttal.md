@@ -1,6 +1,7 @@
 
 ## Reviewer yyYb
 
+---
 We thank the reviewer for the constructive feedbacks. 
 We are thrilled that you found our tasks well motivated, well scoped, and useful to the community. We are encouraged that you found our EvoSense metric a key contribution.
 In the next comments we address the weaknesses mentioned in the review.
@@ -128,7 +129,11 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 
 ---
 ## Reviewer FpSs
+
+---
 We thank the reviewer for the constructive feedbacks. We are happy they found our research angle genuinely novel and the qualitative analysis insightful. We are glad they find the benchmarks cohesive and useful for creating the foundation for future research 
+
+---
 
 ### [W1] EvoSense Baselines
 > The paper lacks comparisons with strong zero-shot and few-shot baselines such as GPT or large instruction-tuned multimodal models, as well as simple, transparent baselines like those used in Behavior-LLaVA. Without these comparisons, it is difficult to judge whether EvoSense or the proposed classification approach truly adds value beyond general-purpose reasoning models.
@@ -430,6 +435,8 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 
 ---
 ## Reviewer dfxP
+
+---
 
 We thank you for your constructive feedbacks and suggestion. We are happy you found the idea nice to explore.
 
