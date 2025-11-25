@@ -24,7 +24,7 @@ We thank the reviewers again for their thoughtful comments and will address thei
 ## Reviewer yyYb
 
 
-We thank the reviewer for the constructive feedbacks. 
+We thank the reviewer for the constructive feedbacks and the opportunity to respond and resolve the concerns. 
 We are thrilled that you found our tasks well motivated, well scoped, and useful to the community. We are encouraged that you found our EvoSense metric a key contribution.
 In the next comments we address the weaknesses mentioned in the review.
 
@@ -152,7 +152,7 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 
 ## Reviewer FpSs
 
-We thank the reviewer for the constructive feedbacks. We are happy they found our research angle genuinely novel and the qualitative analysis insightful. We are glad they find the benchmarks cohesive and useful for creating the foundation for future research 
+We thank the reviewer for the constructive feedback and the opportunity to respond and resolve the concerns. We are happy they found our research angle genuinely novel and the qualitative analysis insightful. We are glad they find the benchmarks cohesive and useful for creating the foundation for future research. 
 
 ---
 
@@ -298,7 +298,7 @@ The table, shows that our metric agreement is fairly consistent over different s
 
 ## Reviewer S1yq
 
-We thank you for the constructive feedbacks and suggestions. We are happy you found our research direction novel. We appreciate the acknowledgement of our systematic exploration on evaluation and understanding of sensory ads. We are thrilled that you found our work possibly serving as  cornerstone of future research. 
+We thank the reviewer for the constructive feedback and the opportunity to respond and resolve the concerns. We are happy you found our research direction novel. We appreciate the acknowledgement of our systematic exploration on evaluation and understanding of sensory ads. We are thrilled that you found our work possibly serving as a cornerstone of future research. 
 
 ---
 
@@ -455,7 +455,7 @@ We compute the human - human agreement on 60 images (5760 image-sensation pairs)
 
 ## Reviewer dfxP
 
-We thank you for your constructive feedbacks and suggestion. We are happy you found the idea nice to explore.
+We thank the reviewer for the constructive feedback and the opportunity to respond and resolve the concerns. We are happy you found the idea nice to explore.
 
 ---
 
