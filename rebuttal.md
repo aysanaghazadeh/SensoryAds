@@ -5,6 +5,7 @@
 We thank the reviewer for the constructive feedbacks. 
 We are thrilled that you found our tasks well motivated, well scoped, and useful to the community. We are encouraged that you found our EvoSense metric a key contribution.
 In the next comments we address the weaknesses mentioned in the review.
+
 ---
 ### [W1] Connection between sensation evocation and persuasion
 > Conceptually, the goal of sensory marketing would be to enhance the appeal and persuasiveness of ads to a viewer. The paper does not discuss this connection about how invoking sensations impacts the persuasiveness of ad images. Further, the impact of the paper can be elevated if the authors can provide evidence through a user study to show the above relation, if there exists any.
