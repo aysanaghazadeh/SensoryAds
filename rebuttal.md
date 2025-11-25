@@ -3,12 +3,20 @@
 We thank the reviewers for their constructive and insightful comments. We are happy that reviewers found our research direction “genuinely novel” and our analysis both systematic and insightful, especially in how we evaluate and understand sensory advertisements (Reviewers FpSs, S1yq). We appreciate the recognition of our tasks as well motivated, well scoped, well-defined, and useful to community forming “usable foundations for future research” (Reviewers yyYb, FpSs). We also thank them for highlighting the cohesiveness and usefulness of our benchmarks serving “as a cornerstone for future research” (Reviewers FpSs, S1yq). We are pleased that the EvoSense metric was regarded as a key contribution that can advance evaluation in this space (Reviewer yyYb). Finally, we appreciate the positive remarks on the idea of exploring sensory visual content (Reviewer dfxp). 
 
 We thank the reviewers again for their thoughtful comments and will address their constructive suggestions in detail as a comment to each review. Here are the summary of new experiments and analysis:
-* Human - Evaluation Metric agreement on more images adding confidence-interval
-* Human - Human agreement on data annotation, annotators statistics, and data diversity 
-* Adding MLLMs as a judge for sensation intensity to EvoSense baselines
-* Per sensation break-down for Human - Evaluation Metric agreements
-* Training-step ablation: increasing the number of train-steps in the fine-tuning of LLM to include more images
-* 
+* Annotation and Data Reliability
+  * Human - human agreement on data annotation
+  * Annotators and annotation process details
+  * Data diversity
+* EvoSense Evaluation
+  * Human - metric agreement on more images 
+  * Reporting confidence-interval for agreement scores
+  * Adding MLLMs as a judge for sensation intensity to the baselines
+  * Per sensation break-down for human - metric agreements
+  * Training-step ablation: increasing the number of train-steps in the fine-tuning of LLM to include more images
+* Sensory Ad Generation Benchmarking
+  * Quantitative analysis of exaggeration in sensation evocation
+  * Alignment of images and advertisement message added to analysis
+  * T2I Model Fine-tuning Ablation: Fine-tuned SD3 on Sensory Ad generation task
 
 ---
 
