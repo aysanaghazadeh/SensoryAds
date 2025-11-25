@@ -105,6 +105,7 @@ While the results are consistent over different fine-tuning steps in the table, 
 Due to the cost issue and annotation costs, we introduce the evaluation dataset for sensory advertisement. From PittAd dataset we randomly select 670 (**from both Commercial and Public Service Advertisements**).
 
 > It is not clear if the curate subset is representative enough and if there is any selection bias.
+
 We selected 670 images randomly covering 95 sensation categories and over 40 topics. 
 We have added the topic and sensation diversity in appendix - A.3 - Fig. 10. The figure represent the distribution of images over 10 most frequent topics and 5 sensations. 
  
