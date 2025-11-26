@@ -63,14 +63,14 @@ In the next comments we address the weaknesses mentioned in the review.
    * First, in overall the advertisement (especially commercial advertisements) are not always following ethical goals. However, **this is a general problem with any T2I model generating persuasive content.**
    * Second, the model might generate sensitive content (e.g. pain sensation in advertisement) for a certain group of audience and this is one of the motivations for classification tasks. While automatically generating the Sensory Ads can be helpful, some sensitive sensations should be detected and prevented from showing to a specific group of audience. This is why it is also important to be able to classify the sensations evoked by the image.
  
- We have added these implications as the ethical implication discussion in the appendix.
+ We have added these implications as the ethical implication discussion in the Appendix - A2 section.
 
 ---
 
 ### [W3] Number of Images in the Fine-tuning Set
 > The authors report that they trained EvoSense on only 50 images which is quite surprising to me.
 
-While there are only 50 images, each image is paired with negative and positive sensation, which expands the data to 21000 samples that the models have been fine-tuned on.  
+While there are only 50 images (now we fine-tune on 100 images in new experiments), each image is paired with negative and positive sensation, which expands the data to 21000 samples that the models have been fine-tuned on.  
  
 **Number of image-(positive, negative, parent of positive) pairs**
   * Each image is annotated with a maximum of 9 sensations that the image evokes. 
