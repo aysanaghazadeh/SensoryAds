@@ -447,7 +447,7 @@ For each image, 1 annotator annotated the image, then the quality of annotations
 
 We appreciate the reviewer’s concern and would like to clarify the role of annotated vs. generated images in our evaluation.
 Our benchmark produces 1,660 images per model (700 Sensory Ad + 960 Sensory Image), totaling 8,300 generated images across all models. These are the images used in Table 3 to compare model-level sensation evocation performance. Importantly, Table 3 is not based on the 75 manually annotated images, but instead uses EvoSense scores applied to the full generated set, which ensures stable estimates at the model level.
-* The 75 annotated images (real ads) are used only in Table 2 to validate EvoSense against human judgments. This smaller annotated set is appropriate for metric evaluation because the goal is to assess agreement between EvoSense and humans, not to compare T2I models; we have now added confidence intervals to further quantify uncertainty.
+* The 75 annotated images are used only in Table 2 to validate EvoSense against human judgments. We have now added confidence intervals to further quantify uncertainty.
 
 > Moreover, using only 10 generated images reduces the interpretability of the sensation-wise heatmaps in Figure 7. The small sample size makes it difficult to assess performance on less visual sensations mentioned in the paper and may lead to sampling noise rather than consistent model differences.
 
@@ -476,20 +476,20 @@ We have addressed these in the updated paper.
 
 To answer this question, we break down the agreement evaluation into 5 main sensation categories and add 0-shot MLLMs as the baseline for our evaluation metric. We show the agreement between human annotators and metrics on 100 images in the following table:
 
-|                 Metric                 | touch | smell | sound | taste | sight | All |
-|:--------------------------------------:| :---: | :---: | :---: | :---: | :---: | :---: |
-|                VQAScore                | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 | 0.57 |
-|               PickScore                | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 | 0.36 |
-|               CLIPScore                | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 | 0.44 |
-|              Image-Reward              | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 | 0.46 |
-|         LLAMA3-instruct 0-shot         | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 | -0.04 |
-|             QwenLM 0-shot              | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 | -0.06 |
-|        **InternVL as a judge**         | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 | 0.50 |
-|         **QwenVL as a judge**          | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 | 0.50 |
-| EvoSense (LLAMA3-instruct + DInternVL) | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80 |
-|  EvoSense (LLAMA3-instruct + DQwenVL)  | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 | 0.75 |
-|     EvoSense (QwenLM + DInternVL)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 | 0.65 |
-|      EvoSense (QwenLM + DQwenVL)       | 0.62 | 0.64 | 0.50 | 0.67 | 0.58 | 0.60 |
+|                   Metric                    | touch | smell | sound | taste | sight |   All    | 
+|:-------------------------------------------:| :---: | :---: | :---: | :---: | :---: |:--------:| 
+|                  VQAScore                   | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 |   0.57   | 
+|                  PickScore                  | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 |   0.36   | 
+|                  CLIPScore                  | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 |   0.44   | 
+|                Image-Reward                 | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 |   0.46   | 
+|      EvoSense (LLAMA3-instruct 0-shot)      | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 |  -0.04   | 
+|          EvoSense (QwenLM 0-shot)           | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 |  -0.06   | 
+|           **InternVL as a judge**           | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 |   0.50   | 
+|            **QwenVL as a judge**            | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 |   0.50   | 
+| EvoSense (LLAMA3-instruct + $D_{InternVL}$) | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80     | 
+|  EvoSense (LLAMA3-instruct + $D_{QWenVL}$)  | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 |   0.76   | 
+|     EvoSense (QwenLM + $D_{InternVL}$)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 |   0.66   | 
+|      EvoSense (QwenLM + $D_{QWenVL}$)       | 0.62 | 0.66 | 0.50 | 0.67 | 0.58 |   0.61   | 
 
 
 * 0-shot MLLMs also utilized in classification tasks perform better on touch sensation category compared to smell while this opposite in EvoSense metric. 
@@ -546,8 +546,8 @@ Also, we respectfully disagree that our metric is passive and purely descriptive
 ### [W4] Paper's Contribution
 > The dataset is small and coarse, the annotation lacks depth, and there’s no real algorithmic innovation or a well-defined end-to-end framework for advertisement image generation. The experiments also seem quite superficial, a few MLLMs are used as baselines, but none of the analyses go deep enough. The paper gives the impression of touching on many ideas without fully developing any of them.
 
-* We respectfully disagree, as our first contribution we introduce new tasks that have not been explored in the field while useful for media content generation and understanding. Our dataset is an evaluation dataset which considering previous evaluation datasets should not be a big concern. We also introduce an evaluation metric achieving high agreement with humans and showing improvement of +30% compared to baseline metrics.
 * The goal of this paper as a paper submitted to the benchmark track, was addressing the underexplored tasks of understanding and generating sensory images, benchmarking the T2I models on the generation of Sensory Ads and LLMs/MLLMs on Sensation classification tasks. The goal of this paper was not the introduction of new methods for generation nor classification.
+* As our first contribution we introduce new tasks that have not been explored in the field while useful for media content generation and understanding. Our dataset is an evaluation dataset which considering previous evaluation datasets should not be a big concern. We also introduce an evaluation metric achieving high agreement with humans and showing improvement of +30% compared to baseline metrics.
 * **Size of Dataset**: Due to **annotation cost**, we only introduce the **evaluation dataset** for sensory advertisement. Compared to the recent evaluation dataset, our dataset scale is not small. Some of the recent similar publications with similar scale of dataset:
   * Khanuja, Simran, et al. "An image speaks a thousand words, but can everyone listen? on image transcreation for cultural relevance."  **(Winner of EMNLP 2024 Best Paper Award) with 600 images in the introduced evaluation dataset**.
   * Bitton-Guetta, Nitzan, et al. "Breaking Common Sense: WHOOPS! A Vision-and-Language Benchmark of Synthetic and Compositional Images" **(ICCV 2023) with 500 synthetic images in the introduced dataset.**
@@ -574,4 +574,4 @@ Table 2 mentions 5000 image-sensation pairs. We evaluate each image for all 97 s
 > Using MLLM-generated image descriptions as inputs for LLM-based sensation classification seems fundamentally flawed. Different MLLMs emphasize different aspects in their captions, and without human verification or standardization, these descriptions introduce large uncontrolled biases. Without any demonstrations or quality checks, evaluating LLMs based on such synthetic inputs is, in my view, methodologically unsound.
 
 * We agree that we can hypothesize that part of the problem in LLMs when classifying the sensation can be the result of low quality verbalization. However, since our results on EvoSence shows that with the same descriptions the model can score the sensations with high agreement with human annotators showing the quality of descriptions. Moreover, the description is just describing the image and visual elements in the image. 
-* We have added qualitative examples of MLLM generated descriptions to appendix - A4 - Figure 12. In the examples, we show that the MLLMs provide a detailed and accurate description of images. Unfortunately, since we cannot attach images to the comments, we could not include the example in the comment as well.
+* We have added qualitative examples of MLLM generated descriptions to Appendix - A4 - Figure 13. In the examples, we show that the MLLMs provide a detailed and accurate description of images. Unfortunately, since we cannot attach images to the comments, we could not include the example in the comment as well.
