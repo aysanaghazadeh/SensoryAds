@@ -256,8 +256,8 @@ are how a receiver acts on the outside world.” this part of Behaviour-LLAVA pa
 
 Moreover, **Behaviour-LLAVA focuses on the side of the receivers' actions** (understanding their action) while **our work is focused on the sender of signals**, the images that evoke the sensations (both generating and understanding).
 
-Crucially, to the best of our knowledge no prior dataset provides sensory-evocation annotations, nor do existing models attempt to predict or quantify sensory cues in images. Behavioral metrics cannot serve as proxies for sensory perception because different users may behave differently despite experiencing similar sensory impressions, and sensory cues may lead to overlapping behaviors. 
-This establishes sensory evocation as a distinct and previously unmodeled problem, and our contributions directly address that gap.
+To the best of our knowledge no prior dataset provides sensory-evocation annotations, nor do existing evaluation methods attempt to predict or quantify sensory cues in images. Behavioral metrics cannot serve as proxies for sensory perception because different users may behave differently despite experiencing similar sensory impressions. 
+This establishes sensory evocation as a distinct and previously uninvestigated problem, and our contributions directly address that gap.
 
 ---
 
@@ -268,15 +268,19 @@ This establishes sensory evocation as a distinct and previously unmodeled proble
 * **Marketing Publications**
 
     Lindstrom in his book [1] cited over 1400 times, shows the relation between the sensory appeal and brand effectiveness, and shows that the brands should use senses based on their products. They further suggest that the sensory perception in marketing results in consumers’ loyalty to the brand. 
+    
     [2] cited over 130 times, designs two studies on relation between sensory advertisements and attitude toward the brand. They show sensory ads increase positive attitude toward the brand (increasing the effectiveness of advertisement) and the reason for why sensory advertisement works is that it triggers the self-referencing, i.e.  audience imagining using the product.
-    [3] cited over 380 times, discusses how Sensory Marketing influences the effectiveness of the advertisement highlighting improvement in the effectiveness of ads by evoking mental simulation. [4] cited over 130 times, reviewed the existing works in sensory images and their effects on consumer behavior, and their findings suggest that sensory advertisements increase the mental imagery in consumers and mental imagery can enhance the ad persuasion. 
+    
+    [3] cited over 380 times, discusses how Sensory Marketing influences the effectiveness of the advertisement highlighting improvement in the effectiveness of ads by evoking mental simulation. 
+
+    [4] cited over 130 times, reviewed the existing works in sensory images and their effects on consumer behavior, and their findings suggest that sensory advertisements increase the mental imagery in consumers and mental imagery can enhance the ad persuasion. 
 
     [1] [Lindstrom, Martin. "Brand sense: How to build powerful brands through touch, taste, smell, sight and sound." Strategic Direction 22.2 (2006).](https://www.emerald.com/sd/article/doi/10.1108/sd.2006.05622bae.001/353448/Brand-Sense-How-to-Build-Powerful-Brands-Through)
-
+    
     [2] [Yoon, Sung-Joon, and Ji Eun Park. "Do sensory ad appeals influence brand attitude?." Journal of Business Research65.11 (2012): 1534-1542.](https://www.sciencedirect.com/science/article/pii/S0148296311000701)
-
+    
     [3] [Krishna, Aradhna, Luca Cian, and Tatiana Sokolova. "The power of sensory marketing in advertising." Current Opinion in Psychology 10 (2016): 142-147.](https://www.sciencedirect.com/science/article/abs/pii/S2352250X16000099)
-
+    
     [4] [Elder, Ryan S., and Aradhna Krishna. "A review of sensory imagery for consumer psychology." Journal of Consumer Psychology 32.2 (2022): 293-315.](https://myscp.onlinelibrary.wiley.com/doi/full/10.1002/jcpy.1242)
 
 * **Persuasion over Sensation Plot**
