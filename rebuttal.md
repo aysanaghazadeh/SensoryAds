@@ -422,8 +422,8 @@ We have added the plot (Fig. 7 - a) showing the relation between the alignment a
 
 * **Persuasion over Sensation Plot**
 
-    We have also plotted the persuasion score computed using Persuasion metric from [1] over the sensation scores for different generated images showing the improvement over the persuasion. We have added the plot to the appendix section. Please note that this experiment is still not an isolated experiment only evaluating the sensation changes and there are different factors changing. We highly rely on previous marketing papers for the relation between the persuasion and sensation evocation.
-
+    We have also plotted the persuasion score computed using Persuasion metric from [5] over the sensation scores for different generated images. We have added the plot to the Appendix - A1 - Figure 7-d. We observe that the persuasion increases with the increase of sensation intensity.
+    
     [1] [Aghazadeh, Aysan, and Adriana Kovashka. "Cap: Evaluation of persuasive and creative image generation." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2025.](https://openaccess.thecvf.com/content/ICCV2025/html/Aghazadeh_CAP_Evaluation_of_Persuasive_and_Creative_Image_Generation_ICCV_2025_paper.html)
 
 ---
