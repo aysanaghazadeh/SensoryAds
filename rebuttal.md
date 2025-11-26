@@ -353,10 +353,10 @@ If the performance of EvoSense was the result of lexical plausibility of caption
 |                Image-Reward                 | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 |   0.46   | 
 |      EvoSense (LLAMA3-instruct 0-shot)      | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 |  -0.04   | 
 |          EvoSense (QwenLM 0-shot)           | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 |  -0.06   | 
-|             **InternVL as a judge**             | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 |   0.50   | 
-|              **QwenVL as a judge**              | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 |   0.50   | 
+|           **InternVL as a judge**           | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 |   0.50   | 
+|            **QwenVL as a judge**            | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 |   0.50   | 
 | EvoSense (LLAMA3-instruct + $D_{InternVL}$) | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80     | 
-|  EvoSense (LLAMA3-instruct +$D_{QWenVL}$)   | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 |   0.76   | 
+|  EvoSense (LLAMA3-instruct + $D_{QWenVL}$)  | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 |   0.76   | 
 |     EvoSense (QwenLM + $D_{InternVL}$)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 |   0.66   | 
 |      EvoSense (QwenLM + $D_{QWenVL}$)       | 0.62 | 0.66 | 0.50 | 0.67 | 0.58 |   0.61   | 
 
@@ -364,8 +364,9 @@ If the performance of EvoSense was the result of lexical plausibility of caption
 
 > Moreover, the paper reports κ = 0.86 while the Pearson r is only 0.38 on real ads (Table 2), suggesting that categorical agreement might be inflated by frequent labels and does not convincingly validate the claimed intensity correlation.
 
-The difference **(as also reflected on baseline metrics)** is because the annotators choose up-to 3 sensations evoked by the image, and the rest of the scores are 0 while the computational metrics choose different scores for each sensation. For κ if the scores are both equal to 0, they are not included in the comparison pairs to resolve this issue. So, while the incorrect sensations are included paired with selected sensations, they are not included as paired with other unselected sensations. This is why κ is bigger than r. 
-* We have added an example sensation score for an image to the appendix showing the problem of correlation because of the **sparsity of the human scores**. The figure represents while high scores assigned by metric represent the chosen categories, because of the sudden drop in the values of human scores, correlation becomes lower.
+* The difference **(as also reflected on baseline metrics)** is because the annotators choose up-to 3 sensation groups evoked by the image, and the rest of the scores are 0. On the other hand, the computational metrics (including EvoSense and the baselines) choose different scores for each sensation. For computing κ agreement, we use the sensation intensity as the criteria for choosing the winner sensation for the image given each two sensation. We ignore the sensation pairs where the human annotators assign the same score to both sensations. 
+This way we significantly reduce the sparsity of human annotations for the image. So, while the incorrect sensations are included paired with selected sensations, they are not included as paired with other unselected sensations. This is why κ is bigger than r. 
+* We have added an example sensation score for an image to the Appendix - A5 - Figure 12, showing the problem of correlation because of the **sparsity of the human scores**. The figure represents while high scores assigned by metric represent the sensations evoked by the image selected by the human, because of the sudden drop in the values of human scores, correlation becomes lower.
 
 ---
 
