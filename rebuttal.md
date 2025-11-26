@@ -175,9 +175,10 @@ We thank the reviewer for the constructive feedback and the opportunity to respo
 ### [W1] EvoSense Baselines
 > The paper lacks comparisons with strong zero-shot and few-shot baselines such as GPT or large instruction-tuned multimodal models, as well as simple, transparent baselines like those used in Behavior-LLaVA. Without these comparisons, it is difficult to judge whether EvoSense or the proposed classification approach truly adds value beyond general-purpose reasoning models.
 
-* EvoSense is not a classification method, and this paper is not proposing a classification method. In this work, we propose the classification tasks, and an evaluation metric (EvoSense) to evaluate how well an image evokes the sensation. We have compared our evaluation metrics with strong zero-shot models of LLAMA3-instruct and Qwen both instruction-tuned. The results on state-of-the-art zero-shot models show negative agreement with humans. 
+* EvoSense is not a classification method, and this paper is not proposing a classification method. In this work, we propose the classification tasks, and an evaluation metric (EvoSense) to evaluate how well an image evokes the sensation. 
+We have compared our evaluation metrics with strong zero-shot models of LLAMA3-instruct and QwenLM both instruction-tuned. The results on state-of-the-art zero-shot models show negative agreement with humans. 
 * For the classification tasks, we use state-of-the-art MLLMs (all instruction tuned) and show they fail in correctly classifying and understanding the sensations evoked by the images.
-* We have added the MLLMs used for description generation for EvoSense (both instruction-tuned) as a judge for sensation evocation. As shown in the table our method achieves 60% higher agreement with humans compared to MLLMs as a judge. We show the Kappa agreement of different baselines (+ the MLLMs judges) with human annotators on 100 images in the following table:
+* We have added the MLLMs used for description generation for EvoSense (both instruction-tuned) as a judge for sensation evocation. As shown in the table our method achieves 60% higher agreement with humans compared to MLLMs as a judge. We show the Kappa agreement of different baselines (+ the MLLMs judges) with human annotators on 100 images (10000 image-sensation pairs) in the following table:
 
 |                 Metric                 | touch | smell | sound | taste | sight | All |
 |:--------------------------------------:| :---: | :---: | :---: | :---: | :---: | :---: |

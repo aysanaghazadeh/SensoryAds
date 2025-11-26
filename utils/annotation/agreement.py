@@ -154,10 +154,11 @@ def get_human_score_agreement(metric_scores, human_annotations):
         # print(f'agreement on image {image_url}', compute_pearson_correlation(metrics_scores_per_image, human_scores_per_image))
         human_scores_list += human_scores_per_image
         metrics_score_list += metrics_scores_per_image
-        if count == 12:
-            print(image_url)
-            print(compute_pearson_correlation(metrics_scores_per_image, human_scores_per_image))
+        # if count == 12:
+        #     print(image_url)
+        #     print(compute_pearson_correlation(metrics_scores_per_image, human_scores_per_image))
     print(f'overall correlation for {count} images is:', compute_pearson_correlation(metrics_score_list, human_scores_list))
+    print(f'total number of image-sensation pair is {len(metrics_score_list)}')
     # r, (ci_low, ci_high), p = bootstrap_spearman(human_scores_list, metrics_score_list)
     # print(f"Spearman's ρ = {r:.3f}")
     # print(f"95% CI = [{ci_low:.3f}, {ci_high:.3f}]")
@@ -185,11 +186,11 @@ def get_human_human_score_agreement(human1_annotations, human2_annotations):
         # if count == 12:
         #     print(image_url)
         #     print(compute_pearson_correlation(metrics_scores_per_image, human_scores_per_image))
-    print(f'overall correlation for {count} images is:', compute_pearson_correlation(human1_scores_list, human2_scores_list))
-    r, (ci_low, ci_high), p = bootstrap_spearman(human_scores_list, metrics_score_list)
-    print(f"Spearman's ρ = {r:.3f}")
-    print(f"95% CI = [{ci_low:.3f}, {ci_high:.3f}]")
-    print(f"p-value = {p:.4f}")
+    # print(f'overall correlation for {count} images is:', compute_pearson_correlation(human1_scores_list, human2_scores_list))
+    # r, (ci_low, ci_high), p = bootstrap_spearman(human_scores_list, metrics_score_list)
+    # print(f"Spearman's ρ = {r:.3f}")
+    # print(f"95% CI = [{ci_low:.3f}, {ci_high:.3f}]")
+    # print(f"p-value = {p:.4f}")
 
 def get_krippendorff_agreement(metric_scores, human_annotations):
     human_preferences = []
@@ -336,10 +337,10 @@ def get_kappa_agreement(metric_scores, human_annotations):
             print(compute_cohen_kappa(metrics_preferences_per_image, human_preferences_per_image))
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))
     # Unweighted kappa (good for nominal sensations)
-    kappa, (ci_low, ci_high) = bootstrap_kappa(human_preferences, metrics_preferences, n_boot=10000)
-
-    print(f"Cohen's κ = {kappa:.3f}")
-    print(f"95% CI = [{ci_low:.3f}, {ci_high:.3f}]")
+    # kappa, (ci_low, ci_high) = bootstrap_kappa(human_preferences, metrics_preferences, n_boot=10000)
+    #
+    # print(f"Cohen's κ = {kappa:.3f}")
+    # print(f"95% CI = [{ci_low:.3f}, {ci_high:.3f}]")
 
 def get_human_human_kappa_agreement(human1_annotations, human2_annotations):
     human1_preferences = []
@@ -365,7 +366,7 @@ def get_human_human_kappa_agreement(human1_annotations, human2_annotations):
 
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(human1_preferences, human2_preferences))
     # Unweighted kappa (good for nominal sensations)
-    kappa, (ci_low, ci_high) = bootstrap_kappa(human1_preferences, human2_preferences, n_boot=10000)
-
-    print(f"Cohen's κ = {kappa:.3f}")
-    print(f"95% CI = [{ci_low:.3f}, {ci_high:.3f}]")
+    # kappa, (ci_low, ci_high) = bootstrap_kappa(human1_preferences, human2_preferences, n_boot=10000)
+    #
+    # print(f"Cohen's κ = {kappa:.3f}")
+    # print(f"95% CI = [{ci_low:.3f}, {ci_high:.3f}]")
