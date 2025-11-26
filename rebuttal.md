@@ -236,7 +236,7 @@ Two results in Table 2 supports generalization of our fine-tuned LLM:
 **Description Generation Leakage**
 
 If the performance of EvoSense was the result of sensation information (interpretation) leakage by MLLMs, the 0-shot LLM should have performed as well as our metric. **We compare our metric with the same setup but utilizing the zero-shot LLMs**. Since the exact same descriptions are given to both fine-tuned and zero-shot LLMs, the agreement of zero-shot version should be high as well. However, the **zero-shot version results in negative agreement** highlighting the importance of fine-tuning.
-* We have added qualitative examples of MLLM generated descriptions to appendix - A4 - Figure 12. In the examples, we show that the MLLMs only provide the detailed description for the image without further interpretations of the image itself or the sensation that it evokes. Unfortunately, since we cannot attach images to the comments, we could not include the example in the comment as well.
+* We have added qualitative examples of MLLM generated descriptions to appendix - A4 - Figure 13. In the examples, we show that the MLLMs only provide the detailed description for the image without further interpretations of the image itself or the sensation that it evokes. Unfortunately, since we cannot attach images to the comments, we could not include the example in the comment as well.
 
 ---
 
@@ -253,7 +253,9 @@ Quoting from the Behaviour-LLAVA paper itself “Humans produce two kinds of beh
 perceptual signals and actions as behavior. Perceptual signals, like seeing, touching, and
 hearing, help a receiver primarily sense the world around her, ultimately guiding her actions. Actions
 are how a receiver acts on the outside world.” this part of Behaviour-LLAVA paper indicates the difference between the sensation signals and actions which is the focus of Behaviour-LLAVA. 
-Moreover, **Behaviour-LLAVA focuses on the side of the receivers' actions** (understanding their action) while **our work is focused on the sender of signals**. The images that evoke the sensations (both generating and understanding).
+
+Moreover, **Behaviour-LLAVA focuses on the side of the receivers' actions** (understanding their action) while **our work is focused on the sender of signals**, the images that evoke the sensations (both generating and understanding).
+
 Crucially, to the best of our knowledge no prior dataset provides sensory-evocation annotations, nor do existing models attempt to predict or quantify sensory cues in images. Behavioral metrics cannot serve as proxies for sensory perception because different users may behave differently despite experiencing similar sensory impressions, and sensory cues may lead to overlapping behaviors. 
 This establishes sensory evocation as a distinct and previously unmodeled problem, and our contributions directly address that gap.
 
