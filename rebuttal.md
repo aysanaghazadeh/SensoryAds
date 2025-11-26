@@ -422,7 +422,7 @@ We have added the plot (Fig. 7 - a) showing the relation between the alignment a
 
 * **Persuasion over Sensation Plot**
 
-    We have also plotted the persuasion score computed using Persuasion metric from [5] over the sensation scores for different generated images. We have added the plot to the Appendix - A1 - Figure 7-d. We observe that the persuasion increases with the increase of sensation intensity.
+    We have also plotted the persuasion score computed using Persuasion metric from [1] over the sensation scores for different generated images. We have added the plot to the Appendix - A1 - Figure 7-d. We observe that the persuasion increases with the increase of sensation intensity.
     
     [1] [Aghazadeh, Aysan, and Adriana Kovashka. "Cap: Evaluation of persuasive and creative image generation." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2025.](https://openaccess.thecvf.com/content/ICCV2025/html/Aghazadeh_CAP_Evaluation_of_Persuasive_and_Creative_Image_Generation_ICCV_2025_paper.html)
 
@@ -434,7 +434,7 @@ We have added the plot (Fig. 7 - a) showing the relation between the alignment a
 * **Annotation Process**
 
     The annotations were done by 12 annotators from different genders, within the age range of 25–60, and with education level of minimum high school diploma, achieving approval rate above 90% on more than 1000 annotations, and located in the United States. The 12 annotators were selected in the test phase of annotation where the annotators were provided with a detailed definition of the sensations and an example for each annotation and then were asked to annotate the images on sensation information. 
-For each image, 1 annotator annotated the image, then the quality of annotations were approved by a skilled evaluator. If there was a disagreement on the annotation, the annotator was asked to explain the reasons for choosing a specific sensation (this happened very rarely), and if the second annotator was not convinced the annotation was ignored and the image was available in the pool for the new annotation.
+For each image, 1 annotator annotated the image, then the quality of annotations were approved by a skilled evaluator. If there was a disagreement on the annotation, the annotator was asked to explain the reasons for choosing a specific sensation (this happened very rarely), and if the second annotator was not convinced the annotation was ignored and the image was available in the pool for the new annotation. We have updated and added these information to Appendix - A4 section.
 
 * **Human-Human Agreement**
 
