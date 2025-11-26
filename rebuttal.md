@@ -105,10 +105,10 @@ We also, increased number of steps to 40000 and the number of images to 100 and 
 
  |                 Metric                 | #steps | touch | smell | sound | taste | sight | All |
  |:--------------------------------------:| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
- | EvoSense (LLAMA3-instruct + DInternVL) | **21000** | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80 |
- | EvoSense (LLAMA3-instruct + DInternVL) | **25000** | 0.80 | 0.82 | 0.78 | 0.83 | 0.88 | 0.81 |
- | EvoSense (LLAMA3-instruct + DInternVL) | **30000** | 0.80 | 0.82 | 0.78 | 0.84 | 0.88 | 0.81 |
- | EvoSense (LLAMA3-instruct + DInternVL) | **40000** | 0.80 | 0.81 | 0.78 | 0.84 | 0.87 | 0.80 |
+ | EvoSense (LLAMA3-instruct + $D_{InternVL}$) | **21000** | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80 |
+ | EvoSense (LLAMA3-instruct + $D_{InternVL}$) | **25000** | 0.80 | 0.82 | 0.78 | 0.83 | 0.88 | 0.81 |
+ | EvoSense (LLAMA3-instruct + $D_{InternVL}$) | **30000** | 0.80 | 0.82 | 0.78 | 0.84 | 0.88 | 0.81 |
+ | EvoSense (LLAMA3-instruct + $D_{InternVL}$) | **40000** | 0.80 | 0.81 | 0.78 | 0.84 | 0.87 | 0.80 |
 
 While the results are consistent over different fine-tuning steps in the table, our initial experiments with few number of images (upto 10 images) showed low agreement with human annotations suggesting there is a minimum number of images/steps required to reach high agreement with human.
 
@@ -185,20 +185,20 @@ We have compared our evaluation metrics with strong zero-shot models of LLAMA3-i
 * For the classification tasks, we use state-of-the-art MLLMs (all instruction tuned) and show they fail in correctly classifying and understanding the sensations evoked by the images.
 * We have added the MLLMs used for description generation for EvoSense (both instruction-tuned) as a judge for sensation evocation. As shown in the table our method achieves 60% higher agreement with humans compared to MLLMs as a judge. We show the Kappa agreement of different baselines (+ the MLLMs judges) with human annotators on 100 images (10000 image-sensation pairs) in the following table:
 
-|                 Metric                 | touch | smell | sound | taste | sight | All |
-|:--------------------------------------:| :---: | :---: | :---: | :---: | :---: | :---: |
-|                VQAScore                | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 | 0.57 |
-|               PickScore                | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 | 0.36 |
-|               CLIPScore                | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 | 0.44 |
-|              Image-Reward              | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 | 0.46 |
-|         LLAMA3-instruct 0-shot         | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 | -0.04 |
-|             QwenLM 0-shot              | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 | -0.06 |
-|          **InternVL as a judge**           | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 | 0.50 |
-|           **QwenVL as a judge**            | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 | 0.50 |
-| EvoSense (LLAMA3-instruct + DInternVL) | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80 |
-|  EvoSense (LLAMA3-instruct + DQwenVL)  | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 | 0.75 |
-|     EvoSense (QwenLM + DInternVL)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 | 0.65 |
-|      EvoSense (QwenLM + DQwenVL)       | 0.62 | 0.64 | 0.50 | 0.67 | 0.58 | 0.60 |
+|                   Metric                    | touch | smell | sound | taste | sight |   All    | 
+|:-------------------------------------------:| :---: | :---: | :---: | :---: | :---: |:--------:| 
+|                  VQAScore                   | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 |   0.57   | 
+|                  PickScore                  | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 |   0.36   | 
+|                  CLIPScore                  | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 |   0.44   | 
+|                Image-Reward                 | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 |   0.46   | 
+|      EvoSense (LLAMA3-instruct 0-shot)      | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 |  -0.04   | 
+|          EvoSense (QwenLM 0-shot)           | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 |  -0.06   | 
+|             **InternVL as a judge**             | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 |   0.50   | 
+|              **QwenVL as a judge**              | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 |   0.50   | 
+| EvoSense (LLAMA3-instruct + $D_{InternVL}$) | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80     | 
+|  EvoSense (LLAMA3-instruct +$D_{QWenVL}$)   | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 |   0.76   | 
+|     EvoSense (QwenLM + $D_{InternVL}$)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 |   0.66   | 
+|      EvoSense (QwenLM + $D_{QWenVL}$)       | 0.62 | 0.66 | 0.50 | 0.67 | 0.58 |   0.61   | 
 
 (We have bolded MLLMs as a judge)
 
@@ -309,22 +309,22 @@ This establishes sensory evocation as a distinct and previously uninvestigated p
 
 >The paper reports a κ = 0.86 “near-perfect” agreement between EvoSense and human annotators but does not provide confidence intervals, standard errors, or per-sensation breakdowns, which limits interpretability. Comparing κ across model types is statistically problematic because κ depends on class prevalence, which differs between LLM-only and MLLM-based setups. There is also no power or uncertainty analysis to demonstrate that these results are stable given the small dataset al. sensations are aggregated into a single κ/r score, even though some (e.g., “Glow”) are visually trivial while others (e.g., “Dryness”) are abstract and harder to ground. Without stratified or normalized results, it is unclear whether the model’s high κ reflects true generalization or dominance by a few easy classes. Consequently, the claim of “human-level” agreement is numerically strong but statistically under-supported.
 
-Thanks for the suggestion, we have added the per high level sensation break-down for agreement evaluation and confidence intervals for kappa metric (on 100 images):
+Thanks for the suggestion, we have added the per high level sensation break-down for agreement evaluation and confidence intervals for kappa metric (on 100 images and 10000 image-sensation pairs):
 
-|                 Metric                 | touch | smell | sound | taste | sight | All | 95% CI |
-|:--------------------------------------:| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|                VQAScore                | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 | 0.57 | [0.561, 0.570] |
-|               PickScore                | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 | 0.36 | [0.350, 0.361] |
-|               CLIPScore                | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 | 0.44 | [0.430, 0.440] |
-|              Image-Reward              | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 | 0.46 | [0.457, 0.467] |
-|         LLAMA3-instruct 0-shot         | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 | -0.04 | [-0.038, -0.027] |
-|             QwenLM 0-shot              | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 | -0.06 | [-0.064, -0.053] |
-|          InternVL as a judge           | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 | 0.50 | [0.507, 0.514] |
-|           QwenVL as a judge            | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 | 0.50 | [0.507, 0.514] |
-| EvoSense (LLAMA3-instruct + DInternVL) | **0.79** | **0.82** | **0.77** | **0.84** | **0.85** | **0.80** | [0.806, 0.813] |
-|  EvoSense (LLAMA3-instruct + DQwenVL)  | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 | 0.75 | [0.754, 0.761] |
-|     EvoSense (QwenLM + DInternVL)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 | 0.66 | [0.658, 0.666] |
-|      EvoSense (QwenLM + DQwenVL)       | 0.62 | 0.66 | 0.50 | 0.67 | 0.58 | 0.61 | [0.612, 0.621] |
+|                   Metric                    | touch | smell | sound | taste | sight |   All    | 95% CI |
+|:-------------------------------------------:| :---: | :---: | :---: | :---: | :---: |:--------:| :---: |
+|                  VQAScore                   | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 |   0.57   | [0.561, 0.570] |
+|                  PickScore                  | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 |   0.36   | [0.350, 0.361] |
+|                  CLIPScore                  | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 |   0.44   | [0.430, 0.440] |
+|                Image-Reward                 | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 |   0.46   | [0.457, 0.467] |
+|      EvoSense (LLAMA3-instruct 0-shot)      | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 |  -0.04   | [-0.038, -0.027] |
+|          EvoSense (QwenLM 0-shot)           | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 |  -0.06   | [-0.064, -0.053] |
+|             InternVL as a judge             | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 |   0.50   | [0.507, 0.514] |
+|              QwenVL as a judge              | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 |   0.50   | [0.507, 0.514] |
+| EvoSense (LLAMA3-instruct + $D_{InternVL}$) | **0.79** | **0.82** | **0.77** | **0.84** | **0.85** | **0.80** | [0.806, 0.813] |
+|  EvoSense (LLAMA3-instruct +$D_{QWenVL}$)   | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 |   0.76   | [0.754, 0.761] |
+|     EvoSense (QwenLM + $D_{InternVL}$)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 |   0.66   | [0.658, 0.666] |
+|      EvoSense (QwenLM + $D_{QWenVL}$)       | 0.62 | 0.66 | 0.50 | 0.67 | 0.58 |   0.61   | [0.612, 0.621] |
 
 The table, shows that our metric agreement is fairly consistent over different sensations improving at least by 44% compared to baselines. 
 
@@ -345,20 +345,22 @@ If the performance of EvoSense was the result of lexical plausibility of caption
 
 * Finally, we have added 0-shot MLLMs (as a judge for sensation evocation) as the baseline for our metric showing that our evaluation method improves the agreement by 60% compared to MLLMs as a judge. This suggests that MLLMs, while capable of generating accurate descriptions, struggle to understand and find the correct sensation (as also shown in the table 1 in classification task), so, it is less probable for MLLMs to include the sensation in the description.
 
-|                 Metric                 | touch | smell | sound | taste | sight | All |
-|:--------------------------------------:| :---: | :---: | :---: | :---: | :---: | :---: |
-|                VQAScore                | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 | 0.57 |
-|               PickScore                | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 | 0.36 |
-|               CLIPScore                | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 | 0.44 |
-|              Image-Reward              | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 | 0.46 |
-|         LLAMA3-instruct 0-shot         | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 | -0.04 |
-|             QwenLM 0-shot              | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 | -0.06 |
-|          **InternVL as a judge**           | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 | 0.50 |
-|           **QwenVL as a judge**            | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 | 0.50 |
-| EvoSense (LLAMA3-instruct + DInternVL) | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80 |
-|  EvoSense (LLAMA3-instruct + DQwenVL)  | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 | 0.75 |
-|     EvoSense (QwenLM + DInternVL)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 | 0.65 |
-|      EvoSense (QwenLM + DQwenVL)       | 0.62 | 0.64 | 0.50 | 0.67 | 0.58 | 0.60 |
+|                   Metric                    | touch | smell | sound | taste | sight |   All    | 
+|:-------------------------------------------:| :---: | :---: | :---: | :---: | :---: |:--------:| 
+|                  VQAScore                   | 0.58 | 0.60 | 0.42 | 0.65 | 0.58 |   0.57   | 
+|                  PickScore                  | 0.38 | 0.45 | 0.12 | 0.36 | 0.30 |   0.36   | 
+|                  CLIPScore                  | 0.48 | 0.47 | 0.36 | 0.41 | 0.30 |   0.44   | 
+|                Image-Reward                 | 0.49 | 0.50 | 0.38 | 0.34 | 0.45 |   0.46   | 
+|      EvoSense (LLAMA3-instruct 0-shot)      | -0.09 | 0.08 | -0.22 | -0.005 | -0.007 |  -0.04   | 
+|          EvoSense (QwenLM 0-shot)           | -0.15 | 0.04 | -0.22 | 0.03 | 0.003 |  -0.06   | 
+|             **InternVL as a judge**             | 0.54 | 0.48 | 0.43 | 0.54 | 0.49 |   0.50   | 
+|              **QwenVL as a judge**              | 0.55 | 0.48 | 0.43 | 0.54 | 0.50 |   0.50   | 
+| EvoSense (LLAMA3-instruct + $D_{InternVL}$) | 0.79 | 0.82 | 0.77 | 0.84 | 0.85 | 0.80     | 
+|  EvoSense (LLAMA3-instruct +$D_{QWenVL}$)   | 0.76 | 0.77 | 0.70 | 0.79 | 0.73 |   0.76   | 
+|     EvoSense (QwenLM + $D_{InternVL}$)      | 0.64 | 0.69 | 0.57 | 0.73 | 0.64 |   0.66   | 
+|      EvoSense (QwenLM + $D_{QWenVL}$)       | 0.62 | 0.66 | 0.50 | 0.67 | 0.58 |   0.61   | 
+
+(We have bolded MLLMs as a judge)
 
 > Moreover, the paper reports κ = 0.86 while the Pearson r is only 0.38 on real ads (Table 2), suggesting that categorical agreement might be inflated by frequent labels and does not convincingly validate the claimed intensity correlation.
 
