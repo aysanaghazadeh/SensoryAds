@@ -336,7 +336,7 @@ We thank the reviewer for the constructive feedback and the opportunity to respo
 
 ---
 
-### [W1] EvoSense Evaluation
+### [W1] Validity of the Evaluation Metric
 > EvoSense first obtains an image description from an MLLM, then asks a text-only LLM to score the likelihood of the sensation term, reporting “average log-probability” as intensity. This setup may conflate lexical plausibility of captions with actual perceptual evocation in images. 
 
 If the performance of EvoSense was the result of lexical plausibility of captions with actual perceptual evocation, the 0-shot LLMs in the same setting as EvoSense should have high agreement with human as well. However, we compare our metric **with the same setup but utilizing the zero-shot LLMs**. Since the **exact same descriptions** are given to both fine-tuned and zero-shot LLMs, the agreement of zero-shot version should be high as well given the hypothesis. However, **the zero-shot version results in negative agreement** highlighting the importance of the fine-tuning. 
@@ -370,14 +370,14 @@ This way we significantly reduce the sparsity of human annotations for the image
 
 ---
 
-### [W2] T2I Fine-tuning on SensoryAd Generation
+### [W2] Limitation of Generation
 >The SensoryAd Generation experiments rely entirely on textual prompting of existing models without any fine-tuning or conditioning on the SensoryAd dataset. Consequently, the results mostly reflect the models’ inherent prompt-following ability rather than learned sensation-aware generation.
 
 Thank you so much for the insightful suggestion of fine-tuning. The goal of this benchmark is to show the need for more sensory image data or further improvement in the generalizability of models. We have fine-tuned the SD3 on the sensory ad data and the AIM (Alignment of Image and Message) was increased from 0.61 to 0.62 while EvoSense stayed on unchanged 0.89 for fine-tuned SD3. We've included this ablation discussion to the Appendix - A5 section.
 
 ---
 
-### [W3] AR Alignment
+### [W3] Suitability of the Evaluation
 > The task requires conveying both the Action-Reason (AR) message and the target sensation. However, quantitative results emphasize only EvoSense intensity (Table 3). 
 
 Thank you so much for the constructive comment. 
@@ -395,7 +395,7 @@ We have added the plot (Fig. 7 - a) showing the relation between the alignment a
 
 ---
 
-### [W4] Persuasion and Sensation Intensity Relation
+### [W4] Sensation vs. Persuasion
 > The paper positions sensation evocation as a persuasive strategy in advertising and implicitly assumes that stronger sensations lead to greater persuasive effect. Yet no behavioral or attitudinal measures of persuasion (e.g., message recall, emotional engagement) are collected, and evaluation remains limited to sensation-intensity scores. Including a human study or a message-alignment metric could help substantiate the claimed link between sensory evocation and persuasive impact.
 
 * **Marketing Publications**
@@ -424,7 +424,7 @@ We have added the plot (Fig. 7 - a) showing the relation between the alignment a
 
 ---
 
-### [W5] Data Annotation Information
+### [W5] Annotation Reliability is Under-reported
 > Although the paper outlines a multi-stage annotation process on Prolific, it does not specify the number of annotators per image, the inter-annotator agreement for either labels or intensity scores, or how disagreements and outliers were handled. Since EvoSense training converts these ratings into pairwise preferences, the lack of clarity around annotation reliability raises questions about the stability of the supervision signal.
 
 * **Annotation Process**
@@ -438,7 +438,7 @@ For each image, 1 annotator annotated the image, then the quality of annotations
 
 ---
 
-### [W6] T2I Benchmark
+### [W6] Small Annotated Subset of Generations
 > For each T2I model, only 15 out of 75 generated images were annotated, which limits the reliability of the model-level comparisons in Table 3. 
 
 We appreciate the reviewer’s concern and would like to clarify the role of annotated vs. generated images in our evaluation.
@@ -449,13 +449,23 @@ Our benchmark produces 1,660 images per model (700 Sensory Ad + 960 Sensory Imag
 
 Figure 7 is an illustrative heatmap intended to visualize relative patterns in sensation difficulty, not to provide statistical estimates. Although it uses numeric values, the underlying sample size (10 images per model for each sensation, and 40 per sensation) is not intended for model comparison.
 
+---
 
-### [W7] Classification Tasks Motivations
+### [W7] Need for Clearer Motivation of Sensation Classification
 > The Sensation Classification task is presented as a key component but lacks clear justification within the overall framework. While it measures whether models can recognize sensory concepts, its connection to the later evaluation and generation tasks is under-explained, leaving it somewhat disconnected rather than foundational.
 
 Thank you so much for the insightful comment. We have added the motivation for the classification task to the paper. Here are the two main motivations:
 * Some sensations like pain sensation can be sensitive to a group of audience such as children in a certain age. Given this, to prevent the presentation of a specific sensation to a specific group, the filtering systems should be able to detect the sensations evoked by the content. 
 * To evaluate if the images evoke specific sensation and how well the image evokes the sensation, it first needs to find the correct sensation evoked by the image. In fact, we use the results from table 1 as a motivation for fine-tuning the LLM in EvoSense. The low performance of models in classifying the sensation shows that these models cannot perform as a judge for sensation evocation.
+
+---
+
+### [W8] Typos and Grammatical Errors
+> There are multiple errors: “a an” in the abstract (p. 1); “the an” and “Hierarchal” instead of “Hierarchical” (p. 2); “fo” instead of “of” (p. 3); “Classfication” in A.3 (p. 15); “different between” in A.2 (p. 14); and “coveys” instead of “conveys” in Table 10 (p. 20).
+
+We have addressed these in the updated paper.
+
+---
 
 ### [Q1] Relation between Classification Task Performance and EvoSense Performance
 > Since both the classification and EvoSense tasks rely on the same annotated data, could you explain whether higher classification accuracy for a given sensation is associated with stronger agreement between EvoSense and human judgments across models or sensation categories?
