@@ -35,9 +35,14 @@ In the next comments we address the weaknesses mentioned in the review.
   
     We are not discovering the relation between the sensation and persuasion, instead we are building on prior marketing and psychology publications to explore the machine learning techniques in this area. As also referenced in the paper, Sensory Advertisement is a well-studied concept in marketing research. Since this has been previously extensively studied we rely on and trust the outcome of previous marketing and psychology works.
     The claim is already supported by the following papers, and books from marketing research including the user study.  
+    
     Lindstrom in his book [1] cited over 1400 times, shows the relation between the sensory appeal and brand effectiveness, and shows that the brands should use senses based on their products. They further suggest that the sensory perception in marketing results in consumers’ loyalty to the brand. 
+    
     [2] cited over 130 times, designs two studies on relation between sensory advertisements and attitude toward the brand. They show sensory ads increase positive attitude toward the brand (increasing the effectiveness of advertisement) and the reason for why sensory advertisement works is that it triggers the self-referencing, i.e.  audience imagining using the product.
-    [3] cited over 380 times, discusses how Sensory Marketing influences the effectiveness of the advertisement highlighting improvement in the effectiveness of ads by evoking mental simulation. [4] cited over 130 times, reviewed the existing works in sensory images and their effects on consumer behavior, and their findings suggest that sensory advertisements increase the mental imagery in consumers and mental imagery can enhance the ad persuasion. 
+    
+    [3] cited over 380 times, discusses how Sensory Marketing influences the effectiveness of the advertisement highlighting improvement in the effectiveness of ads by evoking mental simulation. 
+    
+    [4] cited over 130 times, reviewed the existing works in sensory images and their effects on consumer behavior, and their findings suggest that sensory advertisements increase the mental imagery in consumers and mental imagery can enhance the ad persuasion. 
 
     [1] [Lindstrom, Martin. "Brand sense: How to build powerful brands through touch, taste, smell, sight and sound." Strategic Direction 22.2 (2006).](https://www.emerald.com/sd/article/doi/10.1108/sd.2006.05622bae.001/353448/Brand-Sense-How-to-Build-Powerful-Brands-Through)
 
@@ -285,7 +290,7 @@ This establishes sensory evocation as a distinct and previously uninvestigated p
 
 * **Persuasion over Sensation Plot**
   
-    We have also plotted the persuasion score computed using Persuasion metric from [5] over the sensation scores for different generated images showing the improvement over the persuasion. We have added the plot to the appendix section. Please note that this experiment is still not an isolated experiment only evaluating the sensation changes and there are different factors changing. We highly rely on previous marketing papers for the relation between the persuasion and sensation evocation.
+    We have also plotted the persuasion score computed using Persuasion metric from [5] over the sensation scores for different generated images. We have added the plot to the Appendix - A1 - Figure 7-d. We observe that the persuasion increases with the increase of sensation intensity.
     
     [5] [Aghazadeh, Aysan, and Adriana Kovashka. "Cap: Evaluation of persuasive and creative image generation." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2025.](https://openaccess.thecvf.com/content/ICCV2025/html/Aghazadeh_CAP_Evaluation_of_Persuasive_and_Creative_Image_Generation_ICCV_2025_paper.html)
 
