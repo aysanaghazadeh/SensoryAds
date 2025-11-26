@@ -121,47 +121,49 @@ The following tables show the diversity of images over 10 most frequent topics, 
 
 **Topic distribution:**
 
-| Topic                           | # Images |
-| ------------------------------- | -------- |
-| Beauty products and cosmetics   | 251      |
-| Clothing and accessories        | 136      |
-| Shopping                        | 75       |
-| Human rights                    | 70       |
-| Self esteem                     | 61       |
-| Smoking                         | 52       |
-| Domestic violence               | 42       |
-| Animal rights                   | 41       |
-| Media and arts                  | 37       |
-| dating                          | 34       |
-| Sports equipment and activities | 32       |
-| Healthcare and medications      | 31       |
-| Alcohol                         | 26       |
-| Political candidates            | 26       |
-| Electronics                     | 23       |
+|               Topic               |  # Images  |
+|:---------------------------------:|:----------:|
+|   Beauty products and cosmetics   |    251     |
+|     Clothing and accessories      |    136     |
+|             Shopping              |     75     |
+|           Human rights            |     70     |
+|            Self esteem            |     61     |
+|              Smoking              |     52     |
+|         Domestic violence         |     42     |
+|           Animal rights           |     41     |
+|          Media and arts           |     37     |
+|              dating               |     34     |
+|  Sports equipment and activities  |     32     |
+|    Healthcare and medications     |     31     |
+|              Alcohol              |     26     |
+|       Political candidates        |     26     |
+|            Electronics            |     23     |
 
 **Sensation diversity:**
 
-| Sensation | %images evoking the sensation |
-|----------|----------|
-| touch    | 40.14 |
-| sound    | 26.44 |
-| smell    | 31.73 |
-| taste    | 12.98 |
-| sight    | 19.71 |
-| none     | 28.94 |
+| Sensation  | %images evoking the sensation  |
+|:----------:|:------------------------------:|
+|   touch    |             40.14              |
+|   sound    |             26.44              |
+|   smell    |             31.73              |
+|   taste    |             12.98              |
+|   sight    |             19.71              |
+|    none    |             28.94              |
 
 ---
 
 ### [W5] Human-Human Agreement
 > While the authors report the agreement of EvoSense with human ratings but details about inter-annotator agreement in the data seem missing. That would serve as a topline reference for interpreting the results of any evaluation method.
 
-We compute the human - human agreement on 60 images (5760 image-sensation pairs) and the kappa agreement between the human annotators is **0.83 with 95% CI = [0.831, 0.838]**. 
+We compute the human - human agreement on 60 images (5760 image-sensation pairs) and the kappa agreement between the human annotators is **0.83 with 95% CI = [0.831, 0.838]**. We have added the human-human agreement to the updated paper.
 
 ### [W6] Kappa vs Pearson
 > While EvoSense achieves high agreement with human ratings (κ = 0.86), however the Pearson correlation for this task is still a bit low (r = 0.38)
 
-* The difference **(as also reflected on baseline metrics)** is because the annotators choose up-to 3 sensation groups evoked by the image, and the rest of the scores are 0 while the computational metrics choose different scores for each sensation. While human annotations are discrete metrics have continuous values which can be used as a criteria for choosing the category. Since kappa is designed for categorical agreement, it is more reliable in our setting. For κ if the scores are both equal to 0, they are not included in the comparison pairs to resolve the sparsity issue. So, while the incorrect sensations are included paired with selected sensations, they are not included as paired with other unselected sensations. This is why κ is bigger than r. 
-* We have added an example sensation score for an image to the appendix showing the problem of correlation because of the **sparsity of the human scores**. The figure represents while high scores assigned by metric represent the chosen categories, because of the sudden drop in the values of human scores, correlation becomes lower.
+* The difference **(as also reflected on baseline metrics)** is because the annotators choose up-to 3 sensation groups evoked by the image, and the rest of the scores are 0. On the other hand, the computational metrics (including EvoSense and the baselines) choose different scores for each sensation. For computing κ agreement, we use the sensation intensity as the criteria for choosing the winner sensation for the image given each two sensation. We ignore the sensation pairs where the human annotators assign the same score to both sensations. 
+This way we significantly reduce the sparsity of human annotations for the image. So, while the incorrect sensations are included paired with selected sensations, they are not included as paired with other unselected sensations. This is why κ is bigger than r. 
+* We have added an example sensation score for an image to the Appendix - A5 - Figure 12, showing the problem of correlation because of the **sparsity of the human scores**. The figure represents while high scores assigned by metric represent the sensations evoked by the image selected by the human, because of the sudden drop in the values of human scores, correlation becomes lower.
+
 ---
 
 ## Reviewer FpSs
