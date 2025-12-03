@@ -1,3 +1,32 @@
+## Comment to AC
+We thank all reviewers for their constructive feedback; however, writing this comment we aim to report reviewers FpSs, S1yq, for using LLM to write the inaccurate reviews and dfxP for low-quality and inaccurate reviews. We have responded to all the weaknesses and have addressed the reviewers’ concerns in the paper and the rebuttal and would appreciate the consideration of our responses. We have also provided new information and experimental results as requested by the reviewers.
+
+Here are our pieces of evidence:
+* Reviewer FpSs (Fully AI-generated according to Pangram report, see below):
+  * **(Contradiction)** Reviewer calls our research angle **“genuinely novel”** BUT ALSO calls our claim on being first to investigate sensory advertisement generation and understanding, inaccurate.
+  * **(Contradiction)** The reviewer calls our benchmark cohesive and complete in strength and calls it shallow in the weakness.
+  * Reviewer names Behavior-LLaVA paper working  on the same problem while the aforementioned paper itself explains the difference between sensation and behavior. The reviewer also requested the comparison of our evaluation metric with the Behavior-LLaVA baselines which are video understanding paper focused on human behavior upon recieving the content and not relevant baseline for our **evaluation metric**.
+  * Pangram ICLR 2026 report: https://iclr.pangram.com/reviews?submission_number=3488
+  * GPT-zero: Moderately confident it is AI generated
+  
+* Reviewer S1yq (Fully AI-generated according to Pangram report):
+  * **(Incorrect claim):** While there are total number of 8300 generated images in our benchmark, the reviewer mentions there are only 75 generated images: “For each T2I model, only 15 out of 75 generated images were annotated” (75 was the number of annotated images among generated images)
+  * Pangram ICLR 2026 report: https://iclr.pangram.com/reviews?submission_number=3488
+  * GPT-zero: Highly confident it is AI generated
+  * Overall format is the same as the reviews we got from GPT5-1.
+  
+* Reviewer dfxP (Weaknesses: Fully AI-generated):
+  
+    Reviewer dfxP has used LLM to write the weaknesses
+  * **(Requests Work Out of Scope)** The reviewer mentions no algorithmic innovation for image generation as the weakness of this paper “there’s no real algorithmic innovation or a well-defined end-to-end framework for advertisement image generation” while the scope of this paper is benchmark and dataset and use of such a weakness for rejecting this paper is out of scope for this track. The reviewer did not consider the scope of the paper which is benchmark and dataset track and suggests applying reinforcement learning using our metric to improve the image generation. 
+  * **(Ignores Content in the Paper)** The reviewer claims that “none of the analyses go deep enough” without clarifying what they mean by going deep enough. We have an ablation study on 2 LLMs and 2 MLLMs in our evaluation metric showing the generalization of our method changing the main components in our design. We ablate fine-tuned/zero-shot LLMs in our evaluation method showing the importance of proposed fine-tuning. We show the difference between generated and real sensory advertisement showing the exaggeration issue in T2I models. We compare the sensation evocation for each sensation category by generated images, showing the difference in challenge level of evoking different sensations. We compare the sensation evocation given and without the advertisement message as further analysis on sensory image generation. We evaluate how well the models understand the relation between two sensations by computing the parent recall, etc. We believe given the significant analysis in the main paper and adding the new experiments we do an in depth analysis on sensory images and if the reviewer does not agree we kindly request an elaboration on what analysis is being missed in our paper.
+  * Pangram on weaknesses: Fully AI-Generated with High confidence
+  * GPT-zero: mixed
+  
+* Finally, there are three reviewers asking us to do a human study on the relation between persuasion and sensation evocation as the motivation and claim of the paper, while we have cited a reference paper from marketing research supporting this claim doing the study. We believe the fact that all three reviewers have asked us to do such a study even with the reference paper, is the result of using LLM in writing the review. 
+* Moreover, there are two reviewers raising the concern of information leakage from MLLMs to LLMs in our evaluation, while this hypothesis is rejected comparing the zero-shot LLM row with our method in table 2 of the main paper. Again, we believe two reviewers raising such a concern that is rejected by our experiments, is the use of LLM in writing the reviews.
+
+
 ## Thank you note
 
 We thank the reviewers for their constructive and insightful comments. We are happy that reviewers found our research direction “genuinely novel” and our analysis both systematic and insightful, especially in how we evaluate and understand sensory advertisements (Reviewers FpSs, S1yq). We appreciate the recognition of our tasks as well motivated, well scoped, well-defined, and useful to community forming “usable foundations for future research” (Reviewers yyYb, FpSs). We also thank them for highlighting the cohesiveness and usefulness of our benchmarks serving “as a cornerstone for future research” (Reviewers FpSs, S1yq). We are pleased that the EvoSense metric was regarded as a key contribution that can advance evaluation in this space (Reviewer yyYb). Finally, we appreciate the positive remarks on the idea of exploring sensory visual content (Reviewer dfxp). 
@@ -112,6 +141,8 @@ We also, increased number of steps to 40000 and the number of images to 100 and 
 
 While the results are consistent over different fine-tuning steps in the table, our initial experiments with few number of images (upto 10 images) showed low agreement with human annotations suggesting there is a minimum number of images/steps required to reach high agreement with human.
 
+---
+
 ### [W4] Dataset Size
 >The authors sampled only 670 real ad images from the Pitts Ad dataset which is quite modest in size. 
 
@@ -161,6 +192,8 @@ The following tables show the diversity of images over 10 most frequent topics, 
 > While the authors report the agreement of EvoSense with human ratings but details about inter-annotator agreement in the data seem missing. That would serve as a topline reference for interpreting the results of any evaluation method.
 
 We compute the human - human agreement on 60 images (5760 image-sensation pairs) and the kappa agreement between the human annotators is **0.83 with 95% CI = [0.831, 0.838]**. We have added the human-human agreement to the updated paper.
+
+---
 
 ### [W6] Kappa vs Pearson
 > While EvoSense achieves high agreement with human ratings (κ = 0.86), however the Pearson correlation for this task is still a bit low (r = 0.38)
@@ -306,6 +339,8 @@ This establishes sensory evocation as a distinct and previously uninvestigated p
 * We annotated 75 images, the number of images generated by each model in our evaluation setup is 700 for Sensory Ad generation and 960 for Sensory Image Generation. 
 * We have annotated 50 more generated images which will release with the previously annotated images upon the acceptance of paper. However, the goal of annotated images is solely for evaluation of our EvoSense metric, and we rely on the metric for evaluation of the models in the benchmark.
 * We agree that with the current rapidly evolving T2I ecosystem, no finding is guaranteed to stay the same. In fact, we believe the big part of the contribution of benchmarks to the field is to find the shortcoming of current methods, to address them and evolve the methods. And we hope with this benchmark we introduce a significantly underexplored research for future research.
+
+---
 
 ### [W6] Agreement Evaluation
 
