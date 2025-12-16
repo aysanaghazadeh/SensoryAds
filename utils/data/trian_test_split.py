@@ -50,6 +50,9 @@ def get_test_data(args):
     topics_data_file = os.path.join(args.data_path, 'train/Topics_train.json')
     if args.AD_type=='ALL':
         test_file = os.path.join(args.data_path, f'train/SensoryAd_image_list_all.csv')
+    elif args.AD_type=='WHOLE':
+        QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
+        return list(QA.keys())
     else:
         test_file = os.path.join(args.data_path, f'train/test_set_images_{args.AD_type}.csv')
     if os.path.exists(test_file):

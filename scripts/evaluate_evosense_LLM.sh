@@ -3,5 +3,5 @@ python evaluation.py --config_type=DEFAULT \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_train_images_total_ALL_description_generation.csv \
 --LLM=LLAMA3_instruct \
 --fine_tuned=True \
---model_checkpoint=40000 \
+--model_checkpoint=24500 \
 --resume=True
