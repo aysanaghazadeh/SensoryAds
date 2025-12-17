@@ -189,7 +189,7 @@ def parse_args():
     parser.add_argument('--training_type',
                         type=str,
                         default='CPO_train_LLM',
-                        choices=['CPO_train_LLM', 'DPO_train_MLLM', 'HierarchicalCPO_train_LLM', 'SD3_dreambooth'])
+                        choices=['CPO_train_LLM', 'DPO_train_MLLM', 'HierarchicalCPO_train_LLM', 'SD3_dreambooth', 'HierarchicalCPO_train_LLM_Annotations'])
 
     parser.add_argument(
         "--pretrained_model_name_or_path",
