@@ -87,6 +87,6 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
 
 def get_train_LLM_HierarchicalCPO_Dataloader(args, tokenizer):
     image_urls = get_train_data(args)
-    image_urls = image_urls[:400]
+    image_urls = image_urls
     dataset = get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls)
     return dataset
