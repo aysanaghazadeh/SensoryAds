@@ -120,7 +120,7 @@ def get_training_args(args):
         save_strategy="steps",
         save_steps=5000,
         eval_strategy="steps",
-        eval_steps=100,
+        eval_steps=1000,
         do_eval=True,
         label_names=["input_ids", "labels", "attention_mask"],
         report_to="none",
@@ -135,7 +135,7 @@ def train(args):
     cpo_args = get_training_args(args)
     model, tokenizer = get_model(args)
     train_dataset = get_train_LLM_HierarchicalCPO_Dataloader(args, tokenizer)
-    tmp = train_dataset.train_test_split(test_size=0.1)
+    tmp = train_dataset.train_test_split(test_size=0.01)
     train_dataset = tmp["train"]
 
     eval_dataset = tmp["test"]
