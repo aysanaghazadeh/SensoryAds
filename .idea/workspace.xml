@@ -42,7 +42,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "SHELLCHECK.PATH": "/Users/aysanaghazadeh/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/aysanaghazadeh/University/Pitt/Research/Adriana/SensoryAds/utils/data",
+    "last_opened_file_path": "/Users/aysanaghazadeh/University/Pitt/Research/Adriana/SensoryAds/scripts",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -54,9 +54,9 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/scripts" />
       <recent name="$PROJECT_DIR$/utils/data" />
       <recent name="$PROJECT_DIR$/Training" />
-      <recent name="$PROJECT_DIR$/scripts" />
       <recent name="$PROJECT_DIR$/configs" />
       <recent name="$PROJECT_DIR$/utils/prompt_engineering/prompts" />
     </key>
@@ -215,7 +215,7 @@
       <workItem from="1763490014315" duration="131542000" />
       <workItem from="1764780087325" duration="4132000" />
       <workItem from="1765478717559" duration="3045000" />
-      <workItem from="1765844348308" duration="26731000" />
+      <workItem from="1765844348308" duration="27062000" />
     </task>
     <servers />
   </component>
