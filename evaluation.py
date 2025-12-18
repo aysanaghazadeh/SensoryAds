@@ -42,7 +42,8 @@ class SensationEvaluation:
 
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
-        result_filename = args.description_file.replace('.csv', f'_{args.LLM}_finetuned{args.fine_tuned}{f"_{args.model_checkpoint}" if args.fine_tuned else ""}.json').split('/')[-1]
+        result_filename = args.description_file.replace('.csv', f'_{args.LLM}_finetuned{args.fine_tuned}'
+                                                                f'{f"_{args.model_name + args.model_checkpoint if args.model_name is not None else args.model_checkpoint}" if args.fine_tuned else ""}.json').split('/')[-1]
         directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)

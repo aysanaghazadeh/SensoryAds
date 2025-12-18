@@ -22,26 +22,21 @@ class LLAMA3Instruct(nn.Module):
                                                           token=os.environ.get('HF_TOKEN'))
                 self.tokenizer.pad_token = self.tokenizer.eos_token
                 self.tokenizer.padding_side = "right"
+                if args.model_name is not None:
+                    model_name = args.model_name
+                else:
+                    model_name = 'my_HierarchicalCPO_LLAMA3_instruct'
                 self.model = PeftModel.from_pretrained(self.model,
                                                        os.path.join(args.model_path,
-                                                                    f'my_HierarchicalCPO_LLAMA3_instruct/checkpoint-{args.model_checkpoint}'))
-                print(f'model loaded from my_HierarchicalCPO_LLAMA3_instruct/checkpoint-{args.model_checkpoint}')
+                                                                    f'{model_name}/checkpoint-{args.model_checkpoint}'))
+                print(f'model loaded from {model_name}/checkpoint-{args.model_checkpoint}')
             else:
                 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
-
-                # self.pipeline = pipeline(
-                #     "text-generation",
-                #     model=model_id,
-                #     token=os.environ.get('HF_TOKEN'),
-                #     model_kwargs={"torch_dtype": torch.bfloat16},
-                #     quantization_config=BitsAndBytesConfig(load_in_8bit=True),
-                #     device_map="auto",
-                # )
-                self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",
+                self.model = AutoModelForCausalLM.from_pretrained(model_id,
                                                                   token=os.environ.get('HF_TOKEN'),
                                                                   load_in_8bit=True,
                                                                   device_map='auto')
-                self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",
+                self.tokenizer = AutoTokenizer.from_pretrained(model_id,
                                                                token=os.environ.get('HF_TOKEN'))
         else:
             self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",

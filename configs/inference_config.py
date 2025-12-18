@@ -94,6 +94,10 @@ def parse_args():
                         type=str,
                         default='../models',
                         help='The path to trained models')
+    parser.add_argument('--model_name',
+                        type=str,
+                        default=None,
+                        help='The name of the model folder in model path if using fine-tuned models. The default is my_HierarchicalCPO_{--LLM}')
     parser.add_argument('--config_path',
                         type=str,
                         default=None,
