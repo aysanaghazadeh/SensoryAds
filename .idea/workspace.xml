@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/scripts/fine_tune_LoRA.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/train_Flux_LoRA.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/agreement.py" beforeDir="false" afterPath="$PROJECT_DIR$/agreement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/fine_tune_LoRA.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/fine_tune_LoRA.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -223,7 +221,7 @@
       <workItem from="1765844348308" duration="29118000" />
       <workItem from="1766018374515" duration="10572000" />
       <workItem from="1767560384745" duration="3951000" />
-      <workItem from="1767713747669" duration="4122000" />
+      <workItem from="1767713747669" duration="5304000" />
     </task>
     <servers />
   </component>
