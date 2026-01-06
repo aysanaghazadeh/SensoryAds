@@ -1,0 +1,20 @@
+accelerate launch train_Flux_LoRA.py \
+  --pretrained_model_name_or_path="black-forest-labs/FLUX.1-dev" \
+  --dataset_name="SensoryData" \
+  --train_data_dir="../Data/PittAd/train" \
+  --caption_column="caption" \
+  --image_column="image" \
+  --conditioning_image_column="conditioning_image" \
+  --output_dir="../models/flux_edit_lora" \
+  --validation_prompt="Generate an image that evokes Comforting Warmth and conveys I should buy this car because it is luxurious." \
+  --validation_image="../Data/PittAd/train_images_total/0/13534.jpg" \
+  --validation_steps=250 \
+  --mixed_precision="bf16" \
+  --resolution=1024 \
+  --train_batch_size=1 \
+  --gradient_accumulation_steps=4 \
+  --gradient_checkpointing \
+  --learning_rate=1e-4 \
+  --rank=64 \
+  --lr_scheduler="constant" \
+  --max_train_steps=2000
