@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b799db2-24ef-458c-808c-4168e11914f9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Editing/agents.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logging.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/fine_tune_LoRA.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/fine_tune_LoRA.sh" afterDir="false" />
     </list>
@@ -222,7 +224,7 @@
       <workItem from="1766018374515" duration="10572000" />
       <workItem from="1767560384745" duration="3951000" />
       <workItem from="1767713747669" duration="13756000" />
-      <workItem from="1768489834483" duration="779000" />
+      <workItem from="1768489834483" duration="5156000" />
     </task>
     <servers />
   </component>

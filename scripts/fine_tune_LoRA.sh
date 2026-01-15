@@ -8,9 +8,9 @@ accelerate launch --mixed_precision=bf16 train_Flux_LoRA.py \
   --validation_prompt "Generate an image that evokes Comforting Warmth and conveys I should buy this car because it is luxurious." \
   --validation_image "../Data/PittAd/train_images_total/4/13534.jpg" \
   --validation_steps=2100 \
-  --resolution=1024 \
+  --resolution=512 \
   --train_batch_size=1 \
-  --gradient_accumulation_steps=4 \
+  --gradient_accumulation_steps=2 \
   --gradient_checkpointing \
   --learning_rate=1e-4 \
   --rank=32 \
