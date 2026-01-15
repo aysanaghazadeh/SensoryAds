@@ -16,7 +16,7 @@
 
 import copy
 import itertools
-import logging
+import validation_log
 import math
 import os
 import random
