@@ -86,8 +86,8 @@ class SharedMessage:
 # )
 # pipe.to("cuda")
 quantization_config = PipelineQuantizationConfig(
-            quant_backend="bitsandbytes_4bit",
-            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+            quant_backend="bitsandbytes_8bit",
+            quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
         )
 pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2511",
                                                   torch_dtype=torch.bfloat16,
