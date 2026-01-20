@@ -48,7 +48,7 @@ pipe = FluxControlNetPipeline.from_pretrained(
 pipe.to("cuda")
 
 # Define your image editing task parameters
-image = Image.open('../Data/PittAd/train_images/10000.jpg')
+image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
 ad_message = "I should drink this beer because it is refreshing"  # Replace with your actual ad message
 target_sensation = "Intense Heat"  # Replace with your actual sensation
 initial_description = "A beer advertisement."  # Replace with actual initial description
