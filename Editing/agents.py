@@ -18,6 +18,20 @@ import json
 wandb.init(project="autogen-image-editing", name="flux-controlnet-editing")
 
 
+def resize_image_for_llm(image, max_size=1024):
+    """Resize image to reduce token usage while maintaining aspect ratio"""
+    width, height = image.size
+    if width > max_size or height > max_size:
+        if width > height:
+            new_width = max_size
+            new_height = int(height * (max_size / width))
+        else:
+            new_height = max_size
+            new_width = int(width * (max_size / height))
+        return image.resize((new_width, new_height), Image.LANCZOS)
+    return image
+
+
 class SharedMessage:
     images: list
     messages: list
@@ -49,9 +63,9 @@ pipe.to("cuda")
 
 # Define your image editing task parameters
 image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
-ad_message = "I should drink this beer because it is refreshing"  # Replace with your actual ad message
-target_sensation = "Intense Heat"  # Replace with your actual sensation
-initial_description = "A beer advertisement image"  # Replace with actual initial description
+ad_message = "I should drink this beer because it is refreshing"
+target_sensation = "Intense Heat"
+initial_description = "A beer advertisement image"
 
 shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
 
@@ -87,6 +101,7 @@ def image_editing(prompt, control_image, group_chat):
     })
 
     return image
+
 
 planner_agent = MultimodalConversableAgent(
     name="planner",
@@ -139,8 +154,10 @@ def custom_speaker_selection(last_speaker, group_chat):
         new_image = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
         shared_messages.current_description = refined_prompt
 
-        # Create a USER message with the image for the critic
-        img_uri = pil_to_data_uri(new_image)
+        # Resize image before converting to data URI to reduce token usage
+        resized_image = resize_image_for_llm(new_image, max_size=512)
+        img_uri = pil_to_data_uri(resized_image)
+
         critic_user_message = {
             "role": "user",
             "content": f"""Please evaluate this generated image:
@@ -165,7 +182,6 @@ Applied Instructions: {json.dumps(shared_messages.current_instructions, indent=2
                 "step": shared_messages.step_counter,
                 "issue_identified": critic_response
             })
-            # Send issue back to planner WITHOUT image
             issue_message = {
                 "role": "user",
                 "content": f"""Issue identified: {critic_response}
@@ -194,17 +210,19 @@ group_chat_manager = GroupChatManager(
     llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}]},
 )
 
+
 def evoke_sensation():
-    # Prepare initial message for planner - ONLY send image to critic, not planner
-    initial_img_uri = pil_to_data_uri(image)
+    # Resize initial image before sending to critic
+    resized_initial_image = resize_image_for_llm(image, max_size=512)
+    initial_img_uri = pil_to_data_uri(resized_initial_image)
 
     # First, have critic evaluate the initial image
     initial_critic_message = f"""Please evaluate this initial image:
-    <img {initial_img_uri}>
+<img {initial_img_uri}>
 
-    Advertisement Message: {ad_message}
-    Target Sensation: {target_sensation}
-    Applied Instructions: [] (no edits yet)"""
+Advertisement Message: {ad_message}
+Target Sensation: {target_sensation}
+Applied Instructions: [] (no edits yet)"""
 
     # Start with critic evaluating initial image
     critic_agent.initiate_chat(
