@@ -90,13 +90,6 @@ def image_editing(prompt, control_image, group_chat):
     return image, img_uri
 
 
-config_list_4o = autogen.config_list_from_json(
-    "OAI_CONFIG_LIST",
-    filter_dict={
-        "model": ["gpt-4o"],
-    },
-)
-
 planner_agent = MultimodalConversableAgent(
     name="planner",
     system_message=PLANNER_SYSTEM_PROMPT,
