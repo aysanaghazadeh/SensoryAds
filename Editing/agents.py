@@ -48,10 +48,10 @@ pipe = FluxControlNetPipeline.from_pretrained(
 pipe.to("cuda")
 
 # Define your image editing task parameters
-image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
-ad_message = "I should drink this beer because it is refreshing"  # Replace with your actual ad message
-target_sensation = "Intense Heat"  # Replace with your actual sensation
-initial_description = "A beer advertisement."  # Replace with actual initial description
+image = Image.open('../Data/PittAd/train_images/10000.jpg')
+ad_message = "Refreshing summer drink"  # Replace with your actual ad message
+target_sensation = "refreshment"  # Replace with your actual sensation
+initial_description = "A product image"  # Replace with actual initial description
 
 shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
 
@@ -76,7 +76,6 @@ def image_editing(prompt, control_image, group_chat):
         guidance_scale=3.5,
     ).images[0]
 
-    img_uri = pil_to_data_uri(image)
     shared_messages.images.append(image)
     shared_messages.step_counter += 1
 
@@ -87,8 +86,7 @@ def image_editing(prompt, control_image, group_chat):
         "prompt": prompt,
     })
 
-    return image, img_uri
-
+    return image
 
 planner_agent = MultimodalConversableAgent(
     name="planner",
@@ -114,6 +112,7 @@ text_refiner_agent = ConversableAgent(
 )
 
 
+# Custom speaker selection function to control the flow
 def custom_speaker_selection(last_speaker, group_chat):
     messages = group_chat.messages
 
@@ -130,13 +129,14 @@ def custom_speaker_selection(last_speaker, group_chat):
             else:
                 json_str = planner_response.strip()
             shared_messages.current_instructions = json.loads(json_str)
-        except:
+        except Exception as e:
+            print(f"Error parsing planner instructions: {e}")
             shared_messages.current_instructions = []
         return text_refiner_agent
 
     elif last_speaker is text_refiner_agent:
         refined_prompt = messages[-1].get("content", "").strip()
-        new_image, img_uri = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
+        new_image = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
         shared_messages.current_description = refined_prompt
 
         # Create a USER message with the image for the critic
@@ -165,6 +165,18 @@ Applied Instructions: {json.dumps(shared_messages.current_instructions, indent=2
                 "step": shared_messages.step_counter,
                 "issue_identified": critic_response
             })
+            # Send issue back to planner WITHOUT image
+            issue_message = {
+                "role": "user",
+                "content": f"""Issue identified: {critic_response}
+
+Advertisement Message: {shared_messages.ad_message}
+Target Sensation: {shared_messages.target_sensation}
+Current Image Description: {shared_messages.current_description}
+
+Please generate new editing instructions to address this issue."""
+            }
+            group_chat.messages.append(issue_message)
             return planner_agent
     else:
         return planner_agent
@@ -183,22 +195,21 @@ group_chat_manager = GroupChatManager(
 )
 
 def evoke_sensation():
-    # Prepare initial message for planner with all context
+    # Prepare initial message for planner - ONLY send image to critic, not planner
     initial_img_uri = pil_to_data_uri(image)
-    initial_message = f"""Here is the initial image to edit:
+
+    # First, have critic evaluate the initial image
+    initial_critic_message = f"""Please evaluate this initial image:
     <img {initial_img_uri}>
-    
-    Initial Image Description: {initial_description}
-    
+
     Advertisement Message: {ad_message}
     Target Sensation: {target_sensation}
-    
-    Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation."""
+    Applied Instructions: [] (no edits yet)"""
 
-    # Run the group chat
-    planner_agent.initiate_chat(
+    # Start with critic evaluating initial image
+    critic_agent.initiate_chat(
         group_chat_manager,
-        message=initial_message,
+        message=initial_critic_message,
     )
 
     # Finish wandb run
