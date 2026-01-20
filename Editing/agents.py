@@ -1,110 +1,158 @@
-# sensory_editing_core_style.py
+import os
+import autogen
+from Editing.system_messges import *
+from autogen import Agent, AssistantAgent, ConversableAgent, UserProxyAgent, GroupChat, GroupChatManager
+from autogen.agentchat.contrib.capabilities.vision_capability import VisionCapability
+from autogen.agentchat.contrib.img_utils import get_pil_image, pil_to_data_uri
+from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
+from autogen.agentchat.contrib.capabilities import generate_images
+import torch
+from diffusers.utils import load_image
+from diffusers import FluxControlNetPipeline
+from diffusers import FluxControlNetModel
+from PIL import Image
+import wandb
 
-from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Literal, Tuple
+# Initialize wandb
+wandb.init(project="autogen-image-editing", name="flux-controlnet-editing")
 
-from autogen_core import (
-    DefaultTopicId,
-    MessageContext,
-    RoutedAgent,
-    default_subscription,
-    message_handler,
+
+class SharedMessage:
+    images: list
+    messages: list
+    descriptions: list
+    step_counter: int
+
+    def __init__(self, image):
+        self.images = [image]
+        self.messages = []
+        self.descriptions = []
+        self.step_counter = 0
+
+
+base_model = "black-forest-labs/FLUX.1-dev"
+controlnet_model = "InstantX/FLUX.1-dev-controlnet-canny"
+controlnet = FluxControlNetModel.from_pretrained(controlnet_model, torch_dtype=torch.bfloat16)
+pipe = FluxControlNetPipeline.from_pretrained(
+    base_model, controlnet=controlnet, torch_dtype=torch.bfloat16
+)
+pipe.to("cuda")
+image = Image.open('../Data/PittAd/train_images/10000.jpg')
+shared_messages = SharedMessage(image)
+
+# Log initial image to wandb
+wandb.log({
+    "step": 0,
+    "initial_image": wandb.Image(image, caption="Initial Image")
+})
+
+
+def image_editing(last_message, control_image, group_chat):
+    prompt = last_message.get("content", "")
+    sender = last_message.get("name", "")
+
+    # Generate image
+    image = pipe(
+        prompt,
+        control_image=control_image,
+        control_guidance_start=0.2,
+        control_guidance_end=0.8,
+        controlnet_conditioning_scale=1.0,
+        num_inference_steps=28,
+        guidance_scale=3.5,
+    ).images[0]
+
+    img_uri = pil_to_data_uri(image)
+    group_chat.messages.append({
+        "role": "assistant",
+        "name": "image_generator",
+        "content": f"[IMAGE_DATA_URI]{img_uri}"
+    })
+    shared_messages.images.append(image)
+    shared_messages.step_counter += 1
+
+    # Log to wandb
+    wandb.log({
+        "step": shared_messages.step_counter,
+        "generated_image": wandb.Image(image, caption=f"Step {shared_messages.step_counter}: {prompt[:100]}..."),
+        "prompt": prompt,
+        "sender": sender,
+    })
+
+    return True
+
+
+config_list_4o = autogen.config_list_from_json(
+    "OAI_CONFIG_LIST",
+    filter_dict={
+        "model": ["gpt-4o"],
+    },
 )
 
-FailureMode = Literal[
-    "ok",
-    "needs_reedit",
-    "needs_replan",
-    "prompt_issue",
-    "identity_drift",
-    "grounding_missing_add",
-    "grounding_failed_remove",
-]
+planner_agent = MultimodalConversableAgent(
+    name="planner",
+    system_message=PLANNER_SYSTEM_PROMPT,
+    max_consecutive_auto_reply=10,
+    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
+                "max_tokens": 512},
+)
 
-@dataclass
-class Message:
-    image_path: str
-    target_sensation: str
-    constraints: List[str] = field(default_factory=list)
+critic_agent = MultimodalConversableAgent(
+    name="critic",
+    system_message=CRITIC_SYSTEM_PROMPT,
+    max_consecutive_auto_reply=10,
+    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
+                "max_tokens": 512},
+)
 
-    iter_idx: int = 0
-    max_iters: int = 6
+text_refiner_agent = ConversableAgent(
+    name="text_refiner",
+    system_message=TEXT_REFINER_SYSTEM_PROMPT,
+    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
+                "max_tokens": 512},
+)
 
-    # NEW: descriptions of image states
-    original_image_desc: Optional[Dict[str, Any]] = None   # only computed once
-    current_image_desc: Optional[Dict[str, Any]] = None    # recomputed after edits if you want
 
-    plan: Optional[Dict[str, Any]] = None
-    prompt: Optional[str] = None
-    edit_config: Optional[Dict[str, Any]] = None
-    edited_image_path: Optional[str] = None
-    critic: Optional[Dict[str, Any]] = None
+# Custom speaker selection function to control the flow
+def custom_speaker_selection(last_speaker, group_chat):
+    messages = group_chat.messages
 
-    history: List[Dict[str, Any]] = field(default_factory=list)
+    if len(messages) <= 1:
+        return planner_agent
 
-@default_subscription
-class VisualPlanner(RoutedAgent):
-    def __init__(self, plan_fn: Callable[[Message], Dict[str, Any]]) -> None:
-        super().__init__("A visual elements planner agent.")
-        self._plan_fn = plan_fn
+    if last_speaker is planner_agent:
+        return text_refiner_agent
+    elif last_speaker is text_refiner_agent:
+        # Generate image after text_refiner
+        image_editing(messages[-1], shared_messages.images[-1], group_chat)
+        return critic_agent
+    elif last_speaker is critic_agent:
+        return planner_agent
+    else:
+        return planner_agent
 
-    @message_handler
-    async def handle_message(self, message: Message, ctx: MessageContext) -> None:
-        # Only plan when needed (first step or needs_replan)
-        if message.plan is not None and message.critic is not None:
-            if message.critic.get("failure_mode") != "needs_replan":
-                return
 
-        plan = self._plan_fn(message)
-        message.plan = plan
+group_chat = GroupChat(
+    agents=[planner_agent, critic_agent, text_refiner_agent],
+    messages=[],
+    max_round=12,
+    speaker_selection_method=custom_speaker_selection,
+)
 
-        print(f"{'-'*80}\nPlanner:\nPlan = {plan}")
-        await self.publish_message(message, DefaultTopicId())
+group_chat_manager = GroupChatManager(
+    groupchat=group_chat,
+    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}]},
+)
 
-@default_subscription
-class ImageDescriber(RoutedAgent):
-    def __init__(self, describe_fn):
-        super().__init__("An image describer agent.")
-        self._describe_fn = describe_fn
+# Start the conversation with initial image
+initial_img_uri = pil_to_data_uri(image)
+initial_message = f"Here is the initial image to edit:\n<img {initial_img_uri}>\n\nPlease analyze and suggest improvements."
 
-    @message_handler
-    async def handle_message(self, message: Message, ctx: MessageContext) -> None:
-        # run only once for the original image
-        if message.original_image_desc is not None:
-            return
+# Run the group chat
+planner_agent.initiate_chat(
+    group_chat_manager,
+    message=initial_message,
+)
 
-        desc = self._describe_fn(message.image_path)
-        message.original_image_desc = desc
-        message.current_image_desc = desc  # initialize current state to original
-
-        print(f"{'-'*80}\nDescriber:\nOriginalDesc = {desc}")
-        await self.publish_message(message, DefaultTopicId())  # type: ignore
-
-@default_subscription
-class PromptRefiner(RoutedAgent):
-    def __init__(self, refine_fn: Callable[[Message], Tuple[Dict[str, Any], str]]) -> None:
-        super().__init__("A prompt refiner agent (describes current state + writes edit prompt).")
-        self._refine_fn = refine_fn
-
-    @message_handler
-    async def handle_message(self, message: Message, ctx: MessageContext) -> None:
-        if message.plan is None:
-            return
-        if message.original_image_desc is None:
-            return  # wait until describer runs
-
-        # Only regenerate prompt if missing or prompt_issue
-        if message.prompt is not None and message.critic is not None:
-            if message.critic.get("failure_mode") != "prompt_issue":
-                return
-
-        # Optionally refresh current_image_desc every iteration if you want:
-        # - if iter_idx > 0 and you have an edited image already
-        # Here we do it whenever prompt is generated.
-        current_desc, prompt = self._refine_fn(message)
-        message.current_image_desc = current_desc
-        message.prompt = prompt
-
-        print(f"{'-'*80}\nPromptRefiner:\nCurrentDesc = {current_desc}\nPrompt = {prompt}")
-        await self.publish_message(message, DefaultTopicId())  # type: ignore
-
+# Finish wandb run
+wandb.finish()
