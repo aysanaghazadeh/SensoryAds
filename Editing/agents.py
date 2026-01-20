@@ -277,7 +277,7 @@ Please generate NEW editing instructions to address this issue."""
 group_chat = GroupChat(
     agents=[user_proxy, planner_agent, critic_agent, text_refiner_agent],
     messages=[],
-    max_round=30,
+    max_round=15,
     speaker_selection_method=custom_speaker_selection,
 )
 
