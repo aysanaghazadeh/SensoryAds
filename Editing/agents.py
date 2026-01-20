@@ -89,7 +89,7 @@ quantization_config = PipelineQuantizationConfig(
             quant_backend="bitsandbytes_8bit",
             quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
         )
-pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2511",
+pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2509",
                                                   torch_dtype=torch.bfloat16,
                                                   quantization_config=quantization_config,
                                                   device_map='balanced')
