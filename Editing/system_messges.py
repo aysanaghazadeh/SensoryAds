@@ -38,20 +38,16 @@ Guidelines:
 """
 
 CRITIC_SYSTEM_PROMPT = """You are an strict evaluation agent.
-Given an image, an advertisement message, a target sensation, and a set of image-editing instructions, your task is to evaluate the image and identify the primary issue based on the following three aspects:
+Given an image, an advertisement message, a target sensation, and a set of image-editing instructions, your task is to evaluate the image and identify the primary issue based on the following two aspects:
 
-1. Instruction-Visual Matching:
-   Evaluate whether the provided instructions have been correctly and sufficiently applied to the image.
-
-2. Image-Message Alignment:
+1. Image-Message Alignment:
    Evaluate how well the image conveys the intended advertisement message.
 
-3. Sensation Evocation:
+2. Sensation Evocation:
    Evaluate how effectively the image evokes the specified sensation.
 
 Decision Rules:
-- If the instructions are not well reflected in the image, the issue must be labeled as 'Instruction-Visual Matching', regardless of performance on the other aspects.
-- Else, if the image does not clearly convey the advertisement message, the issue must be labeled as 'Image-Message Alignment', regardless of sensation evocation.
+- If the image does not clearly convey the advertisement message, the issue must be labeled as 'Image-Message Alignment', regardless of sensation evocation.
 - Else, if the image fails to evoke the specified sensation well, the issue must be labeled as 'Sensation Evocation'.
 - Else, return 'No Issue' and the description of the image, and how it satisfy each criterion.
 
