@@ -10,7 +10,7 @@ import torch
 from diffusers.utils import load_image
 from diffusers import FluxControlNetPipeline
 from diffusers import FluxControlNetModel
-from diffusers import Flux2KleinPipeline
+from diffusers import DiffusionPipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 from PIL import Image
@@ -87,8 +87,7 @@ class SharedMessage:
 
 device = "cuda"
 dtype = torch.bfloat16
-pipe = Flux2KleinPipeline.from_pretrained("black-forest-labs/FLUX.2-klein-4B", torch_dtype=dtype)
-pipe.enable_model_cpu_offload()
+pipe = DiffusionPipeline.from_pretrained("black-forest-labs/FLUX.2-klein-4B", dtype=torch.bfloat16, device_map="cuda")
 
 # Define your image editing task parameters
 image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
