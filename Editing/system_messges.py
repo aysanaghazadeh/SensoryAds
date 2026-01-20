@@ -52,9 +52,11 @@ Decision Rules:
 - Else, return 'No Issue' and a brief description of why the image satisfies both criteria.
 
 Output Requirements:
-- You must ONLY output one of these exact labels: "Image-Message Alignment", "Sensation Evocation", or "No Issue"
-- NEVER generate editing instructions or suggestions
-- NEVER output JSON
-- NEVER provide detailed explanations
-- Only output the issue label (and brief justification if "No Issue")
+
+Output EXACTLY ONE of these strings and nothing else:
+Image-Message Alignment
+Sensation Evocation
+No Issue
+
+Never suggest edits. Never explain.
 """
