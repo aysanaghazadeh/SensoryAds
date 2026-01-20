@@ -147,13 +147,38 @@ text_refiner_agent = ConversableAgent(
                 "max_tokens": 512},
 )
 
+# Create a user proxy to initiate the conversation
+user_proxy = UserProxyAgent(
+    name="user_proxy",
+    human_input_mode="NEVER",
+    max_consecutive_auto_reply=0,
+    code_execution_config=False,
+)
+
 
 # Custom speaker selection function to control the flow
 def custom_speaker_selection(last_speaker, group_chat):
     messages = group_chat.messages
 
+    # Start with critic after user_proxy sends initial message
+    if last_speaker is user_proxy:
+        return critic_agent
+
     if len(messages) <= 1:
         return planner_agent
+
+    if last_speaker is critic_agent:
+        critic_response = messages[-1].get("content", "").strip()
+
+        if "No Issue" in critic_response or "no issue" in critic_response.lower():
+            wandb.log({"final_status": "Success - No Issues"})
+            return None
+        else:
+            wandb.log({
+                "step": shared_messages.step_counter,
+                "issue_identified": critic_response
+            })
+            return planner_agent
 
     if last_speaker is planner_agent:
         try:
@@ -192,35 +217,12 @@ Applied Instructions: {json.dumps(shared_messages.current_instructions, indent=2
 
         return critic_agent
 
-    elif last_speaker is critic_agent:
-        critic_response = messages[-1].get("content", "").strip()
-
-        if "No Issue" in critic_response or "no issue" in critic_response.lower():
-            wandb.log({"final_status": "Success - No Issues"})
-            return None
-        else:
-            wandb.log({
-                "step": shared_messages.step_counter,
-                "issue_identified": critic_response
-            })
-            issue_message = {
-                "role": "user",
-                "content": f"""Issue identified: {critic_response}
-
-Advertisement Message: {shared_messages.ad_message}
-Target Sensation: {shared_messages.target_sensation}
-Current Image Description: {shared_messages.current_description}
-
-Please generate new editing instructions to address this issue."""
-            }
-            group_chat.messages.append(issue_message)
-            return planner_agent
     else:
         return planner_agent
 
 
 group_chat = GroupChat(
-    agents=[planner_agent, critic_agent, text_refiner_agent],
+    agents=[user_proxy, planner_agent, critic_agent, text_refiner_agent],
     messages=[],
     max_round=12,
     speaker_selection_method=custom_speaker_selection,
@@ -237,18 +239,18 @@ def evoke_sensation():
     resized_initial_image = resize_image_for_llm(image, max_size=256)
     initial_img_uri = image_to_compressed_uri(resized_initial_image)
 
-    # First, have critic evaluate the initial image
-    initial_critic_message = f"""Please evaluate this initial image:
+    # First, have user_proxy send message with image
+    initial_message = f"""Please evaluate this initial image:
 <img {initial_img_uri}>
 
 Advertisement Message: {ad_message}
 Target Sensation: {target_sensation}
 Applied Instructions: [] (no edits yet)"""
 
-    # Start with critic evaluating initial image
-    critic_agent.initiate_chat(
+    # Start with user_proxy initiating to group chat manager
+    user_proxy.initiate_chat(
         group_chat_manager,
-        message=initial_critic_message,
+        message=initial_message,
     )
 
     # Finish wandb run
