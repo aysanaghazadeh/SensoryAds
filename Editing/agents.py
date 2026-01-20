@@ -181,6 +181,7 @@ user_proxy = UserProxyAgent(
     code_execution_config=False,
 )
 
+
 # Custom speaker selection function to control the flow
 def custom_speaker_selection(last_speaker, group_chat):
     messages = group_chat.messages
@@ -240,6 +241,24 @@ Applied Instructions: {json.dumps(shared_messages.current_instructions, indent=2
                 "step": shared_messages.step_counter,
                 "issue_identified": critic_response
             })
+
+            # Add image for planner to see
+            resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
+            img_uri = image_to_compressed_uri(resized_image)
+
+            issue_message = {
+                "role": "user",
+                "content": f"""The critic has identified an issue: {critic_response}
+
+Current Image:
+<img {img_uri}>
+
+Advertisement Message: {shared_messages.ad_message}
+Target Sensation: {shared_messages.target_sensation}
+
+Please generate NEW editing instructions to address this issue."""
+            }
+            group_chat.messages.append(issue_message)
             return planner_agent
 
     else:
@@ -260,10 +279,13 @@ group_chat_manager = GroupChatManager(
 
 
 def evoke_sensation():
-    # Send initial context to planner (no image needed for planner)
-    initial_message = f"""Here is the task:
+    # Resize and compress initial image
+    resized_initial_image = resize_image_for_llm(image, max_size=256)
+    initial_img_uri = image_to_compressed_uri(resized_initial_image)
 
-Initial Image Description: {initial_description}
+    # Send initial image to planner
+    initial_message = f"""Here is the initial image to edit:
+<img {initial_img_uri}>
 Advertisement Message: {ad_message}
 Target Sensation: {target_sensation}
 
