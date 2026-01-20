@@ -10,7 +10,7 @@ import torch
 from diffusers.utils import load_image
 from diffusers import FluxControlNetPipeline
 from diffusers import FluxControlNetModel
-from diffusers import Flux2Pipeline
+from diffusers import Flux2KleinPipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 from PIL import Image
@@ -18,8 +18,6 @@ import wandb
 import json
 from io import BytesIO
 import base64
-import requests
-import io
 
 
 # Initialize wandb
@@ -58,19 +56,6 @@ def image_to_compressed_uri(image):
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return f"data:image/jpeg;base64,{img_str}"
 
-def remote_text_encoder(prompts):
-    response = requests.post(
-        "https://remote-text-encoder-flux-2.huggingface.co/predict",
-        json={"prompt": prompts},
-        headers={
-            "Authorization": f"Bearer {get_token()}",
-            "Content-Type": "application/json"
-        }
-    )
-    prompt_embeds = torch.load(io.BytesIO(response.content))
-
-    return prompt_embeds.to(device)
-
 class SharedMessage:
     images: list
     messages: list
@@ -100,12 +85,10 @@ class SharedMessage:
 # )
 # pipe.to("cuda")
 
-repo_id = "diffusers/FLUX.2-dev-bnb-4bit" #quantized text-encoder and DiT. VAE still in bf16
 device = "cuda"
-torch_dtype = torch.bfloat16
-pipe = Flux2Pipeline.from_pretrained(
-    repo_id, text_encoder=None, torch_dtype=torch_dtype
-).to(device)
+dtype = torch.bfloat16
+pipe = Flux2KleinPipeline.from_pretrained("black-forest-labs/FLUX.2-klein-4B", torch_dtype=dtype)
+pipe.enable_model_cpu_offload()
 
 # Define your image editing task parameters
 image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
@@ -136,11 +119,13 @@ def image_editing(prompt, control_image, group_chat):
     #     guidance_scale=3.5,
     # ).images[0]
     image = pipe(
-        prompt_embeds=remote_text_encoder(prompt),
-        image=[control_image], #optional multi-image input
-        generator=torch.Generator(device=device).manual_seed(42),
-        num_inference_steps=50,  # 28 steps can be a good trade-off
-        guidance_scale=4,
+        prompt,
+        image=control_image,
+        height=1024,
+        width=1024,
+        guidance_scale=1.0,
+        num_inference_steps=4,
+        generator=torch.Generator(device=device).manual_seed(0)
     ).images[0]
 
     shared_messages.images.append(image)
