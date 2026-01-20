@@ -226,7 +226,7 @@ def custom_speaker_selection(last_speaker, group_chat):
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Please evaluate this generated image:
+            "content": f"""Evaluate this generated image:
 <img {img_uri}>
 
 Advertisement Message: {shared_messages.ad_message}
@@ -262,6 +262,8 @@ Current Image:
 
 Advertisement Message: {shared_messages.ad_message}
 Target Sensation: {shared_messages.target_sensation}
+Previous Instructions Tried (most recent last):
+{json.dumps(shared_messages.current_instructions, indent=2) if shared_messages.messages else "None"}
 
 Please generate NEW editing instructions to address this issue."""
             }
