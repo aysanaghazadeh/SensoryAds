@@ -114,7 +114,6 @@ text_refiner_agent = ConversableAgent(
 )
 
 
-# Custom speaker selection function to control the flow
 def custom_speaker_selection(last_speaker, group_chat):
     messages = group_chat.messages
 
@@ -122,10 +121,8 @@ def custom_speaker_selection(last_speaker, group_chat):
         return planner_agent
 
     if last_speaker is planner_agent:
-        # Extract instructions from planner's response
         try:
             planner_response = messages[-1].get("content", "")
-            # Extract JSON from response (handle potential markdown formatting)
             if "```json" in planner_response:
                 json_str = planner_response.split("```json")[1].split("```")[0].strip()
             elif "```" in planner_response:
@@ -138,35 +135,32 @@ def custom_speaker_selection(last_speaker, group_chat):
         return text_refiner_agent
 
     elif last_speaker is text_refiner_agent:
-        # Extract refined prompt from text_refiner's response
         refined_prompt = messages[-1].get("content", "").strip()
-
-        # Generate image
         new_image, img_uri = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
-
-        # Update current description
         shared_messages.current_description = refined_prompt
 
-        # DON'T add image to group chat - instead, we'll pass it to critic directly
-        # Just add a text message indicating image was generated
-        group_chat.messages.append({
-            "role": "assistant",
-            "name": "image_generator",
-            "content": f"Image has been generated based on the refined prompt."
-        })
+        # Create a USER message with the image for the critic
+        img_uri = pil_to_data_uri(new_image)
+        critic_user_message = {
+            "role": "user",
+            "content": f"""Please evaluate this generated image:
+<img {img_uri}>
+
+Advertisement Message: {shared_messages.ad_message}
+Target Sensation: {shared_messages.target_sensation}
+Applied Instructions: {json.dumps(shared_messages.current_instructions, indent=2)}"""
+        }
+        group_chat.messages.append(critic_user_message)
 
         return critic_agent
 
     elif last_speaker is critic_agent:
-        # Extract critic's evaluation
         critic_response = messages[-1].get("content", "").strip()
 
-        # If no issue, end the conversation
         if "No Issue" in critic_response or "no issue" in critic_response.lower():
             wandb.log({"final_status": "Success - No Issues"})
             return None
         else:
-            # Log the issue and continue
             wandb.log({
                 "step": shared_messages.step_counter,
                 "issue_identified": critic_response
