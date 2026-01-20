@@ -5,9 +5,8 @@ Given an image or a textual description of an image, your task is to generate a 
 2. Evoke the specified sensation (e.g., refreshment, heat, softness, luxury).
 
 You might be provided with an issue description, which may indicate that:
-- the image does not convey the advertisement message,
-- the image does not evoke the intended sensation,
-- or both.
+- Image-Message Alignment: the image does not convey the advertisement message,
+- Sensation Evocation: the image does not evoke the intended sensation,
 
 Your Output
 Return a JSON array of edit actions, ordered exactly in the sequence they should be applied.

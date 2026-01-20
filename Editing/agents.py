@@ -11,6 +11,7 @@ from diffusers.utils import load_image
 from diffusers import FluxControlNetPipeline
 from diffusers import FluxControlNetModel
 from diffusers import QwenImageEditPlusPipeline
+from diffusers import FluxKontextPipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 from PIL import Image
@@ -85,15 +86,16 @@ class SharedMessage:
 #     base_model, controlnet=controlnet, torch_dtype=torch.bfloat16
 # )
 # pipe.to("cuda")
-quantization_config = PipelineQuantizationConfig(
-            quant_backend="bitsandbytes_8bit",
-            quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
-        )
-pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2509",
-                                                  torch_dtype=torch.bfloat16,
-                                                  quantization_config=quantization_config,
-                                                  device_map='balanced')
-device = 'cuda'
+# quantization_config = PipelineQuantizationConfig(
+#             quant_backend="bitsandbytes_8bit",
+#             quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
+#         )
+# pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2509",
+#                                                   torch_dtype=torch.bfloat16,
+#                                                   quantization_config=quantization_config,
+#                                                   device_map='balanced')
+pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
+pipe.to("cuda")
 print("pipeline loaded")
 
 # Define your image editing task parameters
@@ -124,18 +126,23 @@ def image_editing(prompt, control_image, group_chat):
     #     num_inference_steps=28,
     #     guidance_scale=3.5,
     # ).images[0]
-    inputs = {
-        "image": [control_image],
-        "prompt": prompt,
-        "generator": torch.manual_seed(0),
-        "true_cfg_scale": 4.0,
-        "negative_prompt": " ",
-        "num_inference_steps": 28,
-        "guidance_scale": 1.0,
-        "num_images_per_prompt": 1,
-    }
-    output = pipe(**inputs)
-    image = output.images[0]
+    # inputs = {
+    #     "image": [control_image],
+    #     "prompt": prompt,
+    #     "generator": torch.manual_seed(0),
+    #     "true_cfg_scale": 4.0,
+    #     "negative_prompt": " ",
+    #     "num_inference_steps": 28,
+    #     "guidance_scale": 1.0,
+    #     "num_images_per_prompt": 1,
+    # }
+    # output = pipe(**inputs)
+    # image = output.images[0]
+    image = pipe(
+        image=control_image,
+        prompt=prompt,
+        guidance_scale=2.5
+    ).images[0]
 
     shared_messages.images.append(image)
     shared_messages.step_counter += 1
