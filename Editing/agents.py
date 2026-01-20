@@ -223,7 +223,7 @@ Applied Instructions: {json.dumps(shared_messages.current_instructions, indent=2
 group_chat = GroupChat(
     agents=[user_proxy, planner_agent, critic_agent, text_refiner_agent],
     messages=[],
-    max_round=12,
+    max_round=30,
     speaker_selection_method=custom_speaker_selection,
 )
 
