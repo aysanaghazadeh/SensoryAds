@@ -88,6 +88,7 @@ class SharedMessage:
 pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2511",
                                                      torch_dtype=torch.bfloat16,
                                                      device_map='balanced')
+device = 'cuda'
 print("pipeline loaded")
 
 # Define your image editing task parameters
@@ -118,15 +119,18 @@ def image_editing(prompt, control_image, group_chat):
     #     num_inference_steps=28,
     #     guidance_scale=3.5,
     # ).images[0]
-    image = pipe(
-        prompt,
-        image=control_image,
-        height=1024,
-        width=1024,
-        guidance_scale=1.0,
-        num_inference_steps=4,
-        generator=torch.Generator(device=device).manual_seed(0)
-    ).images[0]
+    inputs = {
+        "image": [control_image],
+        "prompt": prompt,
+        "generator": torch.manual_seed(0),
+        "true_cfg_scale": 4.0,
+        "negative_prompt": " ",
+        "num_inference_steps": 40,
+        "guidance_scale": 1.0,
+        "num_images_per_prompt": 1,
+    }
+    output = pipe(**inputs)
+    image = output.images[0]
 
     shared_messages.images.append(image)
     shared_messages.step_counter += 1
