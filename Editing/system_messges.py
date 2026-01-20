@@ -58,7 +58,7 @@ Decision Rules:
 - If the instructions are not well reflected in the image, the issue must be labeled as 'Instruction-Visual Matching', regardless of performance on the other aspects.
 - Else, if the image does not clearly convey the advertisement message, the issue must be labeled as 'Image-Message Alignment', regardless of sensation evocation.
 - Else, if the image fails to evoke the specified sensation, the issue must be labeled as 'Sensation Evocation'.
-- Else, return 'No Issue'.
+- Else, return 'No Issue' and the description of the image.
 
 Output Requirements:
 - Identify exactly one primary issue based on the priority rules above.
