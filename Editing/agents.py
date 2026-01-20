@@ -155,30 +155,16 @@ user_proxy = UserProxyAgent(
     code_execution_config=False,
 )
 
-
 # Custom speaker selection function to control the flow
 def custom_speaker_selection(last_speaker, group_chat):
     messages = group_chat.messages
 
-    # Start with critic after user_proxy sends initial message
+    # Start with planner after user_proxy sends initial message
     if last_speaker is user_proxy:
-        return critic_agent
+        return planner_agent
 
     if len(messages) <= 1:
         return planner_agent
-
-    if last_speaker is critic_agent:
-        critic_response = messages[-1].get("content", "").strip()
-
-        if "No Issue" in critic_response or "no issue" in critic_response.lower():
-            wandb.log({"final_status": "Success - No Issues"})
-            return None
-        else:
-            wandb.log({
-                "step": shared_messages.step_counter,
-                "issue_identified": critic_response
-            })
-            return planner_agent
 
     if last_speaker is planner_agent:
         try:
@@ -217,6 +203,19 @@ Applied Instructions: {json.dumps(shared_messages.current_instructions, indent=2
 
         return critic_agent
 
+    elif last_speaker is critic_agent:
+        critic_response = messages[-1].get("content", "").strip()
+
+        if "No Issue" in critic_response or "no issue" in critic_response.lower():
+            wandb.log({"final_status": "Success - No Issues"})
+            return None
+        else:
+            wandb.log({
+                "step": shared_messages.step_counter,
+                "issue_identified": critic_response
+            })
+            return planner_agent
+
     else:
         return planner_agent
 
@@ -235,17 +234,14 @@ group_chat_manager = GroupChatManager(
 
 
 def evoke_sensation():
-    # Resize and compress initial image before sending to critic
-    resized_initial_image = resize_image_for_llm(image, max_size=256)
-    initial_img_uri = image_to_compressed_uri(resized_initial_image)
+    # Send initial context to planner (no image needed for planner)
+    initial_message = f"""Here is the task:
 
-    # First, have user_proxy send message with image
-    initial_message = f"""Please evaluate this initial image:
-<img {initial_img_uri}>
-
+Initial Image Description: {initial_description}
 Advertisement Message: {ad_message}
 Target Sensation: {target_sensation}
-Applied Instructions: [] (no edits yet)"""
+
+Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation."""
 
     # Start with user_proxy initiating to group chat manager
     user_proxy.initiate_chat(
