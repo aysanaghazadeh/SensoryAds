@@ -10,11 +10,17 @@ import torch
 from diffusers.utils import load_image
 from diffusers import FluxControlNetPipeline
 from diffusers import FluxControlNetModel
+from diffusers import Flux2Pipeline
+from diffusers.utils import load_image
+from huggingface_hub import get_token
 from PIL import Image
 import wandb
 import json
 from io import BytesIO
 import base64
+import requests
+import io
+
 
 # Initialize wandb
 wandb.init(project="autogen-image-editing", name="flux-controlnet-editing")
@@ -52,6 +58,18 @@ def image_to_compressed_uri(image):
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return f"data:image/jpeg;base64,{img_str}"
 
+def remote_text_encoder(prompts):
+    response = requests.post(
+        "https://remote-text-encoder-flux-2.huggingface.co/predict",
+        json={"prompt": prompts},
+        headers={
+            "Authorization": f"Bearer {get_token()}",
+            "Content-Type": "application/json"
+        }
+    )
+    prompt_embeds = torch.load(io.BytesIO(response.content))
+
+    return prompt_embeds.to(device)
 
 class SharedMessage:
     images: list
@@ -74,13 +92,20 @@ class SharedMessage:
         self.current_description = initial_description
 
 
-base_model = "black-forest-labs/FLUX.1-dev"
-controlnet_model = "InstantX/FLUX.1-dev-controlnet-canny"
-controlnet = FluxControlNetModel.from_pretrained(controlnet_model, torch_dtype=torch.bfloat16)
-pipe = FluxControlNetPipeline.from_pretrained(
-    base_model, controlnet=controlnet, torch_dtype=torch.bfloat16
-)
-pipe.to("cuda")
+# base_model = "black-forest-labs/FLUX.1-dev"
+# controlnet_model = "InstantX/FLUX.1-dev-controlnet-canny"
+# controlnet = FluxControlNetModel.from_pretrained(controlnet_model, torch_dtype=torch.bfloat16)
+# pipe = FluxControlNetPipeline.from_pretrained(
+#     base_model, controlnet=controlnet, torch_dtype=torch.bfloat16
+# )
+# pipe.to("cuda")
+
+repo_id = "diffusers/FLUX.2-dev-bnb-4bit" #quantized text-encoder and DiT. VAE still in bf16
+device = "cuda"
+torch_dtype = torch.bfloat16
+pipe = Flux2Pipeline.from_pretrained(
+    repo_id, text_encoder=None, torch_dtype=torch_dtype
+).to(device)
 
 # Define your image editing task parameters
 image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
@@ -101,14 +126,21 @@ wandb.log({
 
 def image_editing(prompt, control_image, group_chat):
     # Generate image
+    # image = pipe(
+    #     prompt,
+    #     control_image=control_image,
+    #     control_guidance_start=0.2,
+    #     control_guidance_end=0.8,
+    #     controlnet_conditioning_scale=1.0,
+    #     num_inference_steps=28,
+    #     guidance_scale=3.5,
+    # ).images[0]
     image = pipe(
-        prompt,
-        control_image=control_image,
-        control_guidance_start=0.2,
-        control_guidance_end=0.8,
-        controlnet_conditioning_scale=1.0,
-        num_inference_steps=28,
-        guidance_scale=3.5,
+        prompt_embeds=remote_text_encoder(prompt),
+        image=[control_image], #optional multi-image input
+        generator=torch.Generator(device=device).manual_seed(42),
+        num_inference_steps=50,  # 28 steps can be a good trade-off
+        guidance_scale=4,
     ).images[0]
 
     shared_messages.images.append(image)
