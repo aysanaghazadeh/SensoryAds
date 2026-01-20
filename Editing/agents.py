@@ -13,12 +13,14 @@ from diffusers import FluxControlNetModel
 from PIL import Image
 import wandb
 import json
+from io import BytesIO
+import base64
 
 # Initialize wandb
 wandb.init(project="autogen-image-editing", name="flux-controlnet-editing")
 
 
-def resize_image_for_llm(image, max_size=1024):
+def resize_image_for_llm(image, max_size=256):
     """Resize image to reduce token usage while maintaining aspect ratio"""
     width, height = image.size
     if width > max_size or height > max_size:
@@ -28,8 +30,27 @@ def resize_image_for_llm(image, max_size=1024):
         else:
             new_height = max_size
             new_width = int(width * (max_size / height))
-        return image.resize((new_width, new_height), Image.LANCZOS)
-    return image
+        resized = image.resize((new_width, new_height), Image.LANCZOS)
+    else:
+        resized = image
+
+    # Convert to RGB if necessary and compress as JPEG
+    if resized.mode in ('RGBA', 'LA', 'P'):
+        rgb_image = Image.new('RGB', resized.size, (255, 255, 255))
+        if resized.mode == 'P':
+            resized = resized.convert('RGBA')
+        rgb_image.paste(resized, mask=resized.split()[-1] if resized.mode in ('RGBA', 'LA') else None)
+        resized = rgb_image
+
+    return resized
+
+
+def image_to_compressed_uri(image):
+    """Convert PIL image to compressed base64 data URI"""
+    buffered = BytesIO()
+    image.save(buffered, format="JPEG", quality=70, optimize=True)
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return f"data:image/jpeg;base64,{img_str}"
 
 
 class SharedMessage:
@@ -154,9 +175,9 @@ def custom_speaker_selection(last_speaker, group_chat):
         new_image = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
         shared_messages.current_description = refined_prompt
 
-        # Resize image before converting to data URI to reduce token usage
-        resized_image = resize_image_for_llm(new_image, max_size=512)
-        img_uri = pil_to_data_uri(resized_image)
+        # Resize and compress image before sending to critic
+        resized_image = resize_image_for_llm(new_image, max_size=256)
+        img_uri = image_to_compressed_uri(resized_image)
 
         critic_user_message = {
             "role": "user",
@@ -212,9 +233,9 @@ group_chat_manager = GroupChatManager(
 
 
 def evoke_sensation():
-    # Resize initial image before sending to critic
-    resized_initial_image = resize_image_for_llm(image, max_size=512)
-    initial_img_uri = pil_to_data_uri(resized_initial_image)
+    # Resize and compress initial image before sending to critic
+    resized_initial_image = resize_image_for_llm(image, max_size=256)
+    initial_img_uri = image_to_compressed_uri(resized_initial_image)
 
     # First, have critic evaluate the initial image
     initial_critic_message = f"""Please evaluate this initial image:
