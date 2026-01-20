@@ -213,10 +213,11 @@ def custom_speaker_selection(last_speaker, group_chat):
         except Exception as e:
             print(f"Error parsing planner instructions: {e}")
             shared_messages.current_instructions = []
-        return text_refiner_agent
-
-    elif last_speaker is text_refiner_agent:
-        refined_prompt = messages[-1].get("content", "").strip()
+    #     return text_refiner_agent
+    #
+    # elif last_speaker is text_refiner_agent:
+    #     refined_prompt = messages[-1].get("content", "").strip()
+        refined_prompt = json.dumps(shared_messages.current_instructions)
         new_image = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
         shared_messages.current_description = refined_prompt
 
@@ -263,7 +264,7 @@ Current Image:
 Advertisement Message: {shared_messages.ad_message}
 Target Sensation: {shared_messages.target_sensation}
 Previous Instructions Tried (most recent last):
-{json.dumps(shared_messages.current_instructions, indent=2) if shared_messages.messages else "None"}
+{json.dumps(shared_messages.current_instructions, indent=2) if shared_messages.current_instructions else "None"}
 
 Please generate NEW editing instructions to address this issue."""
             }
