@@ -10,7 +10,7 @@ import torch
 from diffusers.utils import load_image
 from diffusers import FluxControlNetPipeline
 from diffusers import FluxControlNetModel
-from diffusers import DiffusionPipeline
+from diffusers import QwenImageEditPlusPipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 from PIL import Image
@@ -85,9 +85,10 @@ class SharedMessage:
 # )
 # pipe.to("cuda")
 
-device = "cuda"
-dtype = torch.bfloat16
-pipe = DiffusionPipeline.from_pretrained("black-forest-labs/FLUX.2-klein-4B", dtype=torch.bfloat16, device_map="cuda")
+pipeline = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2511",
+                                                     torch_dtype=torch.bfloat16,
+                                                     device_map='balanced')
+print("pipeline loaded")
 
 # Define your image editing task parameters
 image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
