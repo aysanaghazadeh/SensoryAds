@@ -31,6 +31,7 @@ TEXT_REFINER_SYSTEM_PROMPT = """You are a text refiner agent.
 Given a set of image-editing instructions, generate a clear, concise, and visually grounded prompt suitable for guiding an image editing.
 
 Guidelines:
+- Do not start with create an image.
 - Preserve factual consistency with the provided instructions.
 - Use precise visual language (objects, attributes, colors, lighting, textures, spatial relations).
 - Do not invent elements that are not implied by the instructions.
