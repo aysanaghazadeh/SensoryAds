@@ -85,7 +85,7 @@ class SharedMessage:
 # )
 # pipe.to("cuda")
 
-pipeline = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2511",
+pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2511",
                                                      torch_dtype=torch.bfloat16,
                                                      device_map='balanced')
 print("pipeline loaded")
