@@ -144,14 +144,15 @@ def custom_speaker_selection(last_speaker, group_chat):
         # Generate image
         new_image, img_uri = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
 
-        # Update current description (text_refiner should output updated description in second pass)
+        # Update current description
         shared_messages.current_description = refined_prompt
 
-        # Add image to group chat for critic to see
+        # DON'T add image to group chat - instead, we'll pass it to critic directly
+        # Just add a text message indicating image was generated
         group_chat.messages.append({
             "role": "assistant",
             "name": "image_generator",
-            "content": f"Image generated. Here is the result:\n<img {img_uri}>"
+            "content": f"Image has been generated based on the refined prompt."
         })
 
         return critic_agent
