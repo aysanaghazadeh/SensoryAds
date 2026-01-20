@@ -18,6 +18,7 @@ import wandb
 import json
 from io import BytesIO
 import base64
+from diffusers.quantizers import PipelineQuantizationConfig
 
 
 # Initialize wandb
@@ -84,10 +85,14 @@ class SharedMessage:
 #     base_model, controlnet=controlnet, torch_dtype=torch.bfloat16
 # )
 # pipe.to("cuda")
-
+quantization_config = PipelineQuantizationConfig(
+            quant_backend="bitsandbytes_4bit",
+            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+        )
 pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2511",
-                                                     torch_dtype=torch.bfloat16,
-                                                     device_map='balanced')
+                                                  torch_dtype=torch.bfloat16,
+                                                  quantization_config=quantization_config,
+                                                  device_map='balanced')
 device = 'cuda'
 print("pipeline loaded")
 
@@ -125,7 +130,7 @@ def image_editing(prompt, control_image, group_chat):
         "generator": torch.manual_seed(0),
         "true_cfg_scale": 4.0,
         "negative_prompt": " ",
-        "num_inference_steps": 40,
+        "num_inference_steps": 28,
         "guidance_scale": 1.0,
         "num_images_per_prompt": 1,
     }
