@@ -263,7 +263,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 - Write in present tense"""
             }
             group_chat.messages.append(refiner_message)
-        return text_refiner_agent
+            return text_refiner_agent
         else:
             return planner_agent
 
