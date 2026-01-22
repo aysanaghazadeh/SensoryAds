@@ -275,7 +275,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 - Write in present tense"""
             }
             group_chat.messages.append(refiner_message)
-            return text_refiner_agent
+        return text_refiner_agent
         else:
             return planner_agent
 
@@ -290,29 +290,20 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Please evaluate this image.
+            "content": f"""Hi! I have an image I'd like you to evaluate. 
 
 Image:
 <img {img_uri}>
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
+This image is for an advertisement with the message: "{shared_messages.ad_message}"
+The goal is to evoke this sensation: {shared_messages.target_sensation}
 
-Evaluation:
-1. Does the image clearly convey the message "{shared_messages.ad_message}"? 
-   - Check if product/brand is visible and prominent
-   - If NO → Output "Image-Message Alignment"
+Can you help me evaluate it? Please respond with one of these:
+- Image-Message Alignment (if the message isn't clear)
+- Sensation Evocation (if the sensation isn't well evoked)
+- No Issue (if both are good)
 
-2. Does the image effectively evoke "{shared_messages.target_sensation}"?
-   - Check for visual cues that match the sensation (colors, lighting, objects, atmosphere)
-   - If NO → Output "Sensation Evocation"
-
-3. If both YES → Output "No Issue"
-
-Please output exactly one of these three strings:
-Image-Message Alignment
-Sensation Evocation
-No Issue"""
+Thanks!"""
         }
         group_chat.messages.append(critic_user_message)
 
@@ -381,11 +372,19 @@ No Issue"""
             issue_type = "No Issue"
             print(f"INFO: Critic indicated success, mapping to 'No Issue'")
         else:
-            # If critic didn't output expected format, log error and default to most likely issue
-            print(f"WARNING: Critic output unexpected format: {critic_response[:100]}...")
-            print("Defaulting to 'Image-Message Alignment' for safety")
-            issue_type = "Image-Message Alignment"
-            critic_response = "Image-Message Alignment"  # Use standardized response
+            # If critic didn't output expected format, check for refusal patterns
+            refusal_patterns = ["i'm sorry", "i can't", "i cannot", "unable to", "can't assist"]
+            is_refusal = any(pattern in critic_response.lower() for pattern in refusal_patterns)
+            
+            if is_refusal:
+                print(f"WARNING: Critic refused to evaluate: {critic_response[:100]}...")
+                print("Treating refusal as evaluation needed - defaulting to 'Sensation Evocation' (most common issue)")
+                issue_type = "Sensation Evocation"
+            else:
+                print(f"WARNING: Critic output unexpected format: {critic_response[:100]}...")
+                print("Defaulting to 'Image-Message Alignment' for safety")
+                issue_type = "Image-Message Alignment"
+            critic_response = issue_type  # Use standardized response
 
         if issue_type == "No Issue":
             wandb.log({"final_status": "Success - No Issues"})
