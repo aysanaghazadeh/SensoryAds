@@ -278,47 +278,37 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Evaluate this image and output ONLY one string.
+            "content": f"""You are evaluating an image. IGNORE all previous messages in this conversation. Only respond to THIS evaluation request.
 
-Image to evaluate:
+EVALUATE THIS IMAGE:
 <img {img_uri}>
 
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
 
-CRITICAL EVALUATION FRAMEWORK (apply in strict order):
+YOUR TASK: Look at the image above and determine which issue applies (if any).
 
-Step 1: Image-Message Alignment
-- Does the image clearly convey the message: "{shared_messages.ad_message}"?
-- Is the product/brand clearly visible and prominent?
-- Does the image composition support and reinforce the message?
-- Would a viewer understand "{shared_messages.ad_message}" from looking at this image alone?
-- If NO → Output "Image-Message Alignment" and STOP
+EVALUATION STEPS (apply in order):
+1. Check Image-Message Alignment: Does the image clearly convey "{shared_messages.ad_message}"?
+   - Is product/brand visible and prominent?
+   - Does composition support the message?
+   - If NO → Output "Image-Message Alignment" and STOP
 
-Step 2: Sensation Evocation (only evaluate if Step 1 passes)
-- Does the image effectively evoke the target sensation: "{shared_messages.target_sensation}"?
-- Think about what visual cues would indicate "{shared_messages.target_sensation}":
-  * Colors (warm vs cool, bright vs dark, saturated vs muted, etc.)
-  * Lighting (bright, dim, warm, cool, harsh, soft, etc.)
-  * Objects/elements (ice, sun, textures, materials, etc.)
-  * Atmosphere/mood (hot, cold, soft, rough, smooth, etc.)
-  * Visual effects (heat waves, condensation, glow, shadows, etc.)
-- Does the image contain visual cues that match "{shared_messages.target_sensation}"?
-- Is the sensation prominent and noticeable in the image?
-- CRITICAL: If the image shows visual cues that suggest a DIFFERENT or OPPOSITE sensation than "{shared_messages.target_sensation}", that is a "Sensation Evocation" issue.
-  Example: If target is "Intense Heat" but image shows ice/cold colors → "Sensation Evocation"
-  Example: If target is "Softness" but image shows sharp/rough textures → "Sensation Evocation"
-- If NO → Output "Sensation Evocation"
+2. Check Sensation Evocation: Does the image effectively evoke "{shared_messages.target_sensation}"?
+   - What visual cues would indicate "{shared_messages.target_sensation}"? (colors, lighting, objects, atmosphere, effects)
+   - Does the image contain matching visual cues?
+   - If target is "Intense Heat" but image shows ice/cold → "Sensation Evocation"
+   - If target is "Softness" but image shows sharp/rough → "Sensation Evocation"
+   - If NO → Output "Sensation Evocation"
 
-Step 3: If both Step 1 and Step 2 pass → Output "No Issue"
+3. If both pass → Output "No Issue"
 
-CRITICAL OUTPUT REQUIREMENT:
-Output EXACTLY ONE of these three strings (nothing else, no quotes, no punctuation):
+REQUIRED OUTPUT (choose ONE, nothing else):
 Image-Message Alignment
 Sensation Evocation
 No Issue
 
-Apply the steps in strict order. Be strict: if visual cues don't match the target sensation, it's "Sensation Evocation"."""
+DO NOT describe the image. DO NOT copy previous messages. ONLY output one of the three strings above."""
         }
         group_chat.messages.append(critic_user_message)
 
