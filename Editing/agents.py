@@ -247,6 +247,22 @@ def custom_speaker_selection(last_speaker, group_chat):
         
         # Only proceed to text_refiner if we have valid instructions
         if shared_messages.current_instructions:
+            # Send instructions to text_refiner with explicit conversion instruction
+            refiner_message = {
+                "role": "user",
+                "content": f"""Convert these image-editing instructions into a single natural language prompt for image editing.
+
+Instructions (JSON format):
+{json.dumps(shared_messages.current_instructions, indent=2)}
+
+CRITICAL: Convert the above JSON instructions into ONE cohesive natural language description. 
+- Combine all actions into a single flowing text description
+- Do NOT output JSON
+- Do NOT output markdown or code blocks
+- Output ONLY plain text describing what the edited image should look like
+- Write in present tense"""
+            }
+            group_chat.messages.append(refiner_message)
             return text_refiner_agent
         else:
             return planner_agent

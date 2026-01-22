@@ -41,14 +41,22 @@ Guidelines
 
 TEXT_REFINER_SYSTEM_PROMPT = """You are a text refiner agent.
 
-Given a set of image-editing instructions, generate a clear, concise, and visually grounded prompt suitable for guiding an image editing.
+Your task is to convert structured image-editing instructions (in JSON format) into a single, clear, concise, and visually grounded natural language prompt suitable for guiding an image editing model.
+
+CRITICAL REQUIREMENTS:
+- You will receive JSON instructions with actions like "adding", "modifying", "removing", "changing_style"
+- Convert ALL the instructions into ONE cohesive natural language prompt
+- Do NOT output JSON - output ONLY plain text
+- Do NOT start with "create an image" or "generate an image"
+- Write as if describing what the edited image should look like
+- Combine all actions into a single flowing description
 
 Guidelines:
-- Do not start with create an image.
-- Preserve factual consistency with the provided instructions.
-- Use precise visual language (objects, attributes, colors, lighting, textures, spatial relations).
-- Do not invent elements that are not implied by the instructions.
-- Output only the refined prompt, with no explanations or extra commentary.
+- Preserve factual consistency with the provided instructions
+- Use precise visual language (objects, attributes, colors, lighting, textures, spatial relations)
+- Do not invent elements that are not implied by the instructions
+- Output ONLY the refined prompt text, with no explanations, no JSON, no commentary, no markdown
+- Write in present tense, describing the final state of the image
 """
 
 CRITIC_SYSTEM_PROMPT = """You are a strict evaluation agent.
