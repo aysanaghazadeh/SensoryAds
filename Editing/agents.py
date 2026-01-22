@@ -171,8 +171,8 @@ critic_agent = MultimodalConversableAgent(
     name="critic",
     system_message=CRITIC_SYSTEM_PROMPT,
     max_consecutive_auto_reply=10,
-    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
-                "max_tokens": 512},
+    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.1,  # Very low temp for deterministic output
+                "max_tokens": 50},  # Limit tokens to prevent long outputs
 )
 
 text_refiner_agent = ConversableAgent(
@@ -278,37 +278,23 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""You are evaluating an image. IGNORE all previous messages in this conversation. Only respond to THIS evaluation request.
+            "content": f"""EVALUATE THIS IMAGE. IGNORE ALL PREVIOUS MESSAGES. DO NOT COPY OR DESCRIBE ANYTHING.
 
-EVALUATE THIS IMAGE:
+Image:
 <img {img_uri}>
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
+Message: "{shared_messages.ad_message}"
+Sensation: {shared_messages.target_sensation}
 
-YOUR TASK: Look at the image above and determine which issue applies (if any).
+STEPS:
+1. Does image convey message? If NO → "Image-Message Alignment"
+2. Does image evoke sensation? If NO → "Sensation Evocation"  
+3. If both YES → "No Issue"
 
-EVALUATION STEPS (apply in order):
-1. Check Image-Message Alignment: Does the image clearly convey "{shared_messages.ad_message}"?
-   - Is product/brand visible and prominent?
-   - Does composition support the message?
-   - If NO → Output "Image-Message Alignment" and STOP
-
-2. Check Sensation Evocation: Does the image effectively evoke "{shared_messages.target_sensation}"?
-   - What visual cues would indicate "{shared_messages.target_sensation}"? (colors, lighting, objects, atmosphere, effects)
-   - Does the image contain matching visual cues?
-   - If target is "Intense Heat" but image shows ice/cold → "Sensation Evocation"
-   - If target is "Softness" but image shows sharp/rough → "Sensation Evocation"
-   - If NO → Output "Sensation Evocation"
-
-3. If both pass → Output "No Issue"
-
-REQUIRED OUTPUT (choose ONE, nothing else):
+OUTPUT ONLY ONE STRING (nothing else):
 Image-Message Alignment
 Sensation Evocation
-No Issue
-
-DO NOT describe the image. DO NOT copy previous messages. ONLY output one of the three strings above."""
+No Issue"""
         }
         group_chat.messages.append(critic_user_message)
 
