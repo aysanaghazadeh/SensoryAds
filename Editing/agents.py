@@ -332,6 +332,44 @@ No Issue"""
         
         # Extract the issue type from response (handle cases where critic adds extra text)
         issue_type = None
+        
+        # Check if critic copied a description (common patterns)
+        is_description = any(phrase in critic_response.lower() for phrase in [
+            "in the image", "the image features", "the image shows", "the image depicts",
+            "bright sun", "radiant rays", "heat waves", "color palette", "beer bottles"
+        ])
+        
+        if is_description and len(critic_response) > 50:
+            # Critic copied a description instead of evaluating
+            print(f"WARNING: Critic output appears to be a description (copied text): {critic_response[:100]}...")
+            print("This is likely copied from text_refiner. Retrying with stronger instructions...")
+            # Get the image URI from the most recent image
+            retry_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
+            retry_img_uri = pil_to_data_uri(retry_resized_image)
+            # Send a retry message
+            retry_message = {
+                "role": "user",
+                "content": f"""STOP. You copied a description. That is WRONG.
+
+You must output ONLY one of these three strings:
+Image-Message Alignment
+Sensation Evocation
+No Issue
+
+Look at this image:
+<img {retry_img_uri}>
+
+Message: "{shared_messages.ad_message}"
+Sensation: {shared_messages.target_sensation}
+
+Output ONE string only (no descriptions, no copying):
+Image-Message Alignment
+Sensation Evocation
+No Issue"""
+            }
+            group_chat.messages.append(retry_message)
+            return critic_agent
+        
         if "Image-Message Alignment" in critic_response:
             issue_type = "Image-Message Alignment"
         elif "Sensation Evocation" in critic_response:
