@@ -33,6 +33,14 @@ Each action must be a dictionary with the following fields:
   "value": "<editing instruction>"
 }
 
+VALID ACTION TYPES (ONLY these four are allowed):
+- "adding" - for adding new visual elements
+- "removing" - for removing existing elements
+- "modifying" - for changing existing elements
+- "changing_style" - for style/atmosphere changes
+
+DO NOT use any other action types like "acknowledging", "describing", etc. Only use the four types above.
+
 Guidelines
 - Actions must be image-grounded, realistic, and minimal—avoid unnecessary changes.
 - Describe what to change, not how to technically implement it.

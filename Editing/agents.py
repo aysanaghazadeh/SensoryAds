@@ -235,6 +235,18 @@ def custom_speaker_selection(last_speaker, group_chat):
                 raise ValueError("Instructions must be a JSON array")
             if len(shared_messages.current_instructions) == 0:
                 raise ValueError("Instructions array cannot be empty")
+            
+            # Validate action types
+            valid_action_types = {"adding", "removing", "modifying", "changing_style"}
+            for instruction in shared_messages.current_instructions:
+                if not isinstance(instruction, dict):
+                    raise ValueError("Each instruction must be a dictionary")
+                action_type = instruction.get("type_of_action", "")
+                if action_type not in valid_action_types:
+                    raise ValueError(f"Invalid action type '{action_type}'. Must be one of: {valid_action_types}")
+                if "value" not in instruction:
+                    raise ValueError("Each instruction must have a 'value' field")
+            
             # Add to history of all previous attempts
             shared_messages.all_previous_instructions.append(shared_messages.current_instructions.copy())
         except Exception as e:
@@ -326,6 +338,10 @@ No Issue"""
             issue_type = "Sensation Evocation"
         elif "No Issue" in critic_response or "no issue" in critic_response.lower():
             issue_type = "No Issue"
+        elif "effectively conveys" in critic_response.lower() and "evokes" in critic_response.lower() and "target sensation" in critic_response.lower():
+            # Critic is saying the image is good - map to "No Issue"
+            issue_type = "No Issue"
+            print(f"INFO: Critic indicated success, mapping to 'No Issue'")
         else:
             # If critic didn't output expected format, log error and default to most likely issue
             print(f"WARNING: Critic output unexpected format: {critic_response[:100]}...")
