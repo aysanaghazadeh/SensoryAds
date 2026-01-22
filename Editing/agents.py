@@ -171,8 +171,8 @@ critic_agent = MultimodalConversableAgent(
     name="critic",
     system_message=CRITIC_SYSTEM_PROMPT,
     max_consecutive_auto_reply=10,
-    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.1,  # Very low temp for deterministic output
-                "max_tokens": 50},  # Limit tokens to prevent long outputs
+    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.3,  # Low temp for consistent output
+                "max_tokens": 100},  # Enough for the three strings but not too much
 )
 
 text_refiner_agent = ConversableAgent(
@@ -263,7 +263,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 - Write in present tense"""
             }
             group_chat.messages.append(refiner_message)
-            return text_refiner_agent
+        return text_refiner_agent
         else:
             return planner_agent
 
@@ -278,20 +278,26 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""EVALUATE THIS IMAGE. IGNORE ALL PREVIOUS MESSAGES. DO NOT COPY OR DESCRIBE ANYTHING.
+            "content": f"""Please evaluate this image.
 
 Image:
 <img {img_uri}>
 
-Message: "{shared_messages.ad_message}"
-Sensation: {shared_messages.target_sensation}
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
 
-STEPS:
-1. Does image convey message? If NO → "Image-Message Alignment"
-2. Does image evoke sensation? If NO → "Sensation Evocation"  
-3. If both YES → "No Issue"
+Evaluation:
+1. Does the image clearly convey the message "{shared_messages.ad_message}"? 
+   - Check if product/brand is visible and prominent
+   - If NO → Output "Image-Message Alignment"
 
-OUTPUT ONLY ONE STRING (nothing else):
+2. Does the image effectively evoke "{shared_messages.target_sensation}"?
+   - Check for visual cues that match the sensation (colors, lighting, objects, atmosphere)
+   - If NO → Output "Sensation Evocation"
+
+3. If both YES → Output "No Issue"
+
+Please output exactly one of these three strings:
 Image-Message Alignment
 Sensation Evocation
 No Issue"""
@@ -302,7 +308,7 @@ No Issue"""
 
     elif last_speaker is critic_agent:
         critic_response = messages[-1].get("content", "").strip()
-        
+
         # Handle multimodal content (list format)
         if isinstance(critic_response, list):
             text_content = ""
