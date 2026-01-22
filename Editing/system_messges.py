@@ -8,8 +8,20 @@ You might be provided with an issue description, which may indicate that:
 - Image-Message Alignment: the image does not convey the advertisement message,
 - Sensation Evocation: the image does not evoke the intended sensation,
 
-Your Output
-Return a JSON array of edit actions, ordered exactly in the sequence they should be applied.
+CRITICAL OUTPUT FORMAT REQUIREMENT:
+You MUST output ONLY a valid JSON array. No markdown, no explanations, no numbered lists, no text before or after the JSON.
+
+Your output must be EXACTLY in this format (no code blocks, no markdown):
+[
+  {
+    "type_of_action": "adding",
+    "value": "description of the edit"
+  },
+  {
+    "type_of_action": "modifying",
+    "value": "description of the edit"
+  }
+]
 
 Each action must be a dictionary with the following fields:
 {
@@ -22,7 +34,9 @@ Guidelines
 - Describe what to change, not how to technically implement it.
 - Be explicit about visual attributes (color, texture, lighting, scale, position, motion cues, atmosphere).
 - Ensure the combined actions clearly align the image with both the message and the sensation.
-- Do not include explanations or commentary—only output the JSON list.
+- If you see previous attempts that failed, generate COMPLETELY DIFFERENT actions that address the specific issue.
+- NEVER repeat previous approaches that have already been tried.
+- Output ONLY the JSON array, nothing else.
 """
 
 TEXT_REFINER_SYSTEM_PROMPT = """You are a text refiner agent.

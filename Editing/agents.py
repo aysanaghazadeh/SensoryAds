@@ -205,19 +205,51 @@ def custom_speaker_selection(last_speaker, group_chat):
     if last_speaker is planner_agent:
         try:
             planner_response = messages[-1].get("content", "")
+            # Handle multimodal content (list format)
+            if isinstance(planner_response, list):
+                # Extract text from multimodal content
+                text_content = ""
+                for item in planner_response:
+                    if isinstance(item, dict) and item.get("type") == "text":
+                        text_content = item.get("text", "")
+                        break
+                planner_response = text_content
+            
+            # Extract JSON from response
             if "```json" in planner_response:
                 json_str = planner_response.split("```json")[1].split("```")[0].strip()
             elif "```" in planner_response:
                 json_str = planner_response.split("```")[1].split("```")[0].strip()
             else:
+                # Try to find JSON array in the response
                 json_str = planner_response.strip()
+                # Remove any leading/trailing text
+                start_idx = json_str.find('[')
+                end_idx = json_str.rfind(']')
+                if start_idx != -1 and end_idx != -1:
+                    json_str = json_str[start_idx:end_idx+1]
+            
             shared_messages.current_instructions = json.loads(json_str)
+            # Validate instructions format
+            if not isinstance(shared_messages.current_instructions, list):
+                raise ValueError("Instructions must be a JSON array")
+            if len(shared_messages.current_instructions) == 0:
+                raise ValueError("Instructions array cannot be empty")
             # Add to history of all previous attempts
             shared_messages.all_previous_instructions.append(shared_messages.current_instructions.copy())
         except Exception as e:
             print(f"Error parsing planner instructions: {e}")
+            print(f"Planner response was: {planner_response[:500]}...")
             shared_messages.current_instructions = []
-        return text_refiner_agent
+            # Don't proceed to text_refiner if parsing failed
+            # Return planner again to retry
+            return planner_agent
+        
+        # Only proceed to text_refiner if we have valid instructions
+        if shared_messages.current_instructions:
+            return text_refiner_agent
+        else:
+            return planner_agent
 
     elif last_speaker is text_refiner_agent:
         refined_prompt = messages[-1].get("content", "").strip()
@@ -251,9 +283,9 @@ Target Sensation: {shared_messages.target_sensation}"""
                 "issue_identified": critic_response
             })
 
-            # Add image for planner to see
+            # Add image for planner to see (most recent edited image)
             resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
-            img_uri = image_to_compressed_uri(resized_image)
+            img_uri = pil_to_data_uri(resized_image)  # Use AutoGen's utility for proper format
 
             # Format all previous attempts for the planner
             previous_attempts_text = ""
@@ -263,11 +295,12 @@ Target Sensation: {shared_messages.target_sensation}"""
             else:
                 previous_attempts_text = "None"
             
+            # Use string format with image URI for MultimodalConversableAgent
             issue_message = {
                 "role": "user",
                 "content": f"""The critic has identified an issue: {critic_response}
 
-Current Image:
+Current Image (most recent edited version):
 <img {img_uri}>
 
 Advertisement Message: {shared_messages.ad_message}
@@ -276,7 +309,10 @@ Target Sensation: {shared_messages.target_sensation}
 All Previous Instructions Tried (in order, most recent last):
 {previous_attempts_text}
 
-IMPORTANT: Generate DIFFERENT editing instructions that have NOT been tried before. Avoid repeating previous approaches. Address the specific issue identified by the critic."""
+CRITICAL: You must generate COMPLETELY DIFFERENT editing instructions that have NOT been tried before. 
+- Look at the previous attempts above and avoid repeating any of those approaches.
+- Address the specific issue: {critic_response}
+- Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown."""
             }
             group_chat.messages.append(issue_message)
             return planner_agent
@@ -309,7 +345,9 @@ def evoke_sensation():
 Advertisement Message: {ad_message}
 Target Sensation: {target_sensation}
 
-Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation."""
+Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation.
+
+CRITICAL: Output ONLY a valid JSON array in the exact format specified in your system instructions. No explanations, no markdown, no text before or after the JSON."""
 
     # Start with user_proxy initiating to group chat manager
     user_proxy.initiate_chat(
