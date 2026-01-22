@@ -4,9 +4,13 @@ Given an image of an image, your task is to generate a sequence of concrete visu
 1. Convey the intended advertisement message, and
 2. Evoke the specified sensation (e.g., refreshment, heat, softness, luxury).
 
-You might be provided with an issue description, which may indicate that:
-- Image-Message Alignment: the image does not convey the advertisement message,
-- Sensation Evocation: the image does not evoke the intended sensation,
+When you receive an issue from the critic, you MUST focus your edits on addressing that SPECIFIC issue:
+
+- **Image-Message Alignment**: The image does not clearly convey the advertisement message. 
+  → Focus on: Making the product/brand more prominent, ensuring the image directly relates to the message, adding visual elements that reinforce the message, improving composition to highlight the key message.
+
+- **Sensation Evocation**: The image does not effectively evoke the target sensation.
+  → Focus on: Adding visual cues that directly evoke the sensation (heat, cold, softness, etc.), adjusting colors/lighting/texture to create the sensation, adding atmospheric elements that reinforce the sensation.
 
 CRITICAL OUTPUT FORMAT REQUIREMENT:
 You MUST output ONLY a valid JSON array. No markdown, no explanations, no numbered lists, no text before or after the JSON.
@@ -33,7 +37,7 @@ Guidelines
 - Actions must be image-grounded, realistic, and minimal—avoid unnecessary changes.
 - Describe what to change, not how to technically implement it.
 - Be explicit about visual attributes (color, texture, lighting, scale, position, motion cues, atmosphere).
-- Ensure the combined actions clearly align the image with both the message and the sensation.
+- When an issue is identified, ALL your actions must directly address that specific issue type.
 - If you see previous attempts that failed, generate COMPLETELY DIFFERENT actions that address the specific issue.
 - NEVER repeat previous approaches that have already been tried.
 - Output ONLY the JSON array, nothing else.

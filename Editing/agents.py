@@ -278,10 +278,28 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Evaluate this generated image if it conveys the advertisement message and evoke the target sensation and then return the issue:
-<img {img_uri}
-Advertisement Message: {shared_messages.ad_message}
-Target Sensation: {shared_messages.target_sensation}"""
+            "content": f"""Evaluate this generated image and identify the primary issue.
+
+Image to evaluate:
+<img {img_uri}>
+
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
+
+Evaluation Criteria:
+1. Image-Message Alignment: Does the image clearly convey the message "{shared_messages.ad_message}"? 
+   - Is the product/brand clearly visible and prominent?
+   - Does the image composition support the message?
+   - Would a viewer understand the message from the image alone?
+
+2. Sensation Evocation: Does the image effectively evoke "{shared_messages.target_sensation}"?
+   - Are there clear visual cues that create this sensation?
+   - Is the sensation prominent and noticeable?
+
+Decision: Return EXACTLY ONE of these:
+- "Image-Message Alignment" if the message is not clear
+- "Sensation Evocation" if the sensation is not evoked (but message is clear)
+- "No Issue" if both are satisfied"""
         }
         group_chat.messages.append(critic_user_message)
 
@@ -311,10 +329,42 @@ Target Sensation: {shared_messages.target_sensation}"""
             else:
                 previous_attempts_text = "None"
             
+            # Determine what the issue means and what to focus on
+            issue_guidance = ""
+            if "Image-Message Alignment" in critic_response:
+                issue_guidance = f"""
+FOCUS ON: Image-Message Alignment Issue
+The image does not clearly convey the advertisement message: "{shared_messages.ad_message}"
+
+You MUST generate edits that:
+- Make the product/brand more prominent and visible
+- Ensure the image directly relates to and reinforces the message: "{shared_messages.ad_message}"
+- Add visual elements that clearly connect to the message
+- Improve composition to highlight elements that support the message
+- Remove or modify elements that distract from the message
+
+Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
+            elif "Sensation Evocation" in critic_response:
+                issue_guidance = f"""
+FOCUS ON: Sensation Evocation Issue
+The image does not effectively evoke the target sensation: "{shared_messages.target_sensation}"
+
+You MUST generate edits that:
+- Add visual cues that directly evoke "{shared_messages.target_sensation}"
+- Adjust colors, lighting, and texture to create the sensation
+- Add atmospheric elements that reinforce "{shared_messages.target_sensation}"
+- Make the sensation more prominent and noticeable
+
+Focus specifically on evoking "{shared_messages.target_sensation}" - be explicit about how each edit contributes to this sensation."""
+            else:
+                issue_guidance = f"Address the issue: {critic_response}"
+            
             # Use string format with image URI for MultimodalConversableAgent
             issue_message = {
                 "role": "user",
                 "content": f"""The critic has identified an issue: {critic_response}
+
+{issue_guidance}
 
 Current Image (most recent edited version):
 <img {img_uri}>
@@ -325,10 +375,11 @@ Target Sensation: {shared_messages.target_sensation}
 All Previous Instructions Tried (in order, most recent last):
 {previous_attempts_text}
 
-CRITICAL: You must generate COMPLETELY DIFFERENT editing instructions that have NOT been tried before. 
-- Look at the previous attempts above and avoid repeating any of those approaches.
-- Address the specific issue: {critic_response}
-- Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown."""
+CRITICAL REQUIREMENTS:
+1. Generate COMPLETELY DIFFERENT editing instructions that have NOT been tried before
+2. Look at the previous attempts above and avoid repeating any of those approaches
+3. ALL your actions must directly address the specific issue: {critic_response}
+4. Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown"""
             }
             group_chat.messages.append(issue_message)
             return planner_agent
