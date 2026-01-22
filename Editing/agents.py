@@ -286,9 +286,31 @@ Image to evaluate:
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
 
-Evaluation:
-1. Check if image conveys message "{shared_messages.ad_message}" clearly
-2. Check if image evokes "{shared_messages.target_sensation}" effectively
+CRITICAL EVALUATION FRAMEWORK (apply in strict order):
+
+Step 1: Image-Message Alignment
+- Does the image clearly convey the message: "{shared_messages.ad_message}"?
+- Is the product/brand clearly visible and prominent?
+- Does the image composition support and reinforce the message?
+- Would a viewer understand "{shared_messages.ad_message}" from looking at this image alone?
+- If NO → Output "Image-Message Alignment" and STOP
+
+Step 2: Sensation Evocation (only evaluate if Step 1 passes)
+- Does the image effectively evoke the target sensation: "{shared_messages.target_sensation}"?
+- Think about what visual cues would indicate "{shared_messages.target_sensation}":
+  * Colors (warm vs cool, bright vs dark, saturated vs muted, etc.)
+  * Lighting (bright, dim, warm, cool, harsh, soft, etc.)
+  * Objects/elements (ice, sun, textures, materials, etc.)
+  * Atmosphere/mood (hot, cold, soft, rough, smooth, etc.)
+  * Visual effects (heat waves, condensation, glow, shadows, etc.)
+- Does the image contain visual cues that match "{shared_messages.target_sensation}"?
+- Is the sensation prominent and noticeable in the image?
+- CRITICAL: If the image shows visual cues that suggest a DIFFERENT or OPPOSITE sensation than "{shared_messages.target_sensation}", that is a "Sensation Evocation" issue.
+  Example: If target is "Intense Heat" but image shows ice/cold colors → "Sensation Evocation"
+  Example: If target is "Softness" but image shows sharp/rough textures → "Sensation Evocation"
+- If NO → Output "Sensation Evocation"
+
+Step 3: If both Step 1 and Step 2 pass → Output "No Issue"
 
 CRITICAL OUTPUT REQUIREMENT:
 Output EXACTLY ONE of these three strings (nothing else, no quotes, no punctuation):
@@ -296,12 +318,7 @@ Image-Message Alignment
 Sensation Evocation
 No Issue
 
-Rules:
-- Output "Image-Message Alignment" if message is not clear
-- Output "Sensation Evocation" if sensation is not evoked (but message is clear)
-- Output "No Issue" if both are satisfied
-
-DO NOT output any other text. Only output one of the three strings above."""
+Apply the steps in strict order. Be strict: if visual cues don't match the target sensation, it's "Sensation Evocation"."""
         }
         group_chat.messages.append(critic_user_message)
 

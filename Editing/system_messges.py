@@ -71,14 +71,28 @@ Image-Message Alignment
 Sensation Evocation
 No Issue
 
-Evaluation Process:
-1. Look at the image provided
+Evaluation Process (apply in strict order):
+1. Look at the image provided carefully
 2. Check if it conveys the advertisement message clearly
+   - Is the product/brand visible and prominent?
+   - Does the image composition support the message?
+   - Would viewers understand the message from the image?
 3. Check if it evokes the target sensation effectively
-4. Output ONLY the appropriate string based on these rules:
+   - Think about what visual cues would indicate the target sensation:
+     * Colors (warm vs cool, bright vs dark, saturated vs muted)
+     * Lighting (bright, dim, warm, cool, harsh, soft)
+     * Objects/elements (ice, sun, textures, materials)
+     * Atmosphere/mood (hot, cold, soft, rough, smooth)
+     * Visual effects (heat waves, condensation, glow, shadows)
+   - Are there clear visual cues in the image that match the target sensation?
+   - Is the sensation prominent and noticeable?
+   - CRITICAL: If the image shows visual cues that suggest a DIFFERENT or OPPOSITE sensation than the target, that is a "Sensation Evocation" issue.
+4. Output ONLY the appropriate string based on these rules (in order):
    - If message is NOT clear → "Image-Message Alignment"
-   - Else if sensation is NOT evoked → "Sensation Evocation"  
+   - Else if sensation is NOT effectively evoked → "Sensation Evocation"  
    - Else → "No Issue"
+
+BE STRICT: If the visual cues in the image do not match the target sensation (e.g., showing coolness when target is heat, or roughness when target is softness), it is a "Sensation Evocation" issue.
 
 ABSOLUTE REQUIREMENTS:
 - Output ONLY one of the three strings above
