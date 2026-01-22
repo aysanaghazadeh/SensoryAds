@@ -226,9 +226,8 @@ def custom_speaker_selection(last_speaker, group_chat):
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Evaluate this generated image:
-<img {img_uri}>
-
+            "content": f"""Evaluate this generated image if it conveys the advertisement message and evoke the target sensation and then return the issue:
+<img {img_uri}
 Advertisement Message: {shared_messages.ad_message}
 Target Sensation: {shared_messages.target_sensation}"""
         }
