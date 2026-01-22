@@ -278,7 +278,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Evaluate this generated image and identify the primary issue.
+            "content": f"""Evaluate this image and output ONLY one string.
 
 Image to evaluate:
 <img {img_uri}>
@@ -286,20 +286,22 @@ Image to evaluate:
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
 
-Evaluation Criteria:
-1. Image-Message Alignment: Does the image clearly convey the message "{shared_messages.ad_message}"? 
-   - Is the product/brand clearly visible and prominent?
-   - Does the image composition support the message?
-   - Would a viewer understand the message from the image alone?
+Evaluation:
+1. Check if image conveys message "{shared_messages.ad_message}" clearly
+2. Check if image evokes "{shared_messages.target_sensation}" effectively
 
-2. Sensation Evocation: Does the image effectively evoke "{shared_messages.target_sensation}"?
-   - Are there clear visual cues that create this sensation?
-   - Is the sensation prominent and noticeable?
+CRITICAL OUTPUT REQUIREMENT:
+Output EXACTLY ONE of these three strings (nothing else, no quotes, no punctuation):
+Image-Message Alignment
+Sensation Evocation
+No Issue
 
-Decision: Return EXACTLY ONE of these:
-- "Image-Message Alignment" if the message is not clear
-- "Sensation Evocation" if the sensation is not evoked (but message is clear)
-- "No Issue" if both are satisfied"""
+Rules:
+- Output "Image-Message Alignment" if message is not clear
+- Output "Sensation Evocation" if sensation is not evoked (but message is clear)
+- Output "No Issue" if both are satisfied
+
+DO NOT output any other text. Only output one of the three strings above."""
         }
         group_chat.messages.append(critic_user_message)
 
@@ -307,14 +309,38 @@ Decision: Return EXACTLY ONE of these:
 
     elif last_speaker is critic_agent:
         critic_response = messages[-1].get("content", "").strip()
+        
+        # Handle multimodal content (list format)
+        if isinstance(critic_response, list):
+            text_content = ""
+            for item in critic_response:
+                if isinstance(item, dict) and item.get("type") == "text":
+                    text_content = item.get("text", "")
+                    break
+            critic_response = text_content.strip()
+        
+        # Extract the issue type from response (handle cases where critic adds extra text)
+        issue_type = None
+        if "Image-Message Alignment" in critic_response:
+            issue_type = "Image-Message Alignment"
+        elif "Sensation Evocation" in critic_response:
+            issue_type = "Sensation Evocation"
+        elif "No Issue" in critic_response or "no issue" in critic_response.lower():
+            issue_type = "No Issue"
+        else:
+            # If critic didn't output expected format, log error and default to most likely issue
+            print(f"WARNING: Critic output unexpected format: {critic_response[:100]}...")
+            print("Defaulting to 'Image-Message Alignment' for safety")
+            issue_type = "Image-Message Alignment"
+            critic_response = "Image-Message Alignment"  # Use standardized response
 
-        if "No Issue" in critic_response or "no issue" in critic_response.lower():
+        if issue_type == "No Issue":
             wandb.log({"final_status": "Success - No Issues"})
             return None
         else:
             wandb.log({
                 "step": shared_messages.step_counter,
-                "issue_identified": critic_response
+                "issue_identified": issue_type
             })
 
             # Add image for planner to see (most recent edited image)
@@ -331,7 +357,7 @@ Decision: Return EXACTLY ONE of these:
             
             # Determine what the issue means and what to focus on
             issue_guidance = ""
-            if "Image-Message Alignment" in critic_response:
+            if issue_type == "Image-Message Alignment":
                 issue_guidance = f"""
 FOCUS ON: Image-Message Alignment Issue
 The image does not clearly convey the advertisement message: "{shared_messages.ad_message}"
@@ -344,7 +370,7 @@ You MUST generate edits that:
 - Remove or modify elements that distract from the message
 
 Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
-            elif "Sensation Evocation" in critic_response:
+            elif issue_type == "Sensation Evocation":
                 issue_guidance = f"""
 FOCUS ON: Sensation Evocation Issue
 The image does not effectively evoke the target sensation: "{shared_messages.target_sensation}"
@@ -362,7 +388,7 @@ Focus specifically on evoking "{shared_messages.target_sensation}" - be explicit
             # Use string format with image URI for MultimodalConversableAgent
             issue_message = {
                 "role": "user",
-                "content": f"""The critic has identified an issue: {critic_response}
+                "content": f"""The critic has identified an issue: {issue_type}
 
 {issue_guidance}
 
@@ -378,7 +404,7 @@ All Previous Instructions Tried (in order, most recent last):
 CRITICAL REQUIREMENTS:
 1. Generate COMPLETELY DIFFERENT editing instructions that have NOT been tried before
 2. Look at the previous attempts above and avoid repeating any of those approaches
-3. ALL your actions must directly address the specific issue: {critic_response}
+3. ALL your actions must directly address the specific issue: {issue_type}
 4. Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown"""
             }
             group_chat.messages.append(issue_message)
