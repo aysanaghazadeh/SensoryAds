@@ -66,6 +66,7 @@ class SharedMessage:
     ad_message: str
     target_sensation: str
     current_instructions: list
+    all_previous_instructions: list  # Track all previous instruction sets
     current_description: str
 
     def __init__(self, image, ad_message, target_sensation, initial_description):
@@ -76,6 +77,7 @@ class SharedMessage:
         self.ad_message = ad_message
         self.target_sensation = target_sensation
         self.current_instructions = []
+        self.all_previous_instructions = []  # Initialize history
         self.current_description = initial_description
 
 
@@ -210,6 +212,8 @@ def custom_speaker_selection(last_speaker, group_chat):
             else:
                 json_str = planner_response.strip()
             shared_messages.current_instructions = json.loads(json_str)
+            # Add to history of all previous attempts
+            shared_messages.all_previous_instructions.append(shared_messages.current_instructions.copy())
         except Exception as e:
             print(f"Error parsing planner instructions: {e}")
             shared_messages.current_instructions = []
@@ -251,6 +255,14 @@ Target Sensation: {shared_messages.target_sensation}"""
             resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
             img_uri = image_to_compressed_uri(resized_image)
 
+            # Format all previous attempts for the planner
+            previous_attempts_text = ""
+            if shared_messages.all_previous_instructions:
+                for i, prev_instructions in enumerate(shared_messages.all_previous_instructions, 1):
+                    previous_attempts_text += f"\nAttempt {i}:\n{json.dumps(prev_instructions, indent=2)}\n"
+            else:
+                previous_attempts_text = "None"
+            
             issue_message = {
                 "role": "user",
                 "content": f"""The critic has identified an issue: {critic_response}
@@ -260,10 +272,11 @@ Current Image:
 
 Advertisement Message: {shared_messages.ad_message}
 Target Sensation: {shared_messages.target_sensation}
-Previous Instructions Tried (most recent last):
-{json.dumps(shared_messages.current_instructions, indent=2) if shared_messages.current_instructions else "None"}
 
-Please generate NEW editing instructions to address this issue."""
+All Previous Instructions Tried (in order, most recent last):
+{previous_attempts_text}
+
+IMPORTANT: Generate DIFFERENT editing instructions that have NOT been tried before. Avoid repeating previous approaches. Address the specific issue identified by the critic."""
             }
             group_chat.messages.append(issue_message)
             return planner_agent
