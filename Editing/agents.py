@@ -290,20 +290,32 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Hi! I have an image I'd like you to evaluate. 
+            "content": f"""Please evaluate this advertisement image strictly.
 
 Image:
 <img {img_uri}>
 
-This image is for an advertisement with the message: "{shared_messages.ad_message}"
-The goal is to evoke this sensation: {shared_messages.target_sensation}
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
 
-Can you help me evaluate it? Please respond with one of these:
-- Image-Message Alignment (if the message isn't clear)
-- Sensation Evocation (if the sensation isn't well evoked)
-- No Issue (if both are good)
+STRICT EVALUATION:
+1. Message Clarity: Is "{shared_messages.ad_message}" CLEARLY conveyed?
+   - Is the product/brand prominent and visible?
+   - Does the image composition support the message?
+   - Is the message the focus, not just present?
+   - If NOT clear → "Image-Message Alignment"
 
-Thanks!"""
+2. Sensation Strength: Is "{shared_messages.target_sensation}" EFFECTIVELY evoked?
+   - Are visual cues for this sensation prominent and strong?
+   - Is the sensation noticeable and clear?
+   - If NOT effectively evoked → "Sensation Evocation"
+
+3. If BOTH are good → "No Issue"
+
+Be strict: The message must be CLEAR and the sensation must be STRONG. Output one string:
+Image-Message Alignment
+Sensation Evocation
+No Issue"""
         }
         group_chat.messages.append(critic_user_message)
 
