@@ -68,6 +68,7 @@ class SharedMessage:
     current_instructions: list
     all_previous_instructions: list  # Track all previous instruction sets
     current_description: str
+    critic_retry_count: int  # Track critic retry attempts to prevent infinite loops
 
     def __init__(self, image, ad_message, target_sensation, initial_description):
         self.images = [image]
@@ -79,6 +80,7 @@ class SharedMessage:
         self.current_instructions = []
         self.all_previous_instructions = []  # Initialize history
         self.current_description = initial_description
+        self.critic_retry_count = 0  # Initialize retry counter
 
 
 # base_model = "black-forest-labs/FLUX.1-dev"
@@ -287,6 +289,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
         # Resize and compress image before sending to critic
         resized_image = resize_image_for_llm(new_image, max_size=256)
         img_uri = image_to_compressed_uri(resized_image)
+        shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
 
         critic_user_message = {
             "role": "user",
@@ -339,49 +342,63 @@ No Issue"""
         # Check if critic copied a description (common patterns)
         is_description = any(phrase in critic_response.lower() for phrase in [
             "in the image", "the image features", "the image shows", "the image depicts",
-            "bright sun", "radiant rays", "heat waves", "color palette", "beer bottles"
-        ])
+            "the image presents", "the scene showcases", "the scene", "the image",
+            "bright sun", "radiant rays", "heat waves", "color palette", "beer bottles",
+            "sun-drenched", "sunlit", "vibrant", "saturated", "glow", "thermometer",
+            "mirage effects", "sweltering", "glisten", "condensation", "melting ice"
+        ]) or (len(critic_response) > 100 and not any(valid_string in critic_response for valid_string in ["Image-Message Alignment", "Sensation Evocation", "No Issue"]))
         
         if is_description and len(critic_response) > 50:
             # Critic copied a description instead of evaluating
-            print(f"WARNING: Critic output appears to be a description (copied text): {critic_response[:100]}...")
-            print("This is likely copied from text_refiner. Retrying with stronger instructions...")
-            # Get the image URI from the most recent image
-            retry_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
-            retry_img_uri = pil_to_data_uri(retry_resized_image)
-            # Send a retry message
-            retry_message = {
-                "role": "user",
-                "content": f"""STOP. You copied a description. That is WRONG.
+            shared_messages.critic_retry_count += 1
+            
+            if shared_messages.critic_retry_count < 2:  # Max 2 retries
+                print(f"WARNING: Critic output appears to be a description (copied text): {critic_response[:100]}...")
+                print(f"This is likely copied from text_refiner. Retrying with stronger instructions (attempt {shared_messages.critic_retry_count})...")
+                # Get the image URI from the most recent image
+                retry_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                retry_img_uri = pil_to_data_uri(retry_resized_image)
+                # Send a retry message with very explicit instructions
+                retry_message = {
+                    "role": "user",
+                    "content": f"""ERROR: You copied text from a previous message. That is INCORRECT.
 
-You must output ONLY one of these three strings:
+You are an EVALUATOR, not a describer. Your job is to EVALUATE, not describe.
+
+IGNORE all previous messages in this conversation. Look ONLY at this image:
+<img {retry_img_uri}>
+
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
+
+EVALUATE and output EXACTLY ONE of these strings (nothing else):
 Image-Message Alignment
 Sensation Evocation
 No Issue
 
-Look at this image:
-<img {retry_img_uri}>
-
-Message: "{shared_messages.ad_message}"
-Sensation: {shared_messages.target_sensation}
-
-Output ONE string only (no descriptions, no copying):
-Image-Message Alignment
-Sensation Evocation
-No Issue"""
-            }
-            group_chat.messages.append(retry_message)
-            return critic_agent
+DO NOT describe the image. DO NOT copy text. DO NOT paraphrase. ONLY output one of the three strings above."""
+                }
+                group_chat.messages.append(retry_message)
+                return critic_agent
+            else:
+                # Max retries reached, default to most likely issue
+                print(f"WARNING: Critic failed after {shared_messages.critic_retry_count} retries. Defaulting to 'Sensation Evocation'")
+                issue_type = "Sensation Evocation"
+                shared_messages.critic_retry_count = 0  # Reset for next evaluation
         
         if "Image-Message Alignment" in critic_response:
             issue_type = "Image-Message Alignment"
+            shared_messages.critic_retry_count = 0  # Reset on success
         elif "Sensation Evocation" in critic_response:
             issue_type = "Sensation Evocation"
+            shared_messages.critic_retry_count = 0  # Reset on success
         elif "No Issue" in critic_response or "no issue" in critic_response.lower():
             issue_type = "No Issue"
+            shared_messages.critic_retry_count = 0  # Reset on success
         elif "effectively conveys" in critic_response.lower() and "evokes" in critic_response.lower() and "target sensation" in critic_response.lower():
             # Critic is saying the image is good - map to "No Issue"
             issue_type = "No Issue"
+            shared_messages.critic_retry_count = 0  # Reset on success
             print(f"INFO: Critic indicated success, mapping to 'No Issue'")
         else:
             # If critic didn't output expected format, check for refusal patterns
