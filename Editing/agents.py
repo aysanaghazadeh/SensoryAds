@@ -82,9 +82,8 @@ class SharedMessage:
 
 # pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
 # pipe.to("cuda")
-pipe = Flux2Pipeline.from_pretrained(
-    "diffusers/FLUX.2-dev-bnb-4bit", text_encoder=None, torch_dtype=torch.bfloat16, device_map='balanced'
-)
+pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
+pipe.to("cuda")
 print("pipeline loaded")
 
 # Define your image editing task parameters
