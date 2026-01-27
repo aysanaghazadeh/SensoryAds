@@ -83,7 +83,7 @@ class SharedMessage:
 # pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
 # pipe.to("cuda")
 pipe = Flux2Pipeline.from_pretrained(
-    repo_id, text_encoder=None, torch_dtype=torch_dtype
+    "diffusers/FLUX.2-dev-bnb-4bit", torch_dtype=torch_dtype
 ).to('cuda')
 print("pipeline loaded")
 
