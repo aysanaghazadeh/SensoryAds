@@ -91,14 +91,14 @@ EVALUATION CRITERIA (be strict):
    - Are text and visuals mismatched (e.g., text says one thing, image shows something incompatible)?
    - If the visual content itself is inconsistent or incoherent → "Visual Element Inconsistency"
 
-2. Image-Message Alignment - Check if the advertisement message is CLEARLY conveyed:
+2. Image-Message Alignment - Check if the advertisement message is conveyed:
    - Is the product/brand clearly visible and prominent in the image?
    - Does the image composition directly support and reinforce the message?
    - Would a viewer understand the message from the image alone?
    - Is the message the FOCUS of the image, not just present?
    - If the message is not clear or prominent → "Image-Message Alignment"
 
-3. Sensation Evocation - Check if the target sensation is EFFECTIVELY evoked:
+3. Sensation Evocation - Check if the target sensation is STRONGLY evoked:
    - Are there clear, prominent visual cues that create the target sensation?
    - Is the sensation noticeable and strong in the image?
    - Do the visual elements (colors, lighting, objects, atmosphere) match the sensation?

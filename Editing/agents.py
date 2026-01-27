@@ -108,7 +108,7 @@ print("pipeline loaded")
 # Define your image editing task parameters
 image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
 ad_message = "I should drink this beer because it is refreshing"
-target_sensation = "Weightlessness"
+target_sensation = "Lightness"
 initial_description = "A beer advertisement image"
 
 shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
@@ -299,24 +299,23 @@ Image to evaluate:
 <img {img_uri}>
 
 EVALUATION:
-1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent -> "Visual Element Inconsistency"
+1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent → "Visual Element Inconsistency"
 2. Does the image clearly convey "{shared_messages.ad_message}"?
    - Product/brand visible and prominent?
    - Message is the focus?
    - If NO → "Image-Message Alignment"
 
 3. Does the image effectively evoke "{shared_messages.target_sensation}"?
-   - Visual cues are prominent and strong?
-   - Sensation is noticeable?
+   - Visual cues evoking the sensation are prominent and strong?
+   - Sensation is strong?
    - If NO → "Sensation Evocation"
 
-4. ONLY If ALL COMPLETELY YES → "No Issue" (this should be rare)
 
 OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
-No Issue"""
+"""
         }
         group_chat.messages.append(critic_user_message)
 
@@ -598,7 +597,7 @@ def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensat
     if target_sensation_initial is not None:
         target_sensation = target_sensation_initial
     else:
-        target_sensation = "Weightlessness"
+        target_sensation = "Lightness"
     # Resize and compress initial image
     resized_initial_image = resize_image_for_llm(image, max_size=256)
     initial_img_uri = image_to_compressed_uri(resized_initial_image)
