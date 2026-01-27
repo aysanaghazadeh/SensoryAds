@@ -575,7 +575,7 @@ CRITICAL REQUIREMENTS:
 group_chat = GroupChat(
     agents=[user_proxy, planner_agent, critic_agent, text_refiner_agent],
     messages=[],
-    max_round=15,
+    max_round=30,
     speaker_selection_method=custom_speaker_selection,
 )
 
