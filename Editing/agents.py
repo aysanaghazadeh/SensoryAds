@@ -48,6 +48,8 @@ def resize_image_for_llm(image, max_size=256):
     return resized
 
 
+MIN_EDITS_BEFORE_NO_ISSUE = 2
+
 def image_to_compressed_uri(image):
     """Convert PIL image to compressed base64 data URI"""
     buffered = BytesIO()
@@ -78,6 +80,7 @@ class SharedMessage:
     current_description: str
     critic_retry_count: int  # Track critic retry attempts to prevent infinite loops
     no_issue_confirmations: int  # Track No Issue confirmations
+    no_issue_retry_count: int  # Track retries when No Issue is too early
 
     def __init__(self, image, ad_message, target_sensation, initial_description):
         self.images = [image]
@@ -91,6 +94,7 @@ class SharedMessage:
         self.current_description = initial_description
         self.critic_retry_count = 0  # Initialize retry counter
         self.no_issue_confirmations = 0  # Initialize No Issue confirmation counter
+        self.no_issue_retry_count = 0  # Initialize No Issue retry counter
 
 
 # pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
@@ -400,6 +404,33 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
             critic_response = issue_type  # Use standardized response
 
         if issue_type == "No Issue":
+            if shared_messages.step_counter < MIN_EDITS_BEFORE_NO_ISSUE:
+                if shared_messages.no_issue_retry_count < 1:
+                    shared_messages.no_issue_retry_count += 1
+                    retry_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                    retry_img_uri = pil_to_data_uri(retry_resized_image)
+                    retry_message = {
+                        "role": "user",
+                        "content": f"""No Issue is NOT allowed yet because only {shared_messages.step_counter} edit(s) were made.
+You MUST choose the single MOST IMPORTANT issue from the three options below.
+
+Look at THIS image:
+<img {retry_img_uri}>
+
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
+
+Output EXACTLY ONE of these strings (nothing else):
+Visual Element Inconsistency
+Image-Message Alignment
+Sensation Evocation"""
+                    }
+                    group_chat.messages.append(retry_message)
+                    return critic_agent
+                issue_type = "Sensation Evocation"
+                shared_messages.no_issue_retry_count = 0
+            else:
+                shared_messages.no_issue_retry_count = 0
             if shared_messages.no_issue_confirmations < 1:
                 shared_messages.no_issue_confirmations += 1
                 # Ask for a strict confirmation before accepting "No Issue"
@@ -431,6 +462,7 @@ No Issue"""
             return None
         else:
             shared_messages.no_issue_confirmations = 0
+            shared_messages.no_issue_retry_count = 0
             wandb.log({
                 "step": shared_messages.step_counter,
                 "issue_identified": issue_type
