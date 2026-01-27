@@ -77,6 +77,7 @@ class SharedMessage:
     all_previous_instructions: list  # Track all previous instruction sets
     current_description: str
     critic_retry_count: int  # Track critic retry attempts to prevent infinite loops
+    no_issue_confirmations: int  # Track No Issue confirmations
 
     def __init__(self, image, ad_message, target_sensation, initial_description):
         self.images = [image]
@@ -89,6 +90,7 @@ class SharedMessage:
         self.all_previous_instructions = []  # Initialize history
         self.current_description = initial_description
         self.critic_retry_count = 0  # Initialize retry counter
+        self.no_issue_confirmations = 0  # Initialize No Issue confirmation counter
 
 
 # pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
@@ -306,12 +308,13 @@ EVALUATION:
    - Sensation is noticeable?
    - If NO → "Sensation Evocation"
 
-4. ONLY If ALL COMPLETELY YES → "No Issue"
+4. ONLY If ALL COMPLETELY YES → "No Issue" (this should be rare)
 
 OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
-Sensation Evocation"""
+Sensation Evocation
+No Issue"""
         }
         group_chat.messages.append(critic_user_message)
 
@@ -397,9 +400,37 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
             critic_response = issue_type  # Use standardized response
 
         if issue_type == "No Issue":
+            if shared_messages.no_issue_confirmations < 1:
+                shared_messages.no_issue_confirmations += 1
+                # Ask for a strict confirmation before accepting "No Issue"
+                confirm_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                confirm_img_uri = pil_to_data_uri(confirm_resized_image)
+                confirm_message = {
+                    "role": "user",
+                    "content": f"""DOUBLE-CHECK REQUIRED. "No Issue" is only valid if BOTH of these are CLEARLY true:
+1) The image clearly conveys the advertisement message.
+2) The image strongly evokes the target sensation.
+AND there are no visual inconsistencies.
+
+Look at THIS image:
+<img {confirm_img_uri}>
+
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
+
+Output EXACTLY ONE of these strings (nothing else):
+Visual Element Inconsistency
+Image-Message Alignment
+Sensation Evocation
+No Issue"""
+                }
+                group_chat.messages.append(confirm_message)
+                return critic_agent
+            shared_messages.no_issue_confirmations = 0
             wandb.log({"final_status": "Success - No Issues"})
             return None
         else:
+            shared_messages.no_issue_confirmations = 0
             wandb.log({
                 "step": shared_messages.step_counter,
                 "issue_identified": issue_type
