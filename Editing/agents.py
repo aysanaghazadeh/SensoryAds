@@ -55,6 +55,17 @@ def image_to_compressed_uri(image):
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return f"data:image/jpeg;base64,{img_str}"
 
+def extract_text_content(message_content):
+    """Extract text from autogen multimodal content or plain strings."""
+    if isinstance(message_content, list):
+        for item in message_content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                return item.get("text", "")
+        return ""
+    if isinstance(message_content, str):
+        return message_content
+    return ""
+
 class SharedMessage:
     images: list
     messages: list
@@ -163,21 +174,15 @@ def custom_speaker_selection(last_speaker, group_chat):
     if last_speaker is user_proxy:
         return planner_agent
 
+    if not messages:
+        return planner_agent
+
     if len(messages) <= 1:
         return planner_agent
 
     if last_speaker is planner_agent:
         try:
-            planner_response = messages[-1].get("content", "")
-            # Handle multimodal content (list format)
-            if isinstance(planner_response, list):
-                # Extract text from multimodal content
-                text_content = ""
-                for item in planner_response:
-                    if isinstance(item, dict) and item.get("type") == "text":
-                        text_content = item.get("text", "")
-                        break
-                planner_response = text_content
+            planner_response = extract_text_content(messages[-1].get("content", ""))
             
             # Extract JSON from response
             if "```json" in planner_response:
@@ -264,13 +269,13 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
             return planner_agent
 
     elif last_speaker is text_refiner_agent:
-        refined_prompt = messages[-1].get("content", "").strip()
+        refined_prompt = extract_text_content(messages[-1].get("content", "")).strip()
         new_image = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
         shared_messages.current_description = refined_prompt
 
         # Resize and compress image before sending to critic
         resized_image = resize_image_for_llm(new_image, max_size=256)
-        img_uri = image_to_compressed_uri(resized_image)
+        img_uri = pil_to_data_uri(resized_image)
         shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
 
         critic_user_message = {
@@ -313,16 +318,7 @@ Sensation Evocation"""
         return critic_agent
 
     elif last_speaker is critic_agent:
-        critic_response = messages[-1].get("content", "").strip()
-
-        # Handle multimodal content (list format)
-        if isinstance(critic_response, list):
-            text_content = ""
-            for item in critic_response:
-                if isinstance(item, dict) and item.get("type") == "text":
-                    text_content = item.get("text", "")
-                    break
-            critic_response = text_content.strip()
+        critic_response = extract_text_content(messages[-1].get("content", "")).strip()
         
         # Extract the issue type from response (handle cases where critic adds extra text)
         issue_type = None
