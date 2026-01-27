@@ -590,6 +590,7 @@ def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensat
     if generated_image is not None:
         image = generated_image
     if ad_message_initial is not None:
+        ad_message = ad_message_initial
     if target_sensation_initial is not None:
         target_sensation = target_sensation_initial
     # Resize and compress initial image
