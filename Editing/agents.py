@@ -83,7 +83,7 @@ class SharedMessage:
 # pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
 # pipe.to("cuda")
 pipe = Flux2Pipeline.from_pretrained(
-    "diffusers/FLUX.2-dev-bnb-4bit", torch_dtype=torch.bfloat16
+    "diffusers/FLUX.2-dev", torch_dtype=torch.bfloat16
 ).to('cuda')
 print("pipeline loaded")
 
@@ -108,7 +108,7 @@ def image_editing(prompt, control_image, group_chat):
     image = pipe(
         image=control_image,
         prompt=prompt,
-        guidance_scale=2.5
+        guidance_scale=4
     ).images[0]
 
     shared_messages.images.append(image)
