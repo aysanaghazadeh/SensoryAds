@@ -303,6 +303,7 @@ EVALUATION:
 2. Does the image clearly convey "{shared_messages.ad_message}"?
    - Product/brand visible and prominent?
    - Message is the focus?
+   - If the product/action implied by the message is NOT clearly depicted (e.g., message says gum but no gum is visible) → "Image-Message Alignment"
    - If NO → "Image-Message Alignment"
 
 3. Does the image effectively evoke "{shared_messages.target_sensation}"?
@@ -310,6 +311,10 @@ EVALUATION:
    - Sensation is strong?
    - If NO → "Sensation Evocation"
 
+PRIORITY RULE (CRITICAL):
+1) If Visual Element Inconsistency applies → output "Visual Element Inconsistency"
+2) Else if the advertisement message is NOT clearly conveyed → output "Image-Message Alignment"
+3) Else (message is clear) if sensation is weak → output "Sensation Evocation"
 
 OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
 Visual Element Inconsistency

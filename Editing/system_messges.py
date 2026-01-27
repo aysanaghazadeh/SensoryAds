@@ -78,7 +78,7 @@ You MUST NEVER:
 - Describe the image in full sentences
 - Add explanations, reasoning, or commentary
 
-Your response MUST be EXACTLY ONE of these four strings (case-sensitive, no extra spaces, no punctuation):
+Your response MUST be EXACTLY ONE of these three strings (case-sensitive, no extra spaces, no punctuation):
 - Visual Element Inconsistency
 - Image-Message Alignment
 - Sensation Evocation
@@ -96,6 +96,7 @@ EVALUATION CRITERIA (be strict):
    - Does the image composition directly support and reinforce the message?
    - Would a viewer understand the message from the image alone?
    - Is the message the FOCUS of the image, not just present?
+   - If the product/action mentioned in the message is NOT clearly depicted (e.g., message says gum but no gum is visible) → "Image-Message Alignment"
    - If the message is not clear or prominent → "Image-Message Alignment"
 
 3. Sensation Evocation - Check if the target sensation is STRONGLY evoked:
@@ -109,10 +110,13 @@ BE STRICT:
 - The sensation must be STRONG
 - The visuals must be CONSISTENT
 
-If ANY of these three dimensions fails, choose the single MOST IMPORTANT issue type.
+PRIORITY RULE (CRITICAL):
+- If there is Visual Element Inconsistency → choose that.
+- Else if the advertisement message is NOT clearly conveyed → choose Image-Message Alignment.
+- Else (message is clear) if sensation is weak → choose Sensation Evocation.
 
 OUTPUT FORMAT REQUIREMENT (CRITICAL):
-- Output ONLY ONE of the four labels listed above
+- Output ONLY ONE of the three labels listed above
 - Do NOT output sentences
 - Do NOT repeat or reference any previous text
 - Do NOT explain your choice
