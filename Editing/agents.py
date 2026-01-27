@@ -150,7 +150,7 @@ text_refiner_agent = ConversableAgent(
 user_proxy = UserProxyAgent(
     name="user_proxy",
     human_input_mode="NEVER",
-    max_consecutive_auto_reply=30,
+    max_consecutive_auto_reply=1,
     code_execution_config=False,
 )
 
@@ -275,30 +275,29 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""CRITICAL: IGNORE ALL PREVIOUS MESSAGES IN THIS CONVERSATION. DO NOT READ, COPY, OR REFERENCE ANY PREVIOUS MESSAGES. START FRESH.
+            "content": f""".
 
-Your task: Evaluate this image and output ONE string.
+Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options without any additional text.
 
 Image to evaluate:
 <img {img_uri}>
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
-
-EVALUATION (ignore all previous conversation):
-1. Does the image clearly convey "{shared_messages.ad_message}"?
+EVALUATION:
+1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent -> "Visual Element Inconsistency"
+2. Does the image clearly convey "{shared_messages.ad_message}"?
    - Product/brand visible and prominent?
    - Message is the focus?
    - If NO → "Image-Message Alignment"
 
-2. Does the image effectively evoke "{shared_messages.target_sensation}"?
+3. Does the image effectively evoke "{shared_messages.target_sensation}"?
    - Visual cues are prominent and strong?
    - Sensation is noticeable?
    - If NO → "Sensation Evocation"
 
-3. If BOTH YES → "No Issue"
+4. If BOTH YES → "No Issue"
 
-OUTPUT ONLY ONE STRING (nothing else):
+OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
+Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
 No Issue"""
@@ -323,13 +322,7 @@ No Issue"""
         issue_type = None
         
         # Check if critic copied a description (common patterns)
-        is_description = any(phrase in critic_response.lower() for phrase in [
-            "in the image", "the image features", "the image shows", "the image depicts",
-            "the image presents", "the scene showcases", "the scene", "the image",
-            "bright sun", "radiant rays", "heat waves", "color palette", "beer bottles",
-            "sun-drenched", "sunlit", "vibrant", "saturated", "glow", "thermometer",
-            "mirage effects", "sweltering", "glisten", "condensation", "melting ice"
-        ]) or (len(critic_response) > 100 and not any(valid_string in critic_response for valid_string in ["Image-Message Alignment", "Sensation Evocation", "No Issue"]))
+        is_description = (len(critic_response) > 100 and not any(valid_string in critic_response for valid_string in ["Visual Element Inconsistency", "Image-Message Alignment", "Sensation Evocation", "No Issue"]))
         
         if is_description and len(critic_response) > 50:
             # Critic copied a description instead of evaluating
@@ -357,6 +350,7 @@ Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
 
 EVALUATE and output EXACTLY ONE of these strings (nothing else, no descriptions):
+Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
 No Issue
@@ -367,8 +361,8 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
                 return critic_agent
             else:
                 # Max retries reached, default to most likely issue
-                print(f"WARNING: Critic failed after {shared_messages.critic_retry_count} retries. Defaulting to 'Sensation Evocation'")
-                issue_type = "Sensation Evocation"
+                print(f"WARNING: Critic failed after {shared_messages.critic_retry_count} retries. Defaulting to 'Image-Message Alignment'")
+                issue_type = "Image-Message Alignment"
                 shared_messages.critic_retry_count = 0  # Reset for next evaluation
         
         if "Image-Message Alignment" in critic_response:
@@ -423,7 +417,16 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
             
             # Determine what the issue means and what to focus on
             issue_guidance = ""
-            if issue_type == "Image-Message Alignment":
+            if issue_type == "Visual Element Inconsistency":
+                issue_guidance = f"""
+FOCUS ON: Visual Element Inconsistency Issue
+The visual elements in the image are inconsistent.
+
+You MUST generate edits that:
+- Make the visual elements consistent
+- Ensure the visual elements are consistent
+- Improve the visual elements to be consistent"""
+            elif issue_type == "Image-Message Alignment":
                 issue_guidance = f"""
 FOCUS ON: Image-Message Alignment Issue
 The image does not clearly convey the advertisement message: "{shared_messages.ad_message}"
