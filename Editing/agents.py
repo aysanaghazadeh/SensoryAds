@@ -83,7 +83,7 @@ class SharedMessage:
 # pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
 # pipe.to("cuda")
 pipe = Flux2Pipeline.from_pretrained(
-    "diffusers/FLUX.2-dev", torch_dtype=torch.bfloat16, device_map='balanced'
+    "diffusers/FLUX.2-dev-bnb-4bit", text_encoder=None, torch_dtype=torch.bfloat16, device_map='balanced'
 )
 print("pipeline loaded")
 
@@ -136,8 +136,8 @@ critic_agent = MultimodalConversableAgent(
     name="critic",
     system_message=CRITIC_SYSTEM_PROMPT,
     max_consecutive_auto_reply=10,
-    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.3,  # Low temp for consistent output
-                "max_tokens": 100},  # Enough for the three strings but not too much
+    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
+                "max_tokens": 75},  # Enough for the three strings but not too much
 )
 
 text_refiner_agent = ConversableAgent(
@@ -151,7 +151,7 @@ text_refiner_agent = ConversableAgent(
 user_proxy = UserProxyAgent(
     name="user_proxy",
     human_input_mode="NEVER",
-    max_consecutive_auto_reply=0,
+    max_consecutive_auto_reply=30,
     code_execution_config=False,
 )
 
