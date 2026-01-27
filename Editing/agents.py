@@ -256,7 +256,27 @@ def custom_speaker_selection(last_speaker, group_chat):
             print(f"Planner response was: {planner_response[:500]}...")
             shared_messages.current_instructions = []
             # Don't proceed to text_refiner if parsing failed
-            # Return planner again to retry
+            # Send a retry message to planner with explicit instructions
+            retry_planner_message = {
+                "role": "user",
+                "content": f"""ERROR: Your previous response was not valid JSON. You must output ONLY a JSON array.
+
+The previous response was invalid. Please generate image-editing instructions in JSON format.
+
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
+
+Output ONLY a JSON array with this format (nothing else):
+[
+  {{
+    "type_of_action": "adding",
+    "value": "description"
+  }}
+]
+
+DO NOT output conversational text. DO NOT output explanations. ONLY output the JSON array."""
+            }
+            group_chat.messages.append(retry_planner_message)
             return planner_agent
         
         # Only proceed to text_refiner if we have valid instructions
@@ -293,29 +313,30 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""Please evaluate this advertisement image strictly.
+            "content": f"""CRITICAL: IGNORE ALL PREVIOUS MESSAGES IN THIS CONVERSATION. DO NOT READ, COPY, OR REFERENCE ANY PREVIOUS MESSAGES. START FRESH.
 
-Image:
+Your task: Evaluate this image and output ONE string.
+
+Image to evaluate:
 <img {img_uri}>
 
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
 
-STRICT EVALUATION:
-1. Message Clarity: Is "{shared_messages.ad_message}" CLEARLY conveyed?
-   - Is the product/brand prominent and visible?
-   - Does the image composition support the message?
-   - Is the message the focus, not just present?
-   - If NOT clear → "Image-Message Alignment"
+EVALUATION (ignore all previous conversation):
+1. Does the image clearly convey "{shared_messages.ad_message}"?
+   - Product/brand visible and prominent?
+   - Message is the focus?
+   - If NO → "Image-Message Alignment"
 
-2. Sensation Strength: Is "{shared_messages.target_sensation}" EFFECTIVELY evoked?
-   - Are visual cues for this sensation prominent and strong?
-   - Is the sensation noticeable and clear?
-   - If NOT effectively evoked → "Sensation Evocation"
+2. Does the image effectively evoke "{shared_messages.target_sensation}"?
+   - Visual cues are prominent and strong?
+   - Sensation is noticeable?
+   - If NO → "Sensation Evocation"
 
-3. If BOTH are good → "No Issue"
+3. If BOTH YES → "No Issue"
 
-Be strict: The message must be CLEAR and the sensation must be STRONG. Output one string:
+OUTPUT ONLY ONE STRING (nothing else):
 Image-Message Alignment
 Sensation Evocation
 No Issue"""
@@ -361,22 +382,24 @@ No Issue"""
                 # Send a retry message with very explicit instructions
                 retry_message = {
                     "role": "user",
-                    "content": f"""ERROR: You copied text from a previous message. That is INCORRECT.
+                    "content": f"""STOP. YOU MADE AN ERROR. You copied text from a previous message. That is WRONG.
 
-You are an EVALUATOR, not a describer. Your job is to EVALUATE, not describe.
+YOU ARE AN EVALUATOR. Your job is to EVALUATE the image, NOT describe it, NOT copy text.
 
-IGNORE all previous messages in this conversation. Look ONLY at this image:
+COMPLETELY IGNORE all previous messages. DO NOT read them. DO NOT reference them. START FRESH.
+
+Look at THIS image:
 <img {retry_img_uri}>
 
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
 
-EVALUATE and output EXACTLY ONE of these strings (nothing else):
+EVALUATE and output EXACTLY ONE of these strings (nothing else, no descriptions):
 Image-Message Alignment
 Sensation Evocation
 No Issue
 
-DO NOT describe the image. DO NOT copy text. DO NOT paraphrase. ONLY output one of the three strings above."""
+REMEMBER: You are evaluating, not describing. Output only one string."""
                 }
                 group_chat.messages.append(retry_message)
                 return critic_agent
