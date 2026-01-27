@@ -13,6 +13,7 @@ from huggingface_hub import get_token
 from PIL import Image
 import wandb
 import json
+import re
 from io import BytesIO
 import base64
 from diffusers.quantizers import PipelineQuantizationConfig
@@ -100,6 +101,19 @@ def extract_text_content(message_content):
     if isinstance(message_content, str):
         return message_content
     return ""
+
+
+def extract_product_hint(ad_message_text):
+    """
+    Best-effort extraction of the product noun from ad_message.
+    Examples:
+      "I should chew this gum because..." -> "gum"
+      "I should drink this beer..." -> "beer"
+    """
+    if not isinstance(ad_message_text, str):
+        return ""
+    m = re.search(r"\bthis\s+([A-Za-z][A-Za-z0-9_-]*)\b", ad_message_text, flags=re.IGNORECASE)
+    return (m.group(1) if m else "").strip()
 
 class SharedMessage:
     images: list
@@ -317,6 +331,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
         resized_image = resize_image_for_llm(new_image, max_size=256)
         img_uri = pil_to_data_uri(resized_image)
         shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
+        product_hint = extract_product_hint(shared_messages.ad_message)
 
         critic_user_message = {
             "role": "user",
@@ -334,12 +349,14 @@ Your task: Evaluate the image given the advertisement message and target sensati
 Image to evaluate:
 <img {img_uri}>
 
+Product mentioned in the advertisement message (must be visible): "{product_hint}"
+
 EVALUATION:
 1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent → "Visual Element Inconsistency"
 2. Does the image clearly convey "{shared_messages.ad_message}"?
    - Product/brand visible and prominent?
    - Message is the focus?
-   - If the product/action implied by the message is NOT clearly depicted (e.g., message says gum but no gum is visible) → "Image-Message Alignment"
+   - CRITICAL: If the specific product mentioned above is NOT clearly visible/recognizable → "Image-Message Alignment" (even if sensation is strong)
    - If NO → "Image-Message Alignment"
 
 3. Does the image effectively evoke "{shared_messages.target_sensation}"?
@@ -349,7 +366,7 @@ EVALUATION:
 
 PRIORITY RULE (CRITICAL):
 1) If Visual Element Inconsistency applies → output "Visual Element Inconsistency"
-2) Else if the advertisement message is NOT clearly conveyed → output "Image-Message Alignment"
+2) Else if the advertisement message is NOT clearly conveyed (including missing product) → output "Image-Message Alignment"
 3) Else (message is clear) if sensation is weak → output "Sensation Evocation"
 
 OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
@@ -441,6 +458,7 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
                     shared_messages.refusal_retry_count += 1
                     retry_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
                     retry_img_uri = pil_to_data_uri(retry_resized_image)
+                    product_hint = extract_product_hint(shared_messages.ad_message)
                     retry_message = {
                         "role": "user",
                         "content": f"""You MUST evaluate the image if the image based on the instructions in the system prompt, and return the most obvious issue. If not, reply with exactly ONE label. Refusals are invalid. Do not reply in multiple messages.
@@ -450,6 +468,7 @@ Look at this image:
 
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
+Product mentioned (must be visible): "{product_hint}"
 
 Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
@@ -500,6 +519,7 @@ Sensation Evocation"""
                 # Ask for a strict confirmation before accepting "No Issue"
                 confirm_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
                 confirm_img_uri = pil_to_data_uri(confirm_resized_image)
+                product_hint = extract_product_hint(shared_messages.ad_message)
                 confirm_message = {
                     "role": "user",
                     "content": f"""DOUBLE-CHECK REQUIRED. "No Issue" is only valid if BOTH of these are CLEARLY true:
@@ -512,6 +532,7 @@ Look at THIS image:
 
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
+Product mentioned (must be visible): "{product_hint}"
 
 Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
