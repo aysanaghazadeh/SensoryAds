@@ -13,7 +13,6 @@ from huggingface_hub import get_token
 from PIL import Image
 import wandb
 import json
-import re
 from io import BytesIO
 import base64
 from diffusers.quantizers import PipelineQuantizationConfig
@@ -102,18 +101,6 @@ def extract_text_content(message_content):
         return message_content
     return ""
 
-
-def extract_product_hint(ad_message_text):
-    """
-    Best-effort extraction of the product noun from ad_message.
-    Examples:
-      "I should chew this gum because..." -> "gum"
-      "I should drink this beer..." -> "beer"
-    """
-    if not isinstance(ad_message_text, str):
-        return ""
-    m = re.search(r"\bthis\s+([A-Za-z][A-Za-z0-9_-]*)\b", ad_message_text, flags=re.IGNORECASE)
-    return (m.group(1) if m else "").strip()
 
 class SharedMessage:
     images: list
@@ -331,7 +318,6 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
         resized_image = resize_image_for_llm(new_image, max_size=256)
         img_uri = pil_to_data_uri(resized_image)
         shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
-        product_hint = extract_product_hint(shared_messages.ad_message)
 
         critic_user_message = {
             "role": "user",
@@ -348,8 +334,6 @@ Your task: Evaluate the image given the advertisement message and target sensati
 
 Image to evaluate:
 <img {img_uri}>
-
-Product mentioned in the advertisement message (must be visible): "{product_hint}"
 
 EVALUATION:
 1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent → "Visual Element Inconsistency"
@@ -458,7 +442,6 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
                     shared_messages.refusal_retry_count += 1
                     retry_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
                     retry_img_uri = pil_to_data_uri(retry_resized_image)
-                    product_hint = extract_product_hint(shared_messages.ad_message)
                     retry_message = {
                         "role": "user",
                         "content": f"""You MUST evaluate the image if the image based on the instructions in the system prompt, and return the most obvious issue. If not, reply with exactly ONE label. Refusals are invalid. Do not reply in multiple messages.
@@ -468,9 +451,8 @@ Look at this image:
 
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
-Product mentioned (must be visible): "{product_hint}"
 
-Output EXACTLY ONE of these strings (nothing else):
+Output EXACTLY ONE of these strings and explain why you chose it in one sentence(nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation"""
@@ -486,7 +468,7 @@ Sensation Evocation"""
                 issue_type = "Image-Message Alignment"
             critic_response = issue_type  # Use standardized response
 
-        if issue_type == "No Issue":
+        if "No Issue" in issue_type:
             if shared_messages.step_counter < MIN_EDITS_BEFORE_NO_ISSUE:
                 if shared_messages.no_issue_retry_count < 1:
                     shared_messages.no_issue_retry_count += 1
@@ -519,7 +501,6 @@ Sensation Evocation"""
                 # Ask for a strict confirmation before accepting "No Issue"
                 confirm_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
                 confirm_img_uri = pil_to_data_uri(confirm_resized_image)
-                product_hint = extract_product_hint(shared_messages.ad_message)
                 confirm_message = {
                     "role": "user",
                     "content": f"""DOUBLE-CHECK REQUIRED. "No Issue" is only valid if BOTH of these are CLEARLY true:
@@ -532,7 +513,6 @@ Look at THIS image:
 
 Advertisement Message: "{shared_messages.ad_message}"
 Target Sensation: {shared_messages.target_sensation}
-Product mentioned (must be visible): "{product_hint}"
 
 Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
@@ -568,7 +548,7 @@ No Issue"""
             
             # Determine what the issue means and what to focus on
             issue_guidance = ""
-            if issue_type == "Visual Element Inconsistency":
+            if "Visual Element Inconsistency" in issue_type:
                 issue_guidance = f"""
 FOCUS ON: Visual Element Inconsistency Issue
 The visual elements in the image are inconsistent.
@@ -577,7 +557,7 @@ You MUST generate edits that:
 - Make the visual elements consistent
 - Ensure the visual elements are consistent
 - Improve the visual elements to be consistent"""
-            elif issue_type == "Image-Message Alignment":
+            elif "Image-Message Alignment" in issue_type:
                 issue_guidance = f"""
 FOCUS ON: Image-Message Alignment Issue
 The image does not clearly convey the advertisement message: "{shared_messages.ad_message}"
@@ -590,7 +570,7 @@ You MUST generate edits that:
 - Remove or modify elements that distract from the message
 
 Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
-            elif issue_type == "Sensation Evocation":
+            elif "Sensation Evocation" in issue_type:
                 issue_guidance = f"""
 FOCUS ON: Sensation Evocation Issue
 The image does not effectively evoke the target sensation: "{shared_messages.target_sensation}"
