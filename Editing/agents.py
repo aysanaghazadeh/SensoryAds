@@ -589,10 +589,16 @@ group_chat_manager = GroupChatManager(
 def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensation_initial=None):
     if generated_image is not None:
         image = generated_image
+    else:
+        image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
     if ad_message_initial is not None:
         ad_message = ad_message_initial
+    else:
+        ad_message = "I should drink this beer because it is refreshing"
     if target_sensation_initial is not None:
         target_sensation = target_sensation_initial
+    else:
+        target_sensation = "Weightlessness"
     # Resize and compress initial image
     resized_initial_image = resize_image_for_llm(image, max_size=256)
     initial_img_uri = image_to_compressed_uri(resized_initial_image)
