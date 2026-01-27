@@ -22,6 +22,39 @@ from diffusers import Flux2Pipeline
 # Initialize wandb
 wandb.init(project="autogen-image-editing", name="flux-controlnet-editing")
 
+# W&B logging for agent responses
+agent_response_round = 0
+agent_responses_table = wandb.Table(columns=["step", "round", "agent", "content"])
+
+
+def _safe_to_text(x, max_len=8000):
+    if isinstance(x, str):
+        s = x
+    else:
+        try:
+            s = json.dumps(x, ensure_ascii=False)
+        except Exception:
+            s = str(x)
+    s = s.strip()
+    return s[:max_len]
+
+
+def log_agent_response(agent_name, content, extra=None):
+    """Persist each agent's response into W&B (table + latest text)."""
+    global agent_response_round, agent_responses_table
+    agent_response_round += 1
+    text = _safe_to_text(content)
+    agent_responses_table.add_data(shared_messages.step_counter, agent_response_round, agent_name, text)
+    payload = {
+        "agent_responses": agent_responses_table,
+        "agent_last_speaker": agent_name,
+        "agent_response_round": agent_response_round,
+        f"{agent_name}_last_response": text[:2000],
+    }
+    if extra:
+        payload.update(extra)
+    wandb.log(payload)
+
 
 def resize_image_for_llm(image, max_size=256):
     """Resize image to reduce token usage while maintaining aspect ratio"""
@@ -191,6 +224,7 @@ def custom_speaker_selection(last_speaker, group_chat):
     if last_speaker is planner_agent:
         try:
             planner_response = extract_text_content(messages[-1].get("content", ""))
+            log_agent_response("planner", planner_response)
             
             # Extract JSON from response
             if "```json" in planner_response:
@@ -223,6 +257,7 @@ def custom_speaker_selection(last_speaker, group_chat):
             # Add to history of all previous attempts
             shared_messages.all_previous_instructions.append(shared_messages.current_instructions.copy())
         except Exception as e:
+            log_agent_response("planner", planner_response, extra={"planner_parse_error": _safe_to_text(e)})
             print(f"Error parsing planner instructions: {e}")
             print(f"Planner response was: {planner_response[:500]}...")
             shared_messages.current_instructions = []
@@ -274,6 +309,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
     elif last_speaker is text_refiner_agent:
         refined_prompt = extract_text_content(messages[-1].get("content", "")).strip()
+        log_agent_response("text_refiner", refined_prompt)
         new_image = image_editing(refined_prompt, shared_messages.images[-1], group_chat)
         shared_messages.current_description = refined_prompt
 
@@ -328,6 +364,7 @@ Sensation Evocation
 
     elif last_speaker is critic_agent:
         critic_response = extract_text_content(messages[-1].get("content", "")).strip()
+        log_agent_response("critic", critic_response)
         
         # Extract the issue type from response (handle cases where critic adds extra text)
         issue_type = None
