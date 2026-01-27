@@ -82,7 +82,6 @@ Your response MUST be EXACTLY ONE of these four strings (case-sensitive, no extr
 - Visual Element Inconsistency
 - Image-Message Alignment
 - Sensation Evocation
-- No Issue
 
 EVALUATION CRITERIA (be strict):
 
@@ -104,8 +103,6 @@ EVALUATION CRITERIA (be strict):
    - Is the sensation noticeable and strong in the image?
    - Do the visual elements (colors, lighting, objects, atmosphere) match the sensation?
    - If the sensation is weak or not effectively evoked → "Sensation Evocation"
-
-4. If BOTH the message is clearly conveyed AND the sensation is effectively evoked, and there is no visual inconsistency → "No Issue"
 
 BE STRICT:
 - The message must be CLEAR

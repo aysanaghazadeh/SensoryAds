@@ -81,6 +81,7 @@ class SharedMessage:
     critic_retry_count: int  # Track critic retry attempts to prevent infinite loops
     no_issue_confirmations: int  # Track No Issue confirmations
     no_issue_retry_count: int  # Track retries when No Issue is too early
+    refusal_retry_count: int  # Track retries when critic refuses
 
     def __init__(self, image, ad_message, target_sensation, initial_description):
         self.images = [image]
@@ -95,6 +96,7 @@ class SharedMessage:
         self.critic_retry_count = 0  # Initialize retry counter
         self.no_issue_confirmations = 0  # Initialize No Issue confirmation counter
         self.no_issue_retry_count = 0  # Initialize No Issue retry counter
+        self.refusal_retry_count = 0  # Initialize refusal retry counter
 
 
 # pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
@@ -212,13 +214,9 @@ def custom_speaker_selection(last_speaker, group_chat):
                 raise ValueError("Instructions array cannot be empty")
             
             # Validate action types
-            valid_action_types = {"adding", "removing", "modifying", "changing_style"}
             for instruction in shared_messages.current_instructions:
                 if not isinstance(instruction, dict):
                     raise ValueError("Each instruction must be a dictionary")
-                action_type = instruction.get("type_of_action", "")
-                if action_type not in valid_action_types:
-                    raise ValueError(f"Invalid action type '{action_type}'. Must be one of: {valid_action_types}")
                 if "value" not in instruction:
                     raise ValueError("Each instruction must have a 'value' field")
             
@@ -395,8 +393,31 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
             
             if is_refusal:
                 print(f"WARNING: Critic refused to evaluate: {critic_response[:100]}...")
+                if shared_messages.refusal_retry_count < 1:
+                    shared_messages.refusal_retry_count += 1
+                    retry_resized_image = resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                    retry_img_uri = pil_to_data_uri(retry_resized_image)
+                    retry_message = {
+                        "role": "user",
+                        "content": f"""You MUST evaluate the image and reply with exactly ONE label. Refusals are invalid.
+
+Look at this image:
+<img {retry_img_uri}>
+
+Advertisement Message: "{shared_messages.ad_message}"
+Target Sensation: {shared_messages.target_sensation}
+
+Output EXACTLY ONE of these strings (nothing else):
+Visual Element Inconsistency
+Image-Message Alignment
+Sensation Evocation
+No Issue"""
+                    }
+                    group_chat.messages.append(retry_message)
+                    return critic_agent
                 print("Treating refusal as evaluation needed - defaulting to 'Sensation Evocation' (most common issue)")
                 issue_type = "Sensation Evocation"
+                shared_messages.refusal_retry_count = 0
             else:
                 print(f"WARNING: Critic output unexpected format: {critic_response[:100]}...")
                 print("Defaulting to 'Image-Message Alignment' for safety")
@@ -463,6 +484,7 @@ No Issue"""
         else:
             shared_messages.no_issue_confirmations = 0
             shared_messages.no_issue_retry_count = 0
+            shared_messages.refusal_retry_count = 0
             wandb.log({
                 "step": shared_messages.step_counter,
                 "issue_identified": issue_type
