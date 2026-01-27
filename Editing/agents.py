@@ -306,8 +306,7 @@ EVALUATION:
 OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
-Sensation Evocation
-No Issue"""
+Sensation Evocation"""
         }
         group_chat.messages.append(critic_user_message)
 
