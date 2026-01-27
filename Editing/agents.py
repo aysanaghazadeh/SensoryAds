@@ -401,7 +401,7 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
                     retry_img_uri = pil_to_data_uri(retry_resized_image)
                     retry_message = {
                         "role": "user",
-                        "content": f"""You MUST evaluate the image if the image evokes the target sensation, convey the message, and visual elements are consistent. If not, reply with exactly ONE label. Refusals are invalid.
+                        "content": f"""You MUST evaluate the image if the image evokes the target sensation, convey the message, and visual elements are consistent. If not, reply with exactly ONE label. Refusals are invalid. Do not reply in multiple messages.
 
 Look at this image:
 <img {retry_img_uri}>
