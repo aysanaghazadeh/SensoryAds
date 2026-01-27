@@ -108,7 +108,7 @@ print("pipeline loaded")
 # Define your image editing task parameters
 image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
 ad_message = "I should drink this beer because it is refreshing"
-target_sensation = "Intense Heat"
+target_sensation = "Weightlessness"
 initial_description = "A beer advertisement image"
 
 shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
@@ -126,7 +126,7 @@ def image_editing(prompt, control_image, group_chat):
     image = pipe(
         image=control_image,
         prompt=prompt,
-        guidance_scale=4
+        guidance_scale=3
     ).images[0]
 
     shared_messages.images.append(image)
@@ -586,7 +586,12 @@ group_chat_manager = GroupChatManager(
 )
 
 
-def evoke_sensation():
+def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensation_initial=None):
+    if generated_image is not None:
+        image = generated_image
+    if ad_message_initial is not None:
+    if target_sensation_initial is not None:
+        target_sensation = target_sensation_initial
     # Resize and compress initial image
     resized_initial_image = resize_image_for_llm(image, max_size=256)
     initial_img_uri = image_to_compressed_uri(resized_initial_image)
