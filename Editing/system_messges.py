@@ -106,7 +106,7 @@ EVALUATION CRITERIA (be strict):
    - If the sensation is weak or not effectively evoked → "Sensation Evocation"
 
 BE STRICT:
-- The message must be CLEAR
+- The message must be CLEAR and the image must show the message explicitly
 - The sensation must be EVOKED
 - The visuals must be CONSISTENT
 
