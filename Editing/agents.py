@@ -275,7 +275,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f"""IMPORTANT: You are an EVALUATOR, not a DESCRIBER.
+            "content": f"""IMPORTANT: You are an STRICTEVALUATOR, not a DESCRIBER.
 
 You MUST NOT copy or paraphrase any previous text or prompts.
 You MUST NOT describe the image in full sentences.
@@ -301,7 +301,7 @@ EVALUATION:
    - Sensation is noticeable?
    - If NO → "Sensation Evocation"
 
-4. If BOTH YES → "No Issue"
+4. ONLY If ALL COMPLETELY YES → "No Issue"
 
 OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
 Visual Element Inconsistency
