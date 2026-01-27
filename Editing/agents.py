@@ -378,6 +378,9 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
         elif "Sensation Evocation" in critic_response:
             issue_type = "Sensation Evocation"
             shared_messages.critic_retry_count = 0  # Reset on success
+        elif "Visual Element Inconsistency" in critic_response:
+            issue_type = "Visual Element Inconsistency"
+            shared_messages.critic_retry_count = 0  # Reset on success
         elif "No Issue" in critic_response or "no issue" in critic_response.lower():
             issue_type = "No Issue"
             shared_messages.critic_retry_count = 0  # Reset on success
