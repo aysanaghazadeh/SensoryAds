@@ -106,10 +106,10 @@ pipe.to("cuda")
 print("pipeline loaded")
 
 # Define your image editing task parameters
-image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
-ad_message = "I should drink this beer because it is refreshing"
-target_sensation = "Lightness"
-initial_description = "A beer advertisement image"
+image = Image.open('../experiments/generated_images/SensoryAds/20250918_122434/AR_ALL_PixArt/freezing cold/1/166611.jpg')
+ad_message = "I should chew this gum because it is refreshing"
+target_sensation = "Freezing Cold"
+initial_description = "An ice-cube"
 
 shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
 
@@ -588,15 +588,15 @@ def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensat
     if generated_image is not None:
         image = generated_image
     else:
-        image = Image.open('../Data/PittAd/train_images/0/10000.jpg')
+        image = Image.open('../experiments/generated_images/SensoryAds/20250918_122434/AR_ALL_PixArt/freezing cold/1/166611.jpg')
     if ad_message_initial is not None:
         ad_message = ad_message_initial
     else:
-        ad_message = "I should drink this beer because it is refreshing"
+        ad_message = "I should chew this gum because it is refreshing"
     if target_sensation_initial is not None:
         target_sensation = target_sensation_initial
     else:
-        target_sensation = "Lightness"
+        target_sensation = "Freezing Cold"
     # Resize and compress initial image
     resized_initial_image = resize_image_for_llm(image, max_size=256)
     initial_img_uri = image_to_compressed_uri(resized_initial_image)
