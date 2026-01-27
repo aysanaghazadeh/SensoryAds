@@ -7,10 +7,6 @@ from autogen.agentchat.contrib.img_utils import get_pil_image, pil_to_data_uri
 from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
 from autogen.agentchat.contrib.capabilities import generate_images
 import torch
-from diffusers.utils import load_image
-from diffusers import FluxControlNetPipeline
-from diffusers import FluxControlNetModel
-from diffusers import QwenImageEditPlusPipeline
 from diffusers import FluxKontextPipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
@@ -20,6 +16,7 @@ import json
 from io import BytesIO
 import base64
 from diffusers.quantizers import PipelineQuantizationConfig
+from diffusers import Flux2Pipeline
 
 
 # Initialize wandb
@@ -83,23 +80,11 @@ class SharedMessage:
         self.critic_retry_count = 0  # Initialize retry counter
 
 
-# base_model = "black-forest-labs/FLUX.1-dev"
-# controlnet_model = "InstantX/FLUX.1-dev-controlnet-canny"
-# controlnet = FluxControlNetModel.from_pretrained(controlnet_model, torch_dtype=torch.bfloat16)
-# pipe = FluxControlNetPipeline.from_pretrained(
-#     base_model, controlnet=controlnet, torch_dtype=torch.bfloat16
-# )
+# pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
 # pipe.to("cuda")
-# quantization_config = PipelineQuantizationConfig(
-#             quant_backend="bitsandbytes_8bit",
-#             quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
-#         )
-# pipe = QwenImageEditPlusPipeline.from_pretrained("Qwen/Qwen-Image-Edit-2509",
-#                                                   torch_dtype=torch.bfloat16,
-#                                                   quantization_config=quantization_config,
-#                                                   device_map='balanced')
-pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
-pipe.to("cuda")
+pipe = Flux2Pipeline.from_pretrained(
+    repo_id, text_encoder=None, torch_dtype=torch_dtype
+).to('cuda')
 print("pipeline loaded")
 
 # Define your image editing task parameters
@@ -120,28 +105,6 @@ wandb.log({
 
 
 def image_editing(prompt, control_image, group_chat):
-    # Generate image
-    # image = pipe(
-    #     prompt,
-    #     control_image=control_image,
-    #     control_guidance_start=0.2,
-    #     control_guidance_end=0.8,
-    #     controlnet_conditioning_scale=1.0,
-    #     num_inference_steps=28,
-    #     guidance_scale=3.5,
-    # ).images[0]
-    # inputs = {
-    #     "image": [control_image],
-    #     "prompt": prompt,
-    #     "generator": torch.manual_seed(0),
-    #     "true_cfg_scale": 4.0,
-    #     "negative_prompt": " ",
-    #     "num_inference_steps": 28,
-    #     "guidance_scale": 1.0,
-    #     "num_images_per_prompt": 1,
-    # }
-    # output = pipe(**inputs)
-    # image = output.images[0]
     image = pipe(
         image=control_image,
         prompt=prompt,
