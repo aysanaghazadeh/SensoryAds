@@ -99,7 +99,7 @@ EVALUATION CRITERIA (be strict):
    - If the product/action mentioned in the message is NOT clearly depicted (e.g., message says gum but no gum is visible) → "Image-Message Alignment"
    - If the message is not clear or prominent → "Image-Message Alignment"
 
-3. Sensation Evocation - Check if the target sensation is STRONGLY evoked:
+3. Sensation Evocation - Check if the target sensation is evoked:
    - Are there clear, prominent visual cues that create the target sensation?
    - Is the sensation noticeable and strong in the image?
    - Do the visual elements (colors, lighting, objects, atmosphere) match the sensation?
@@ -107,7 +107,7 @@ EVALUATION CRITERIA (be strict):
 
 BE STRICT:
 - The message must be CLEAR
-- The sensation must be STRONG
+- The sensation must be EVOKED
 - The visuals must be CONSISTENT
 
 PRIORITY RULE (CRITICAL):
@@ -116,8 +116,6 @@ PRIORITY RULE (CRITICAL):
 - Else (message is clear) if sensation is weak → choose Sensation Evocation.
 
 OUTPUT FORMAT REQUIREMENT (CRITICAL):
-- Output ONLY ONE of the three labels listed above
-- Do NOT output sentences
+- Output ONLY ONE of the three labels listed above and explain why you chose it in one sentence
 - Do NOT repeat or reference any previous text
-- Do NOT explain your choice
 """

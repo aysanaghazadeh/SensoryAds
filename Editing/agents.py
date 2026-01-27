@@ -518,7 +518,7 @@ Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
-No Issue"""
+"""
                 }
                 group_chat.messages.append(confirm_message)
                 return critic_agent
