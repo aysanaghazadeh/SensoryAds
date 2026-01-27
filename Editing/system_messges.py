@@ -116,6 +116,6 @@ PRIORITY RULE (CRITICAL):
 - Else (message is clear) if sensation is weak → choose Sensation Evocation.
 
 OUTPUT FORMAT REQUIREMENT (CRITICAL):
-- Output ONLY ONE of the three labels listed above and explain why you chose it in one sentence
+- Output ONLY ONE of the three labels listed above and explain why you chose it in one sentence. Do not miss the explanation or label. 
 - Do NOT repeat or reference any previous text
 """
