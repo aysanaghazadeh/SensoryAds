@@ -71,7 +71,7 @@ Guidelines:
 - Write in present tense, describing the final state of the image
 """
 
-CRITIC_SYSTEM_PROMPT = """You are a strict image evaluation agent working in multi-agent environment. You ONLY OUTPUT ONE SHORT LABEL per evaluation.
+CRITIC_SYSTEM_PROMPT = """You are a strict image evaluation agent working in multi-agent environment. You ONLY OUTPUT ONE SHORT LABEL per evaluation and explain why you chose it in one sentence.
 
 You MUST NEVER:
 - Copy or paraphrase any previous message content (including image descriptions or prompts)
