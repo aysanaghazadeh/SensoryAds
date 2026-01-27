@@ -275,9 +275,16 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
         critic_user_message = {
             "role": "user",
-            "content": f""".
+            "content": f"""IMPORTANT: You are an EVALUATOR, not a DESCRIBER.
 
-Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options without any additional text.
+You MUST NOT copy or paraphrase any previous text or prompts.
+You MUST NOT describe the image in full sentences.
+You MUST IGNORE all previous messages and focus ONLY on:
+- The image below
+- The advertisement message
+- The target sensation
+
+Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options without any additional text or explanation.
 
 Image to evaluate:
 <img {img_uri}>
