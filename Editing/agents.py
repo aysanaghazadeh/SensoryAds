@@ -612,7 +612,7 @@ def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensat
 Advertisement Message: {ad_message}
 Target Sensation: {target_sensation}
 
-Please generate a sequence of concrete visual edits to make this image effectively evoke the target sensation.
+Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation.
 
 CRITICAL: Output ONLY a valid JSON array in the exact format specified in your system instructions. No explanations, no markdown, no text before or after the JSON."""
 
