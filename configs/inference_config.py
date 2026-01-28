@@ -109,7 +109,7 @@ def parse_args():
     parser.add_argument('--T2I_model',
                         type=str,
                         default='PixArt',
-                        help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate')
+                        help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate, AgenticEditing')
     parser.add_argument('--LLM',
                         type=str,
                         default='LLAMA3_instruct',

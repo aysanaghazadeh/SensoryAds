@@ -1,4 +1,4 @@
-from Editing.agents import evoke_sensation
+from Editing.agents import agentic_image_editing
 
 
-evoke_sensation()
+agentic_image_editing()

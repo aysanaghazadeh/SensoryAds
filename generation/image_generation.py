@@ -101,7 +101,11 @@ def generate_images(args):
         action_reasons = content[0]
         image_sensations = sensations[filename]['image_sensations']
         for sensation in image_sensations:
-            image, prompt = AdImageGeneration(filename, sensation.replace(' sensation', ''))
+            if args.T2I_model == 'AgenticEditing':
+                generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename))
+                image, prompt = AdImageGeneration(filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
+            else:
+                image, prompt = AdImageGeneration(filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=None)
             save_image(args, filename, image, experiment_datetime, sensation)
             save_results(args, prompt, action_reasons, filename, experiment_datetime, sensation)
             print(f'image url: {filename}')
