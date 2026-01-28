@@ -145,15 +145,7 @@ print("pipeline loaded")
 # target_sensation = "Dryness"
 initial_description = "A lipbalm"
 
-shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
 
-# Log initial image to wandb
-wandb.log({
-    "step": 0,
-    "initial_image": wandb.Image(image, caption="Initial Image"),
-    "ad_message": ad_message,
-    "target_sensation": target_sensation
-})
 
 
 def image_editing(prompt, control_image, group_chat):
@@ -628,8 +620,7 @@ group_chat_manager = GroupChatManager(
 
 
 def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensation_initial=None):
-    global image, ad_message, target_sensation
-    
+    global image, ad_message, target_sensation, initial_description, shared_messages
     if generated_image is not None:
         image = generated_image
     else:
@@ -642,6 +633,15 @@ def evoke_sensation(generated_image=None, ad_message_initial=None, target_sensat
         target_sensation = target_sensation_initial
     else:
         target_sensation = "Dryness"    
+    shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
+
+    # Log initial image to wandb
+    wandb.log({
+        "step": 0,
+        "initial_image": wandb.Image(image, caption="Initial Image"),
+        "ad_message": ad_message,
+        "target_sensation": target_sensation
+    })
     # Resize and compress initial image
     resized_initial_image = resize_image_for_llm(image, max_size=256)
     initial_img_uri = image_to_compressed_uri(resized_initial_image)
