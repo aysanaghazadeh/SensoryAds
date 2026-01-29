@@ -423,14 +423,13 @@ REMEMBER: You are evaluating, not describing. Output only one label as the label
                 
                 if is_refusal:
                     print(f"WARNING: Critic refused to evaluate: {critic_response[:100]}...")
-                    if self.shared_messages.refusal_retry_count < 1:
+                    if self.shared_messages.refusal_retry_count < 3:
                         self.shared_messages.refusal_retry_count += 1
                         retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                         retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                         retry_message = {
                             "role": "user",
-                            "content": f"""You MUST evaluate the image if the image based on the instructions in the system prompt, and return the LABEL OF most obvious PROBLEM. Reply with exactly ONE label AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE. Refusals are invalid. Do not reply in multiple messages.
-
+                            "content": f"""You MUST evaluate the image based on the instructions in the system prompt, and return the LABEL OF most obvious PROBLEM. Reply with exactly ONE label AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE. Refusals are invalid and do not reply with {critic_response}.
 Look at this image:
 <img {retry_img_uri}>
 
@@ -455,7 +454,7 @@ Sensation Evocation"""
 
             if "No Issue" in issue_type:
                 if self.shared_messages.step_counter < MIN_EDITS_BEFORE_NO_ISSUE:
-                    if self.shared_messages.no_issue_retry_count < 1:
+                    if self.shared_messages.no_issue_retry_count < 3:
                         self.shared_messages.no_issue_retry_count += 1
                         retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                         retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
@@ -481,7 +480,7 @@ Sensation Evocation"""
                     self.shared_messages.no_issue_retry_count = 0
                 else:
                     self.shared_messages.no_issue_retry_count = 0
-                if self.shared_messages.no_issue_confirmations < 1:
+                if self.shared_messages.no_issue_confirmations < 3:
                     self.shared_messages.no_issue_confirmations += 1
                     # Ask for a strict confirmation before accepting "No Issue"
                     confirm_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
