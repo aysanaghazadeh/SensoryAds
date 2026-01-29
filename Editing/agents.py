@@ -79,7 +79,7 @@ class ImageEditingAgent:
                     {"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]},
                 ],
                 "temperature": 0.0,
-                "max_tokens": 60,
+                "max_tokens": 40,
             },
         )
 
@@ -402,7 +402,7 @@ Sensation Evocation
                 retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                 retry_message = {
                     "role": "user",
-                    "content": f"""EVALUATE THE IMAGE. Do NOT refuse.
+                    "content": f"""EVALUATE THE IMAGE. Do NOT refuse. Do NOT output JSON. Do NOT output any edit suggestions.
 
 Look at THIS image:
 <img {retry_img_uri}>
@@ -452,13 +452,14 @@ Line 2: exactly ONE sentence explaining why that label applies.
 
 Do NOT propose changes or give instructions (no verbs like: add, modify, enhance, incorporate, adjust, increase, include).
 Do NOT ask questions or say "feel free to ask" / "ask me" / "I can't" / "unable".
+Do NOT output JSON (must NOT start with '{{' or '[').
 Do NOT output anything else."""
                     }
                     self.group_chat.messages.append(retry_message)
                     # If the main critic keeps failing, try fallback.
                     if last_speaker is self.critic_agent:
                         return self.critic_fallback_agent
-                    return self.critic_agent
+                    return self.critic_fallback_agent
                 else:
                     # Max retries reached, default to most likely issue
                     print(f"WARNING: Critic failed after {self.shared_messages.critic_retry_count} retries. Defaulting to 'Image-Message Alignment'")
