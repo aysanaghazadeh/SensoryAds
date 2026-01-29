@@ -8,6 +8,7 @@ from datetime import datetime
 import csv
 from utils.data.trian_test_split import get_test_data
 import random
+from PIL import Image
 
 
 def get_prompt_info(args):
