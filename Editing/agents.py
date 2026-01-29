@@ -543,8 +543,8 @@ You MUST generate edits that:
 - Make the visual elements consistent
 - Ensure the visual elements are consistent
 - Improve the visual elements to be consistent"""
-            elif "Image-Message Alignment" in issue_type:
-                issue_guidance = f"""
+                elif "Image-Message Alignment" in issue_type:
+                    issue_guidance = f"""
 FOCUS ON: Image-Message Alignment Issue
 The image does not clearly convey the advertisement message: "{shared_messages.ad_message}"
 
@@ -556,8 +556,8 @@ You MUST generate edits that:
 - Remove or modify elements that distract from the message
 
 Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
-            elif "Sensation Evocation" in issue_type:
-                issue_guidance = f"""
+                elif "Sensation Evocation" in issue_type:
+                    issue_guidance = f"""
 FOCUS ON: Sensation Evocation Issue
 The image does not effectively evoke the target sensation: "{shared_messages.target_sensation}"
 
