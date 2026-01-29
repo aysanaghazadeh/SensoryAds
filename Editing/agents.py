@@ -67,6 +67,22 @@ class ImageEditingAgent:
                         "max_tokens": 60},
         )
 
+        # Fallback critic: used if the main critic refuses.
+        # Using a different model often avoids sporadic refusal loops.
+        self.critic_fallback_agent = MultimodalConversableAgent(
+            name="critic_fallback",
+            system_message=CRITIC_SYSTEM_PROMPT,
+            max_consecutive_auto_reply=10,
+            llm_config={
+                "config_list": [
+                    {"model": "gpt-4o-mini", "api_key": os.environ["OPENAI_API_KEY"]},
+                    {"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]},
+                ],
+                "temperature": 0.0,
+                "max_tokens": 60,
+            },
+        )
+
         self.text_refiner_agent = ConversableAgent(
             name="text_refiner",
             system_message=TEXT_REFINER_SYSTEM_PROMPT,
@@ -82,7 +98,7 @@ class ImageEditingAgent:
             code_execution_config=False,
         )
         self.group_chat = GroupChat(
-            agents=[self.user_proxy, self.planner_agent, self.critic_agent, self.text_refiner_agent],
+            agents=[self.user_proxy, self.planner_agent, self.critic_agent, self.critic_fallback_agent, self.text_refiner_agent],
             messages=[],
             max_round=20,
             speaker_selection_method=self.custom_speaker_selection,
@@ -354,13 +370,13 @@ Sensation Evocation
 
             return self.critic_agent
 
-        elif last_speaker is self.critic_agent:
+        elif last_speaker is self.critic_agent or last_speaker is self.critic_fallback_agent:
             critic_response_raw = self.extract_text_content(messages[-1].get("content", "")).strip()
             critic_lines = [ln.strip() for ln in critic_response_raw.splitlines() if ln.strip()]
             critic_label = critic_lines[0] if critic_lines else ""
             critic_explanation = critic_lines[1] if len(critic_lines) > 1 else ""
             critic_response = critic_response_raw
-            self.log_agent_response("critic", critic_response)
+            self.log_agent_response(last_speaker.name, critic_response)
             
             # Extract the issue type from response (handle cases where critic adds extra text)
             issue_type = None
@@ -376,6 +392,36 @@ Sensation Evocation
             # Check if critic copied a description (common patterns)
             is_description = (len(critic_response) > 100 and not any(valid_string in critic_response for valid_string in ["Visual Element Inconsistency", "Image-Message Alignment", "Sensation Evocation"]))
             
+            # If the model refused (common safety phrasing), try the fallback critic once.
+            refusal_patterns = ["i'm sorry", "i can't", "i cannot", "unable to", "can't assist", "cannot assist"]
+            is_refusal_text = any(pattern in critic_response.lower() for pattern in refusal_patterns)
+
+            if is_refusal_text and last_speaker is self.critic_agent and self.shared_messages.refusal_retry_count < 1:
+                self.shared_messages.refusal_retry_count += 1
+                retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
+                retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
+                retry_message = {
+                    "role": "user",
+                    "content": f"""EVALUATE THE IMAGE. Do NOT refuse.
+
+Look at THIS image:
+<img {retry_img_uri}>
+
+Advertisement Message: "{self.shared_messages.ad_message}"
+Target Sensation: {self.shared_messages.target_sensation}
+
+Output EXACTLY TWO LINES:
+Line 1: one of these labels (exact match):
+Visual Element Inconsistency
+Image-Message Alignment
+Sensation Evocation
+Line 2: exactly ONE sentence explaining why that label applies.
+
+Do NOT output anything else."""
+                }
+                self.group_chat.messages.append(retry_message)
+                return self.critic_fallback_agent
+
             if invalid_format or (is_description and len(critic_response) > 50):
                 # Critic copied a description instead of evaluating
                 self.shared_messages.critic_retry_count += 1
@@ -409,6 +455,9 @@ Do NOT ask questions or say "feel free to ask" / "ask me" / "I can't" / "unable"
 Do NOT output anything else."""
                     }
                     self.group_chat.messages.append(retry_message)
+                    # If the main critic keeps failing, try fallback.
+                    if last_speaker is self.critic_agent:
+                        return self.critic_fallback_agent
                     return self.critic_agent
                 else:
                     # Max retries reached, default to most likely issue
@@ -427,8 +476,7 @@ Do NOT output anything else."""
                 self.shared_messages.critic_retry_count = 0  # Reset on success
             else:
                 # If critic didn't output expected format, check for refusal patterns
-                refusal_patterns = ["i'm sorry", "i can't", "i cannot", "unable to", "can't assist"]
-                is_refusal = any(pattern in critic_response.lower() for pattern in refusal_patterns)
+                is_refusal = is_refusal_text
                 
                 if is_refusal:
                     print(f"WARNING: Critic refused to evaluate: {critic_response[:100]}...")
@@ -457,7 +505,7 @@ Do NOT ask questions or say "feel free to ask" / "ask me" / "I can't" / "unable"
 Do NOT output anything else."""
                         }
                         self.group_chat.messages.append(retry_message)
-                        return self.critic_agent
+                        return self.critic_fallback_agent if last_speaker is self.critic_agent else self.critic_agent
                     print("Treating refusal as evaluation needed - defaulting to 'Sensation Evocation' (most common issue)")
                     issue_type = "Sensation Evocation"
                     self.shared_messages.refusal_retry_count = 0
