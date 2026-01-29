@@ -635,7 +635,7 @@ CRITICAL REQUIREMENTS:
 
         # Start with user_proxy initiating to group chat manager
         self.user_proxy.initiate_chat(
-            group_chat_manager,
+            self.group_chat_manager,
             message=initial_message,
         )
 
