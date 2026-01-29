@@ -192,6 +192,7 @@ class ImageEditingAgent:
 
     # Custom speaker selection function to control the flow
     def custom_speaker_selection(self, last_speaker, group_chat):
+        global planner_response
         messages = group_chat.messages
 
         # Start with planner after user_proxy sends initial message
