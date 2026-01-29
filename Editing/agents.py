@@ -602,7 +602,7 @@ CRITICAL REQUIREMENTS:
         global image, ad_message, target_sensation, shared_messages, agent_response_round, agent_responses_table
         agent_response_round = 0
         
-        wandb.init(project="image-generation", name="image-FLUX-KONTEXT-AGENTIC")
+        wandb.init(project="image-FLUX-KONTEXT-AGENTIC", name=f"{ad_message_initial}-{target_sensation_initial}")
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
