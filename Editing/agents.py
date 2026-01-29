@@ -111,7 +111,7 @@ class ImageEditingAgent:
         global agent_response_round, agent_responses_table
         agent_response_round += 1
         text = self._safe_to_text(content)
-        agent_responses_table.add_data(shared_messages.step_counter, agent_response_round, agent_name, text)
+        agent_responses_table.add_data(self.shared_messages.step_counter, agent_response_round, agent_name, text)
         payload = {
             "agent_responses": agent_responses_table,
             "agent_last_speaker": agent_name,
