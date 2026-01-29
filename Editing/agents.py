@@ -224,27 +224,27 @@ class ImageEditingAgent:
                     if start_idx != -1 and end_idx != -1:
                         json_str = json_str[start_idx:end_idx+1]
                 
-                shared_messages.current_instructions = json.loads(json_str)
+                self.shared_messages.current_instructions = json.loads(json_str)
                 # Validate instructions format
-                if not isinstance(shared_messages.current_instructions, list):
+                if not isinstance(self.shared_messages.current_instructions, list):
                     raise ValueError("Instructions must be a JSON array")
-                if len(shared_messages.current_instructions) == 0:
+                if len(self.shared_messages.current_instructions) == 0:
                     raise ValueError("Instructions array cannot be empty")
                 
                 # Validate action types
-                for instruction in shared_messages.current_instructions:
+                for instruction in self.shared_messages.current_instructions:
                     if not isinstance(instruction, dict):
                         raise ValueError("Each instruction must be a dictionary")
                     if "value" not in instruction:
                         raise ValueError("Each instruction must have a 'value' field")
                 
                 # Add to history of all previous attempts
-                shared_messages.all_previous_instructions.append(shared_messages.current_instructions.copy())
+                self.shared_messages.all_previous_instructions.append(self.shared_messages.current_instructions.copy())
             except Exception as e:
                 self.log_agent_response("planner", planner_response, extra={"planner_parse_error": self._safe_to_text(e)})
                 print(f"Error parsing planner instructions: {e}")
                 print(f"Planner response was: {planner_response[:500]}...")
-                shared_messages.current_instructions = []
+                self.shared_messages.current_instructions = []
                 # Don't proceed to text_refiner if parsing failed
                 # Send a retry message to planner with explicit instructions
                 retry_planner_message = {
@@ -253,8 +253,8 @@ class ImageEditingAgent:
 
 The previous response was invalid. Please generate image-editing instructions in JSON format.
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
+Advertisement Message: "{self.shared_messages.ad_message}"
+Target Sensation: {self.shared_messages.target_sensation}
 
 Output ONLY a JSON array with this format (nothing else):
 [
@@ -270,14 +270,14 @@ DO NOT output conversational text. DO NOT output explanations. ONLY output the J
                 return self.planner_agent
             
             # Only proceed to text_refiner if we have valid instructions
-            if shared_messages.current_instructions:
+            if self.shared_messages.current_instructions:
                 # Send instructions to text_refiner with explicit conversion instruction
                 refiner_message = {
                     "role": "user",
                     "content": f"""Convert these image-editing instructions into a single natural language prompt for image editing.
 
 Instructions (JSON format):
-{json.dumps(shared_messages.current_instructions, indent=2)}
+{json.dumps(self.shared_messages.current_instructions, indent=2)}
 
 CRITICAL: Convert the above JSON instructions into ONE cohesive natural language description. 
 - Combine all actions into a single flowing text description
@@ -292,15 +292,15 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
                 return self.planner_agent
 
         elif last_speaker is text_refiner_agent:
-            refined_prompt = extract_text_content(messages[-1].get("content", "")).strip()
+            refined_prompt = self.extract_text_content(messages[-1].get("content", "")).strip()
             self.log_agent_response("text_refiner", refined_prompt)
-            new_image = self.image_editing(refined_prompt, shared_messages.images[-1], group_chat)
-            shared_messages.current_description = refined_prompt
+            new_image = self.image_editing(refined_prompt, self.shared_messages.images[-1], group_chat)
+            self.shared_messages.current_description = refined_prompt
 
             # Resize and compress image before sending to critic
             resized_image = self.resize_image_for_llm(new_image, max_size=256)
             img_uri = self.image_to_compressed_uri(resized_image)
-            shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
+            self.shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
 
             critic_user_message = {
                 "role": "user",
@@ -320,13 +320,13 @@ Image to evaluate:
 
 EVALUATION:
 1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent → "Visual Element Inconsistency".
-2. Does the image clearly convey "{shared_messages.ad_message}"?
+2. Does the image clearly convey "{self.shared_messages.ad_message}"?
 - Product/brand visible and prominent?
 - Message is the focus?
 - CRITICAL: If the specific product mentioned above is NOT clearly visible/recognizable → "Image-Message Alignment" (even if sensation is strong)
 - If NO → "Image-Message Alignment"
 
-3. Does the image effectively evoke "{shared_messages.target_sensation}"?
+3. Does the image effectively evoke "{self.shared_messages.target_sensation}"?
 - Visual cues evoking the sensation are prominent and strong?
 - Sensation is strong?
 - If NO → "Sensation Evocation"
@@ -347,7 +347,7 @@ Sensation Evocation
             return self.critic_agent
 
         elif last_speaker is critic_agent:
-            critic_response = extract_text_content(messages[-1].get("content", "")).strip()
+            critic_response = self.extract_text_content(messages[-1].get("content", "")).strip()
             self.log_agent_response("critic", critic_response)
             
             # Extract the issue type from response (handle cases where critic adds extra text)
@@ -358,13 +358,13 @@ Sensation Evocation
             
             if is_description and len(critic_response) > 50:
                 # Critic copied a description instead of evaluating
-                shared_messages.critic_retry_count += 1
+                self.shared_messages.critic_retry_count += 1
                 
-                if shared_messages.critic_retry_count < 2:  # Max 2 retries
+                if self.shared_messages.critic_retry_count < 2:  # Max 2 retries
                     print(f"WARNING: Critic output appears to be a description (copied text): {critic_response[:100]}...")
-                    print(f"This is likely copied from text_refiner. Retrying with stronger instructions (attempt {shared_messages.critic_retry_count})...")
+                    print(f"This is likely copied from text_refiner. Retrying with stronger instructions (attempt {self.shared_messages.critic_retry_count})...")
                     # Get the image URI from the most recent image
-                    retry_resized_image = self.resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                    retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                     retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                     # Send a retry message with very explicit instructions
                     retry_message = {
@@ -378,8 +378,8 @@ COMPLETELY IGNORE all previous messages. DO NOT read them. DO NOT reference them
 Look at THIS image:
 <img {retry_img_uri}>
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
+Advertisement Message: "{self.shared_messages.ad_message}"
+Target Sensation: {self.shared_messages.target_sensation}
 
 EVALUATE and output EXACTLY ONE of these strings (nothing else, no descriptions):
 Visual Element Inconsistency
@@ -393,26 +393,26 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
                     return self.critic_agent
                 else:
                     # Max retries reached, default to most likely issue
-                    print(f"WARNING: Critic failed after {shared_messages.critic_retry_count} retries. Defaulting to 'Image-Message Alignment'")
+                    print(f"WARNING: Critic failed after {self.shared_messages.critic_retry_count} retries. Defaulting to 'Image-Message Alignment'")
                     issue_type = "Image-Message Alignment"
-                    shared_messages.critic_retry_count = 0  # Reset for next evaluation
+                    self.shared_messages.critic_retry_count = 0  # Reset for next evaluation
             
             if "Image-Message Alignment" in critic_response:
                 issue_type = "Image-Message Alignment"
-                shared_messages.critic_retry_count = 0  # Reset on success
+                self.shared_messages.critic_retry_count = 0  # Reset on success
             elif "Sensation Evocation" in critic_response:
                 issue_type = "Sensation Evocation"
-                shared_messages.critic_retry_count = 0  # Reset on success
+                self.shared_messages.critic_retry_count = 0  # Reset on success
             elif "Visual Element Inconsistency" in critic_response:
                 issue_type = "Visual Element Inconsistency"
-                shared_messages.critic_retry_count = 0  # Reset on success
+                self.shared_messages.critic_retry_count = 0  # Reset on success
             elif "No Issue" in critic_response or "no issue" in critic_response.lower():
                 issue_type = "No Issue"
-                shared_messages.critic_retry_count = 0  # Reset on success
+                self.shared_messages.critic_retry_count = 0  # Reset on success
             elif "effectively conveys" in critic_response.lower() and "evokes" in critic_response.lower() and "target sensation" in critic_response.lower():
                 # Critic is saying the image is good - map to "No Issue"
                 issue_type = "No Issue"
-                shared_messages.critic_retry_count = 0  # Reset on success
+                self.shared_messages.critic_retry_count = 0  # Reset on success
                 print(f"INFO: Critic indicated success, mapping to 'No Issue'")
             else:
                 # If critic didn't output expected format, check for refusal patterns
@@ -421,9 +421,9 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
                 
                 if is_refusal:
                     print(f"WARNING: Critic refused to evaluate: {critic_response[:100]}...")
-                    if shared_messages.refusal_retry_count < 1:
-                        shared_messages.refusal_retry_count += 1
-                        retry_resized_image = self.resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                    if self.shared_messages.refusal_retry_count < 1:
+                        self.shared_messages.refusal_retry_count += 1
+                        retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                         retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                         retry_message = {
                             "role": "user",
@@ -432,8 +432,8 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
 Look at this image:
 <img {retry_img_uri}>
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
+Advertisement Message: "{self.shared_messages.ad_message}"
+Target Sensation: {self.shared_messages.target_sensation}
 
 Output EXACTLY ONE of these strings and explain why you chose it in one sentence(nothing else):
 Visual Element Inconsistency
@@ -444,7 +444,7 @@ Sensation Evocation"""
                         return self.critic_agent
                     print("Treating refusal as evaluation needed - defaulting to 'Sensation Evocation' (most common issue)")
                     issue_type = "Sensation Evocation"
-                    shared_messages.refusal_retry_count = 0
+                    self.shared_messages.refusal_retry_count = 0
                 else:
                     print(f"WARNING: Critic output unexpected format: {critic_response[:100]}...")
                     print("Defaulting to 'Image-Message Alignment' for safety")
@@ -452,21 +452,21 @@ Sensation Evocation"""
                 critic_response = issue_type  # Use standardized response
 
             if "No Issue" in issue_type:
-                if shared_messages.step_counter < MIN_EDITS_BEFORE_NO_ISSUE:
-                    if shared_messages.no_issue_retry_count < 1:
-                        shared_messages.no_issue_retry_count += 1
-                        retry_resized_image = self.resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                if self.shared_messages.step_counter < MIN_EDITS_BEFORE_NO_ISSUE:
+                    if self.shared_messages.no_issue_retry_count < 1:
+                        self.shared_messages.no_issue_retry_count += 1
+                        retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                         retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                         retry_message = {
                             "role": "user",
-                            "content": f"""No Issue is NOT allowed yet because only {shared_messages.step_counter} edit(s) were made.
+                            "content": f"""No Issue is NOT allowed yet because only {self.shared_messages.step_counter} edit(s) were made.
 You MUST choose the single MOST IMPORTANT issue from the three options below.
 
 Look at THIS image:
 <img {retry_img_uri}>
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
+Advertisement Message: "{self.shared_messages.ad_message}"
+Target Sensation: {self.shared_messages.target_sensation}
 
 Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
@@ -476,13 +476,13 @@ Sensation Evocation"""
                         group_chat.messages.append(retry_message)
                         return self.critic_agent
                     issue_type = "Sensation Evocation"
-                    shared_messages.no_issue_retry_count = 0
+                    self.shared_messages.no_issue_retry_count = 0
                 else:
-                    shared_messages.no_issue_retry_count = 0
-                if shared_messages.no_issue_confirmations < 1:
-                    shared_messages.no_issue_confirmations += 1
+                    self.shared_messages.no_issue_retry_count = 0
+                if self.shared_messages.no_issue_confirmations < 1:
+                    self.shared_messages.no_issue_confirmations += 1
                     # Ask for a strict confirmation before accepting "No Issue"
-                    confirm_resized_image = self.resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                    confirm_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                     confirm_img_uri = self.image_to_compressed_uri(confirm_resized_image)
                     confirm_message = {
                         "role": "user",
@@ -494,8 +494,8 @@ AND there are no visual inconsistencies.
 Look at THIS image:
 <img {confirm_img_uri}>
 
-Advertisement Message: "{shared_messages.ad_message}"
-Target Sensation: {shared_messages.target_sensation}
+Advertisement Message: "{self.shared_messages.ad_message}"
+Target Sensation: {self.shared_messages.target_sensation}
 
 Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
@@ -505,26 +505,26 @@ Sensation Evocation
                     }
                     group_chat.messages.append(confirm_message)
                     return self.critic_agent
-                shared_messages.no_issue_confirmations = 0
+                self.shared_messages.no_issue_confirmations = 0
                 wandb.log({"final_status": "Success - No Issues"})
                 return None
             else:
-                shared_messages.no_issue_confirmations = 0
-                shared_messages.no_issue_retry_count = 0
-                shared_messages.refusal_retry_count = 0
+                self.shared_messages.no_issue_confirmations = 0
+                self.shared_messages.no_issue_retry_count = 0
+                self.shared_messages.refusal_retry_count = 0
                 wandb.log({
-                    "step": shared_messages.step_counter,
+                    "step": self.shared_messages.step_counter,
                     "issue_identified": issue_type
                 })
 
                 # Add image for planner to see (most recent edited image)
-                resized_image = self.resize_image_for_llm(shared_messages.images[-1], max_size=256)
+                resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                 img_uri = self.image_to_compressed_uri(resized_image)  # Use AutoGen's utility for proper format
 
                 # Format all previous attempts for the planner
                 previous_attempts_text = ""
-                if shared_messages.all_previous_instructions:
-                    for i, prev_instructions in enumerate(shared_messages.all_previous_instructions, 1):
+                if self.shared_messages.all_previous_instructions:
+                    for i, prev_instructions in enumerate(self.shared_messages.all_previous_instructions, 1):
                         previous_attempts_text += f"\nAttempt {i}:\n{json.dumps(prev_instructions, indent=2)}\n"
                 else:
                     previous_attempts_text = "None"
@@ -543,11 +543,11 @@ You MUST generate edits that:
                 elif "Image-Message Alignment" in issue_type:
                     issue_guidance = f"""
 FOCUS ON: Image-Message Alignment Issue
-The image does not clearly convey the advertisement message: "{shared_messages.ad_message}"
+The image does not clearly convey the advertisement message: "{self.shared_messages.ad_message}"
 
 You MUST generate edits that:
 - Make the product/brand more prominent and visible
-- Ensure the image directly relates to and reinforces the message: "{shared_messages.ad_message}"
+- Ensure the image directly relates to and reinforces the message: "{self.shared_messages.ad_message}"
 - Add visual elements that clearly connect to the message
 - Improve composition to highlight elements that support the message
 - Remove or modify elements that distract from the message
@@ -556,15 +556,15 @@ Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
                 elif "Sensation Evocation" in issue_type:
                     issue_guidance = f"""
 FOCUS ON: Sensation Evocation Issue
-The image does not effectively evoke the target sensation: "{shared_messages.target_sensation}"
+The image does not effectively evoke the target sensation: "{self.shared_messages.target_sensation}"
 
 You MUST generate edits that:
-- Add visual cues that directly evoke "{shared_messages.target_sensation}"
+- Add visual cues that directly evoke "{self.shared_messages.target_sensation}"
 - Adjust colors, lighting, and texture to create the sensation
-- Add atmospheric elements that reinforce "{shared_messages.target_sensation}"
+- Add atmospheric elements that reinforce "{self.shared_messages.target_sensation}"
 - Make the sensation more prominent and noticeable
 
-Focus specifically on evoking "{shared_messages.target_sensation}" - be explicit about how each edit contributes to this sensation."""
+Focus specifically on evoking "{self.shared_messages.target_sensation}" - be explicit about how each edit contributes to this sensation."""
                 else:
                     issue_guidance = f"Address the issue: {critic_response}"
                 
@@ -578,8 +578,8 @@ Focus specifically on evoking "{shared_messages.target_sensation}" - be explicit
 Current Image (most recent edited version):
 <img {img_uri}>
 
-Advertisement Message: {shared_messages.ad_message}
-Target Sensation: {shared_messages.target_sensation}
+Advertisement Message: {self.shared_messages.ad_message}
+Target Sensation: {self.shared_messages.target_sensation}
 
 All Previous Instructions Tried (in order, most recent last):
 {previous_attempts_text}
@@ -597,7 +597,7 @@ CRITICAL REQUIREMENTS:
             return self.planner_agent
 
     def agentic_image_editing(self, generated_image=None, ad_message_initial=None, target_sensation_initial=None):
-        global image, ad_message, target_sensation, shared_messages, agent_response_round, agent_responses_table
+        global image, ad_message, target_sensation, self.shared_messages, agent_response_round, agent_responses_table
         agent_response_round = 0
         
         wandb.init(project="image-generation", name="image-FLUX-KONTEXT-AGENTIC")
