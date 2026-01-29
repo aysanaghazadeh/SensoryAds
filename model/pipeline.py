@@ -16,7 +16,7 @@ class AdvertisementImageGeneration(nn.Module):
         if prompt is None:
             prompt = self.prompt_generator.generate_prompt(self.args, image_filename, sensation)
         if generated_image is not None:
-            image = self.T2I_model(prompt, seed, generated_image, target_sensation_initial)
+            image = self.T2I_model(prompt, seed, generated_image, sensation)
         else:
             image = self.T2I_model(prompt, seed)
         return image, prompt
