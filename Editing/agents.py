@@ -533,7 +533,8 @@ Sensation Evocation
                 issue_guidance = ""
                 if "Visual Element Inconsistency" in issue_type:
                     issue_guidance = f"""
-The critic response to focus on is:{issue_type}
+FOCUS ON: Visual Element Inconsistency Issue
+The visual elements in the image are inconsistent.
 
 You MUST generate edits that:
 - Make the visual elements consistent
@@ -541,8 +542,8 @@ You MUST generate edits that:
 - Improve the visual elements to be consistent"""
                 elif "Image-Message Alignment" in issue_type:
                     issue_guidance = f"""
-The critic response to focus on is:{issue_type}
-The advertisement message to convey is: "{self.shared_messages.ad_message}"
+FOCUS ON: Image-Message Alignment Issue
+The image does not clearly convey the advertisement message: "{self.shared_messages.ad_message}"
 
 You MUST generate edits that:
 - Make the product/brand more prominent and visible
@@ -554,8 +555,8 @@ You MUST generate edits that:
 Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
                 elif "Sensation Evocation" in issue_type:
                     issue_guidance = f"""
-The critic response to focus on is:{issue_type}
-The target sensation to evoke is: "{self.shared_messages.target_sensation}"
+FOCUS ON: Sensation Evocation Issue
+The image does not effectively evoke the target sensation: "{self.shared_messages.target_sensation}"
 
 You MUST generate edits that:
 - Add visual cues that directly evoke "{self.shared_messages.target_sensation}"
