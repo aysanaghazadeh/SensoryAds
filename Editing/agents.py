@@ -206,6 +206,7 @@ class ImageEditingAgent:
             return self.planner_agent
 
         if last_speaker is self.planner_agent:
+            planner_response = messages[-1].get("content", "")
             try:
                 planner_response = extract_text_content(messages[-1].get("content", ""))
                 self.log_agent_response("planner", planner_response)
