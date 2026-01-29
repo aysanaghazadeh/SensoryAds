@@ -170,19 +170,19 @@ class ImageEditingAgent:
 
 
     def image_editing(self, prompt, control_image, group_chat):
-        image = pipe(
+        image = self.pipe(
             image=control_image,
             prompt=prompt,
             guidance_scale=3
         ).images[0]
 
-        shared_messages.images.append(image)
-        shared_messages.step_counter += 1
+        self.shared_messages.images.append(image)
+        self.shared_messages.step_counter += 1
 
         # Log to wandb
         wandb.log({
-            "step": shared_messages.step_counter,
-            "generated_image": wandb.Image(image, caption=f"Step {shared_messages.step_counter}: {prompt[:100]}..."),
+            "step": self.shared_messages.step_counter,
+            "generated_image": wandb.Image(image, caption=f"Step {self.shared_messages.step_counter}: {prompt[:100]}..."),
             "prompt": prompt,
         })
 
