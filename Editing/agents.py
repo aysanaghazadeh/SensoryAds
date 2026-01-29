@@ -597,7 +597,7 @@ CRITICAL REQUIREMENTS:
             return self.planner_agent
 
     def agentic_image_editing(self, generated_image=None, ad_message_initial=None, target_sensation_initial=None):
-        global image, ad_message, target_sensation, self.shared_messages, agent_response_round, agent_responses_table
+        global image, ad_message, target_sensation, shared_messages, agent_response_round, agent_responses_table
         agent_response_round = 0
         
         wandb.init(project="image-generation", name="image-FLUX-KONTEXT-AGENTIC")
