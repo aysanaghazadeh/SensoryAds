@@ -598,11 +598,11 @@ CRITICAL REQUIREMENTS:
         else:
             return self.planner_agent
 
-    def agentic_image_editing(self, generated_image=None, ad_message_initial=None, target_sensation_initial=None):
+    def agentic_image_editing(self, filename=None, generated_image=None, ad_message_initial=None, target_sensation_initial=None):
         global image, ad_message, target_sensation, shared_messages, agent_response_round, agent_responses_table
         agent_response_round = 0
         
-        wandb.init(project="image-FLUX-KONTEXT-AGENTIC", name=f"{ad_message_initial}-{target_sensation_initial}")
+        wandb.init(project="image-FLUX-KONTEXT-AGENTIC", name=f"{filename}-{target_sensation_initial}")
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image

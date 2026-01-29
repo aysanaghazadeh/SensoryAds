@@ -26,8 +26,8 @@ class T2IModel(nn.Module):
         }
         self.model = model_map[args.T2I_model](args)
 
-    def forward(self, prompt, seed=None, generated_image=None, target_sensation_initial=None):
+    def forward(self, filename, prompt, seed=None, generated_image=None, target_sensation_initial=None):
         if self.args.T2I_model == 'AgenticEditing':
-            return self.model.agentic_image_editing(generated_image, prompt, target_sensation_initial)
+            return self.model.agentic_image_editing(filename, generated_image, prompt, target_sensation_initial)
         else:
             return self.model(prompt, seed)
