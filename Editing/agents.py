@@ -313,7 +313,18 @@ You MUST IGNORE all previous messages and focus ONLY on:
 - The advertisement message
 - The target sensation
 
-Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options AS THE LABEL OF THE PROBLEM OF THE IMAGE AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE. Your explaination and chosen option must be consistent. For example if the problem is Image-Message Alignment, you must explain why the image and message are not aligned.
+Your task: Evaluate the image given the advertisement message and target sensation.
+
+You MUST output EXACTLY TWO LINES:
+Line 1: one label (exactly one of the three strings below)
+Line 2: exactly ONE sentence explaining why that label applies (must not contradict Line 1)
+
+You MUST NOT output:
+- editing suggestions
+- step-by-step instructions
+- bullet lists
+- multiple sentences
+- anything beyond the required 2 lines
 
 Image to evaluate:
 <img {img_uri}>
@@ -339,7 +350,11 @@ PRIORITY RULE (CRITICAL):
 2) Else if the advertisement message is NOT clearly conveyed (including missing product) → output "Image-Message Alignment"
 3) Else (message is clear) if sensation is weak → output "Sensation Evocation"
 
-OUTPUT ONLY ONE OF THE FOLLOWING STRINGS as the label of the problem and explain why you chose it in one sentence (nothing else):
+OUTPUT FORMAT (EXACT):
+<Label>
+<One-sentence explanation>
+
+ALLOWED LABELS:
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
@@ -350,33 +365,41 @@ Sensation Evocation
             return self.critic_agent
 
         elif last_speaker is self.critic_agent:
-            critic_response = self.extract_text_content(messages[-1].get("content", "")).strip()
+            critic_response_raw = self.extract_text_content(messages[-1].get("content", "")).strip()
+            critic_lines = [ln.strip() for ln in critic_response_raw.splitlines() if ln.strip()]
+            critic_label = critic_lines[0] if critic_lines else ""
+            critic_explanation = critic_lines[1] if len(critic_lines) > 1 else ""
+            critic_response = critic_response_raw
             self.log_agent_response("critic", critic_response)
             
             # Extract the issue type from response (handle cases where critic adds extra text)
             issue_type = None
+            allowed_labels = {"Visual Element Inconsistency", "Image-Message Alignment", "Sensation Evocation"}
+
+            # Hard validation: must be exactly 2 non-empty lines: label + one sentence.
+            too_many_lines = len(critic_lines) != 2
+            bad_label = critic_label not in allowed_labels
+            sentence_terminators = sum(critic_explanation.count(ch) for ch in [".", "!", "?"])
+            bad_explanation = (not critic_explanation) or (sentence_terminators > 1)
+            invalid_format = too_many_lines or bad_label or bad_explanation
             
             # Check if critic copied a description (common patterns)
-            is_description = (len(critic_response) > 100 and not any(valid_string in critic_response for valid_string in ["Visual Element Inconsistency", "Image-Message Alignment", "Sensation Evocation", "No Issue"]))
+            is_description = (len(critic_response) > 100 and not any(valid_string in critic_response for valid_string in ["Visual Element Inconsistency", "Image-Message Alignment", "Sensation Evocation"]))
             
-            if is_description and len(critic_response) > 50:
+            if invalid_format or (is_description and len(critic_response) > 50):
                 # Critic copied a description instead of evaluating
                 self.shared_messages.critic_retry_count += 1
                 
                 if self.shared_messages.critic_retry_count < 2:  # Max 2 retries
-                    print(f"WARNING: Critic output appears to be a description (copied text): {critic_response[:100]}...")
-                    print(f"This is likely copied from text_refiner. Retrying with stronger instructions (attempt {self.shared_messages.critic_retry_count})...")
+                    print(f"WARNING: Critic output invalid format: {critic_response[:120]}...")
+                    print(f"Retrying with stricter two-line format (attempt {self.shared_messages.critic_retry_count})...")
                     # Get the image URI from the most recent image
                     retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
                     retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                     # Send a retry message with very explicit instructions
                     retry_message = {
                         "role": "user",
-                        "content": f"""STOP. YOU MADE AN ERROR. You copied text from a previous message. That is WRONG.
-
-YOU ARE AN EVALUATOR. Your job is to EVALUATE the image, NOT describe it, NOT copy text.
-
-COMPLETELY IGNORE all previous messages. DO NOT read them. DO NOT reference them. START FRESH.
+                        "content": f"""INVALID OUTPUT. Follow the required format EXACTLY.
 
 Look at THIS image:
 <img {retry_img_uri}>
@@ -384,12 +407,14 @@ Look at THIS image:
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
-EVALUATE and output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence (nothing else, no descriptions):
+Output EXACTLY TWO LINES:
+Line 1: one of these labels (exact match):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
+Line 2: exactly ONE sentence explaining why that label applies.
 
-REMEMBER: You are evaluating, not describing. Output only one label as the label of the problem and explain why you chose it in one sentence."""
+Do NOT output anything else."""
                     }
                     self.group_chat.messages.append(retry_message)
                     return self.critic_agent
@@ -399,23 +424,15 @@ REMEMBER: You are evaluating, not describing. Output only one label as the label
                     issue_type = "Image-Message Alignment"
                     self.shared_messages.critic_retry_count = 0  # Reset for next evaluation
             
-            if "Image-Message Alignment" in critic_response:
+            if critic_label == "Image-Message Alignment" or "Image-Message Alignment" in critic_response:
                 issue_type = "Image-Message Alignment"
                 self.shared_messages.critic_retry_count = 0  # Reset on success
-            elif "Sensation Evocation" in critic_response:
+            elif critic_label == "Sensation Evocation" or "Sensation Evocation" in critic_response:
                 issue_type = "Sensation Evocation"
                 self.shared_messages.critic_retry_count = 0  # Reset on success
-            elif "Visual Element Inconsistency" in critic_response:
+            elif critic_label == "Visual Element Inconsistency" or "Visual Element Inconsistency" in critic_response:
                 issue_type = "Visual Element Inconsistency"
                 self.shared_messages.critic_retry_count = 0  # Reset on success
-            elif "No Issue" in critic_response or "no issue" in critic_response.lower():
-                issue_type = "No Issue"
-                self.shared_messages.critic_retry_count = 0  # Reset on success
-            elif "effectively conveys" in critic_response.lower() and "evokes" in critic_response.lower() and "target sensation" in critic_response.lower():
-                # Critic is saying the image is good - map to "No Issue"
-                issue_type = "No Issue"
-                self.shared_messages.critic_retry_count = 0  # Reset on success
-                print(f"INFO: Critic indicated success, mapping to 'No Issue'")
             else:
                 # If critic didn't output expected format, check for refusal patterns
                 refusal_patterns = ["i'm sorry", "i can't", "i cannot", "unable to", "can't assist"]
@@ -429,17 +446,21 @@ REMEMBER: You are evaluating, not describing. Output only one label as the label
                         retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                         retry_message = {
                             "role": "user",
-                            "content": f"""You MUST evaluate the image based on the instructions in the system prompt, and return the LABEL OF most obvious PROBLEM. Reply with exactly ONE label AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE. Refusals are invalid and do not reply with {critic_response}.
+                            "content": f"""INVALID OUTPUT. Follow the required format EXACTLY. Refusals are invalid.
 Look at this image:
 <img {retry_img_uri}>
 
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
-Output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence(nothing else):
+Output EXACTLY TWO LINES:
+Line 1: one of these labels (exact match):
 Visual Element Inconsistency
 Image-Message Alignment
-Sensation Evocation"""
+Sensation Evocation
+Line 2: exactly ONE sentence explaining why that label applies.
+
+Do NOT output anything else."""
                         }
                         self.group_chat.messages.append(retry_message)
                         return self.critic_agent
@@ -452,65 +473,12 @@ Sensation Evocation"""
                     issue_type = "Image-Message Alignment"
                 critic_response = issue_type  # Use standardized response
 
-            if "No Issue" in issue_type:
-                if self.shared_messages.step_counter < MIN_EDITS_BEFORE_NO_ISSUE:
-                    if self.shared_messages.no_issue_retry_count < 3:
-                        self.shared_messages.no_issue_retry_count += 1
-                        retry_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
-                        retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
-                        retry_message = {
-                            "role": "user",
-                            "content": f"""No Issue is NOT allowed yet because only {self.shared_messages.step_counter} edit(s) were made.
-You MUST choose the single MOST IMPORTANT issue from the three options below.
+            # We do NOT use a "No Issue" label in this pipeline.
+            # If the model outputs it anyway, treat it as invalid and default to Image-Message Alignment.
+            if issue_type == "No Issue":
+                issue_type = "Image-Message Alignment"
+                self.shared_messages.critic_retry_count = 0
 
-Look at THIS image:
-<img {retry_img_uri}>
-
-Advertisement Message: "{self.shared_messages.ad_message}"
-Target Sensation: {self.shared_messages.target_sensation}
-
-Output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence (nothing else):
-Visual Element Inconsistency
-Image-Message Alignment
-Sensation Evocation"""
-                        }
-                        self.group_chat.messages.append(retry_message)
-                        return self.critic_agent
-                    issue_type = "Sensation Evocation"
-                    self.shared_messages.no_issue_retry_count = 0
-                else:
-                    self.shared_messages.no_issue_retry_count = 0
-                if self.shared_messages.no_issue_confirmations < 3:
-                    self.shared_messages.no_issue_confirmations += 1
-                    # Ask for a strict confirmation before accepting "No Issue"
-                    confirm_resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
-                    confirm_img_uri = self.image_to_compressed_uri(confirm_resized_image)
-                    confirm_message = {
-                        "role": "user",
-                        "content": f"""DOUBLE-CHECK REQUIRED. "No Issue" is only valid if BOTH of these are CLEARLY true:
-1) The image clearly conveys the advertisement message.
-2) The image strongly evokes the target sensation.
-AND there are no visual inconsistencies.
-
-Look at THIS image:
-<img {confirm_img_uri}>
-
-Advertisement Message: "{self.shared_messages.ad_message}"
-Target Sensation: {self.shared_messages.target_sensation}
-
-Output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence (nothing else):
-Visual Element Inconsistency
-Image-Message Alignment
-Sensation Evocation
-
-REMEMBER: You are evaluating, not describing. Output only one label as the label of the problem and explain why you chose it in one sentence."""
-                    }
-                    self.group_chat.messages.append(confirm_message)
-                    return self.critic_agent
-                self.shared_messages.no_issue_confirmations = 0
-                wandb.log({"final_status": "Success - No Issues"})
-                return None
-            else:
                 self.shared_messages.no_issue_confirmations = 0
                 self.shared_messages.no_issue_retry_count = 0
                 self.shared_messages.refusal_retry_count = 0
