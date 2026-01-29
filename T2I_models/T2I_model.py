@@ -12,6 +12,7 @@ from Editing.agents import ImageEditingAgent
 class T2IModel(nn.Module):
     def __init__(self, args):
         super(T2IModel, self).__init__()
+        self.args = args
         model_map = {
             'PixArt': PixArt,
             'SDXL': SDXL,
@@ -26,7 +27,7 @@ class T2IModel(nn.Module):
         self.model = model_map[args.T2I_model](args)
 
     def forward(self, prompt, seed=None, generated_image=None, target_sensation_initial=None):
-        if args.T2I_model == 'AgenticEditing':
+        if self.args.T2I_model == 'AgenticEditing':
             return self.model.agentic_image_editing(generated_image, prompt, target_sensation_initial)
         else:
             return self.model(prompt, seed)
