@@ -473,44 +473,43 @@ Do NOT output anything else."""
                     issue_type = "Image-Message Alignment"
                 critic_response = issue_type  # Use standardized response
 
-            # We do NOT use a "No Issue" label in this pipeline.
-            # If the model outputs it anyway, treat it as invalid and default to Image-Message Alignment.
-            if issue_type == "No Issue":
+            # Always continue the loop on any detected issue by routing back to planner.
+            # We do NOT use a "No Issue" label in this pipeline; treat it as invalid if it appears.
+            if not issue_type or issue_type == "No Issue":
                 issue_type = "Image-Message Alignment"
-                self.shared_messages.critic_retry_count = 0
 
-                self.shared_messages.no_issue_confirmations = 0
-                self.shared_messages.no_issue_retry_count = 0
-                self.shared_messages.refusal_retry_count = 0
-                wandb.log({
-                    "step": self.shared_messages.step_counter,
-                    "issue_identified": issue_type
-                })
+            self.shared_messages.no_issue_confirmations = 0
+            self.shared_messages.no_issue_retry_count = 0
+            self.shared_messages.refusal_retry_count = 0
+            wandb.log({
+                "step": self.shared_messages.step_counter,
+                "issue_identified": issue_type
+            })
 
-                # Add image for planner to see (most recent edited image)
-                resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
-                img_uri = self.image_to_compressed_uri(resized_image)  # Use AutoGen's utility for proper format
+            # Add image for planner to see (most recent edited image)
+            resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
+            img_uri = self.image_to_compressed_uri(resized_image)
 
-                # Format all previous attempts for the planner
-                previous_attempts_text = ""
-                if self.shared_messages.all_previous_instructions:
-                    for i, prev_instructions in enumerate(self.shared_messages.all_previous_instructions, 1):
-                        previous_attempts_text += f"\nAttempt {i}:\n{json.dumps(prev_instructions, indent=2)}\n"
-                else:
-                    previous_attempts_text = "None"
-                
-                # Determine what the issue means and what to focus on
-                issue_guidance = ""
-                if "Visual Element Inconsistency" in issue_type:
-                    issue_guidance = f"""
+            # Format all previous attempts for the planner
+            previous_attempts_text = ""
+            if self.shared_messages.all_previous_instructions:
+                for i, prev_instructions in enumerate(self.shared_messages.all_previous_instructions, 1):
+                    previous_attempts_text += f"\nAttempt {i}:\n{json.dumps(prev_instructions, indent=2)}\n"
+            else:
+                previous_attempts_text = "None"
+
+            # Determine what the issue means and what to focus on
+            issue_guidance = ""
+            if issue_type == "Visual Element Inconsistency":
+                issue_guidance = f"""
 Critic response to focus on is: {issue_type}
 
 You MUST generate creative edits that:
 - Make the visual elements consistent
 - Ensure the visual elements are consistent
 - Improve the visual elements to be consistent"""
-                elif "Image-Message Alignment" in issue_type:
-                    issue_guidance = f"""
+            elif issue_type == "Image-Message Alignment":
+                issue_guidance = f"""
 Critic response to focus on is: {issue_type}
 The advertisement message to convey is "{self.shared_messages.ad_message}"
 
@@ -522,8 +521,8 @@ You MUST generate creative edits that:
 - Remove or modify elements that distract from the message
 
 Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
-                elif "Sensation Evocation" in issue_type:
-                    issue_guidance = f"""
+            elif issue_type == "Sensation Evocation":
+                issue_guidance = f"""
 Critic response to focus on is: {issue_type}
 The image must evoke the "{self.shared_messages.target_sensation}" sensation.
 
@@ -534,13 +533,12 @@ You MUST generate creative edits that:
 - Make the sensation more prominent and noticeable
 
 Focus specifically on evoking "{self.shared_messages.target_sensation}" - be explicit about how each edit contributes to this sensation."""
-                else:
-                    issue_guidance = f"Address the issue: {critic_response}"
-                
-                # Use string format with image URI for MultimodalConversableAgent
-                issue_message = {
-                    "role": "user",
-                    "content": f"""The critic has identified an issue: {issue_type}
+            else:
+                issue_guidance = f"Address the issue: {critic_response}"
+
+            issue_message = {
+                "role": "user",
+                "content": f"""The critic has identified an issue: {issue_type}
 
 {issue_guidance}
 
@@ -558,9 +556,9 @@ CRITICAL REQUIREMENTS:
 2. Look at the previous attempts above and avoid repeating any of those approaches
 3. ALL your actions must directly address the specific issue: {issue_type} and be creative.
 4. Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown"""
-                }
-                self.group_chat.messages.append(issue_message)
-                return self.planner_agent
+            }
+            self.group_chat.messages.append(issue_message)
+            return self.planner_agent
 
         else:
             return self.planner_agent
