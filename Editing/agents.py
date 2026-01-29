@@ -307,7 +307,8 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
                 "role": "user",
                 "content": f"""IMPORTANT: You are a STRICT EVALUATOR, not a planner, not an editor.
 
-You MUST NOT output editing suggestions or instructions (do NOT use verbs like: add, modify, enhance, incorporate, adjust, increase, include).
+You MUST NOT propose changes or give instructions (do NOT use verbs like: add, modify, enhance, incorporate, adjust, increase, include).
+You MUST NOT ask the user for more information or say "feel free to ask" / "ask me" / "I can't" / "unable".
 You MUST IGNORE all previous messages and focus ONLY on:
 - The image below
 - The advertisement message
@@ -403,7 +404,8 @@ Image-Message Alignment
 Sensation Evocation
 Line 2: exactly ONE sentence explaining why that label applies.
 
-Do NOT output editing suggestions or instructions (no verbs like: add, modify, enhance, incorporate, adjust, increase, include).
+Do NOT propose changes or give instructions (no verbs like: add, modify, enhance, incorporate, adjust, increase, include).
+Do NOT ask questions or say "feel free to ask" / "ask me" / "I can't" / "unable".
 Do NOT output anything else."""
                     }
                     self.group_chat.messages.append(retry_message)
@@ -450,7 +452,8 @@ Image-Message Alignment
 Sensation Evocation
 Line 2: exactly ONE sentence explaining why that label applies.
 
-Do NOT output editing suggestions or instructions (no verbs like: add, modify, enhance, incorporate, adjust, increase, include).
+Do NOT propose changes or give instructions (no verbs like: add, modify, enhance, incorporate, adjust, increase, include).
+Do NOT ask questions or say "feel free to ask" / "ask me" / "I can't" / "unable".
 Do NOT output anything else."""
                         }
                         self.group_chat.messages.append(retry_message)
