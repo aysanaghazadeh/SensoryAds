@@ -21,29 +21,25 @@ from diffusers import Flux2Pipeline
 MIN_EDITS_BEFORE_NO_ISSUE = 2
 class SharedMessage:
     images: list
-    messages: list
-    descriptions: list
+    messages: list  
     step_counter: int
     ad_message: str
     target_sensation: str
     current_instructions: list
     all_previous_instructions: list  # Track all previous instruction sets
-    current_description: str
     critic_retry_count: int  # Track critic retry attempts to prevent infinite loops
     no_issue_confirmations: int  # Track No Issue confirmations
     no_issue_retry_count: int  # Track retries when No Issue is too early
     refusal_retry_count: int  # Track retries when critic refuses
 
-    def __init__(self, image, ad_message, target_sensation, initial_description):
+    def __init__(self, image, ad_message, target_sensation):
         self.images = [image]
         self.messages = []
-        self.descriptions = [initial_description]
         self.step_counter = 0
         self.ad_message = ad_message
         self.target_sensation = target_sensation
         self.current_instructions = []
         self.all_previous_instructions = []  # Initialize history
-        self.current_description = initial_description
         self.critic_retry_count = 0  # Initialize retry counter
         self.no_issue_confirmations = 0  # Initialize No Issue confirmation counter
         self.no_issue_retry_count = 0  # Initialize No Issue retry counter
@@ -600,7 +596,7 @@ CRITICAL REQUIREMENTS:
             return self.planner_agent
 
     def agentic_image_editing(self, generated_image=None, ad_message_initial=None, target_sensation_initial=None):
-        global image, ad_message, target_sensation, initial_description, shared_messages
+        global image, ad_message, target_sensation, shared_messages
         wandb.init(project="image-generation", name="image-FLUX-KONTEXT-AGENTIC")
         if generated_image is not None:
             image = generated_image
@@ -614,7 +610,7 @@ CRITICAL REQUIREMENTS:
             target_sensation = target_sensation_initial
         else:
             target_sensation = "Dryness"    
-        self.shared_messages = SharedMessage(image, ad_message, target_sensation, initial_description)
+        self.shared_messages = SharedMessage(image, ad_message, target_sensation)
 
         # Log initial image to wandb
         wandb.log({
