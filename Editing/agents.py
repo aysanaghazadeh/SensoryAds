@@ -47,7 +47,6 @@ class SharedMessage:
 
 class ImageEditingAgent:
     def __init__(self, args):
-        
         self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
         self.pipe.to("cuda")
         print("pipeline loaded")
@@ -598,8 +597,11 @@ CRITICAL REQUIREMENTS:
             return self.planner_agent
 
     def agentic_image_editing(self, generated_image=None, ad_message_initial=None, target_sensation_initial=None):
-        global image, ad_message, target_sensation, shared_messages
+        global image, ad_message, target_sensation, shared_messages, agent_response_round, agent_responses_table
+        agent_response_round = 0
+        
         wandb.init(project="image-generation", name="image-FLUX-KONTEXT-AGENTIC")
+        agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
         else:
