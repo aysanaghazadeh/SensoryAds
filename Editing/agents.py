@@ -291,7 +291,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
             else:
                 return self.planner_agent
 
-        elif last_speaker is text_refiner_agent:
+        elif last_speaker is self.text_refiner_agent:
             refined_prompt = self.extract_text_content(messages[-1].get("content", "")).strip()
             self.log_agent_response("text_refiner", refined_prompt)
             new_image = self.image_editing(refined_prompt, self.shared_messages.images[-1], group_chat)
@@ -342,11 +342,11 @@ Image-Message Alignment
 Sensation Evocation
 """
             }
-            group_chat.messages.append(critic_user_message)
+            self.group_chat.messages.append(critic_user_message)
 
             return self.critic_agent
 
-        elif last_speaker is critic_agent:
+        elif last_speaker is self.critic_agent:
             critic_response = self.extract_text_content(messages[-1].get("content", "")).strip()
             self.log_agent_response("critic", critic_response)
             
@@ -389,7 +389,7 @@ No Issue
 
 REMEMBER: You are evaluating, not describing. Output only one string."""
                     }
-                    group_chat.messages.append(retry_message)
+                    self.group_chat.messages.append(retry_message)
                     return self.critic_agent
                 else:
                     # Max retries reached, default to most likely issue
@@ -440,7 +440,7 @@ Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation"""
                         }
-                        group_chat.messages.append(retry_message)
+                        self.group_chat.messages.append(retry_message)
                         return self.critic_agent
                     print("Treating refusal as evaluation needed - defaulting to 'Sensation Evocation' (most common issue)")
                     issue_type = "Sensation Evocation"
@@ -473,7 +473,7 @@ Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation"""
                         }
-                        group_chat.messages.append(retry_message)
+                        self.group_chat.messages.append(retry_message)
                         return self.critic_agent
                     issue_type = "Sensation Evocation"
                     self.shared_messages.no_issue_retry_count = 0
@@ -503,7 +503,7 @@ Image-Message Alignment
 Sensation Evocation
 """
                     }
-                    group_chat.messages.append(confirm_message)
+                    self.group_chat.messages.append(confirm_message)
                     return self.critic_agent
                 self.shared_messages.no_issue_confirmations = 0
                 wandb.log({"final_status": "Success - No Issues"})
@@ -590,7 +590,7 @@ CRITICAL REQUIREMENTS:
 3. ALL your actions must directly address the specific issue: {issue_type}
 4. Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown"""
                 }
-                group_chat.messages.append(issue_message)
+                self.group_chat.messages.append(issue_message)
                 return self.planner_agent
 
         else:
