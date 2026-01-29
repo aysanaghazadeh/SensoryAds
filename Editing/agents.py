@@ -313,20 +313,23 @@ You MUST IGNORE all previous messages and focus ONLY on:
 - The advertisement message
 - The target sensation
 
-Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options AS THE ISSUE OF THE IMAGE AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE.
+Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options AS THE LABEL OF THE PROBLEM OF THE IMAGE AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE. Your explaination and chosen option must be consistent. For example if the problem is Image-Message Alignment, you must explain why the image and message are not aligned.
 
 Image to evaluate:
 <img {img_uri}>
 
-EVALUATION:
-1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent → "Visual Element Inconsistency".
-2. Does the image clearly convey "{self.shared_messages.ad_message}"?
+CHOOSING LABEL OF THE PROBLEM:
+1. Are the visual elements in the image consistent? If the visual elements, textual elements, etc are not consistent then the label of the problem can be "Visual Element Inconsistency".
+2. If the answer to any of the following questions is NO, then the label of the problem can be "Image-Message Alignment"
+- Does the image clearly convey "{self.shared_messages.ad_message}"?
 - Product/brand visible and prominent?
 - Message is the focus?
 - CRITICAL: If the specific product mentioned above is NOT clearly visible/recognizable → "Image-Message Alignment" (even if sensation is strong)
 - If NO → "Image-Message Alignment"
 
-3. Does the image effectively evoke "{self.shared_messages.target_sensation}"?
+3. 
+- If the answer to any of the following questions is NO, then the label of the problem can be "Sensation Evocation"
+- Does the image effectively evoke "{self.shared_messages.target_sensation}"?
 - Visual cues evoking the sensation are prominent and strong?
 - Sensation is strong?
 - If NO → "Sensation Evocation"
@@ -336,7 +339,7 @@ PRIORITY RULE (CRITICAL):
 2) Else if the advertisement message is NOT clearly conveyed (including missing product) → output "Image-Message Alignment"
 3) Else (message is clear) if sensation is weak → output "Sensation Evocation"
 
-OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
+OUTPUT ONLY ONE OF THE FOLLOWING STRINGS as the label of the problem and explain why you chose it in one sentence (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
@@ -381,13 +384,12 @@ Look at THIS image:
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
-EVALUATE and output EXACTLY ONE of these strings (nothing else, no descriptions):
+EVALUATE and output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence (nothing else, no descriptions):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
-No Issue
 
-REMEMBER: You are evaluating, not describing. Output only one string."""
+REMEMBER: You are evaluating, not describing. Output only one label as the label of the problem and explain why you chose it in one sentence."""
                     }
                     self.group_chat.messages.append(retry_message)
                     return self.critic_agent
@@ -427,7 +429,7 @@ REMEMBER: You are evaluating, not describing. Output only one string."""
                         retry_img_uri = self.image_to_compressed_uri(retry_resized_image)
                         retry_message = {
                             "role": "user",
-                            "content": f"""You MUST evaluate the image if the image based on the instructions in the system prompt, and return the LABEL OF most obvious ISSUE. Reply with exactly ONE label AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE. Refusals are invalid. Do not reply in multiple messages.
+                            "content": f"""You MUST evaluate the image if the image based on the instructions in the system prompt, and return the LABEL OF most obvious PROBLEM. Reply with exactly ONE label AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE. Refusals are invalid. Do not reply in multiple messages.
 
 Look at this image:
 <img {retry_img_uri}>
@@ -435,7 +437,7 @@ Look at this image:
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
-Output EXACTLY ONE of these strings and explain why you chose it in one sentence(nothing else):
+Output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence(nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation"""
@@ -468,7 +470,7 @@ Look at THIS image:
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
-Output EXACTLY ONE of these strings (nothing else):
+Output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation"""
@@ -497,11 +499,12 @@ Look at THIS image:
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
-Output EXACTLY ONE of these strings (nothing else):
+Output EXACTLY ONE of these strings as the label of the problem and explain why you chose it in one sentence (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
-"""
+
+REMEMBER: You are evaluating, not describing. Output only one label as the label of the problem and explain why you chose it in one sentence."""
                     }
                     self.group_chat.messages.append(confirm_message)
                     return self.critic_agent
@@ -533,19 +536,18 @@ Sensation Evocation
                 issue_guidance = ""
                 if "Visual Element Inconsistency" in issue_type:
                     issue_guidance = f"""
-FOCUS ON: Visual Element Inconsistency Issue
-The visual elements in the image are inconsistent.
+Critic response to focus on is: {issue_type}
 
-You MUST generate edits that:
+You MUST generate creative edits that:
 - Make the visual elements consistent
 - Ensure the visual elements are consistent
 - Improve the visual elements to be consistent"""
                 elif "Image-Message Alignment" in issue_type:
                     issue_guidance = f"""
-FOCUS ON: Image-Message Alignment Issue
-The image does not clearly convey the advertisement message: "{self.shared_messages.ad_message}"
+Critic response to focus on is: {issue_type}
+The advertisement message to convey is "{self.shared_messages.ad_message}"
 
-You MUST generate edits that:
+You MUST generate creative edits that:
 - Make the product/brand more prominent and visible
 - Ensure the image directly relates to and reinforces the message: "{self.shared_messages.ad_message}"
 - Add visual elements that clearly connect to the message
@@ -555,10 +557,10 @@ You MUST generate edits that:
 Do NOT just add more sensation elements - focus on making the MESSAGE clear."""
                 elif "Sensation Evocation" in issue_type:
                     issue_guidance = f"""
-FOCUS ON: Sensation Evocation Issue
-The image does not effectively evoke the target sensation: "{self.shared_messages.target_sensation}"
+Critic response to focus on is: {issue_type}
+The image must evoke the "{self.shared_messages.target_sensation}" sensation.
 
-You MUST generate edits that:
+You MUST generate creative edits that:
 - Add visual cues that directly evoke "{self.shared_messages.target_sensation}"
 - Adjust colors, lighting, and texture to create the sensation
 - Add atmospheric elements that reinforce "{self.shared_messages.target_sensation}"
@@ -587,7 +589,7 @@ All Previous Instructions Tried (in order, most recent last):
 CRITICAL REQUIREMENTS:
 1. Generate COMPLETELY DIFFERENT editing instructions that have NOT been tried before
 2. Look at the previous attempts above and avoid repeating any of those approaches
-3. ALL your actions must directly address the specific issue: {issue_type}
+3. ALL your actions must directly address the specific issue: {issue_type} and be creative.
 4. Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown"""
                 }
                 self.group_chat.messages.append(issue_message)
@@ -633,7 +635,7 @@ CRITICAL REQUIREMENTS:
     Advertisement Message: {ad_message}
     Target Sensation: {target_sensation}
 
-    Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation.
+    Please generate a sequence of concrete creative visual edits to make this image effectively convey the advertisement message and evoke the target sensation.
 
     CRITICAL: Output ONLY a valid JSON array in the exact format specified in your system instructions. No explanations, no markdown, no text before or after the JSON."""
 
