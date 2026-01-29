@@ -104,9 +104,9 @@ def generate_images(args):
         for sensation in image_sensations:
             if args.T2I_model == 'AgenticEditing':
                 generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename))
-                image, prompt = AdImageGeneration(filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
+                image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
             else:
-                image, prompt = AdImageGeneration(filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=None)
+                image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=None)
             save_image(args, filename, image, experiment_datetime, sensation)
             save_results(args, prompt, action_reasons, filename, experiment_datetime, sensation)
             print(f'image url: {filename}')
