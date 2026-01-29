@@ -62,8 +62,9 @@ class ImageEditingAgent:
             name="critic",
             system_message=CRITIC_SYSTEM_PROMPT,
             max_consecutive_auto_reply=10,
-            llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
-                        "max_tokens": 75},  # Enough for the three strings but not too much
+            # Make critic deterministic and concise to avoid "planner-like" outputs.
+            llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.0,
+                        "max_tokens": 60},
         )
 
         self.text_refiner_agent = ConversableAgent(
@@ -304,10 +305,9 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
 
             critic_user_message = {
                 "role": "user",
-                "content": f"""IMPORTANT: You are an STRICT EVALUATOR, not a DESCRIBER.
+                "content": f"""IMPORTANT: You are a STRICT EVALUATOR, not a planner, not an editor.
 
-You MUST NOT copy or paraphrase any previous text or prompts.
-You MUST NOT describe the image in full sentences.
+You MUST NOT output editing suggestions or instructions (do NOT use verbs like: add, modify, enhance, incorporate, adjust, increase, include).
 You MUST IGNORE all previous messages and focus ONLY on:
 - The image below
 - The advertisement message
@@ -329,21 +329,10 @@ You MUST NOT output:
 Image to evaluate:
 <img {img_uri}>
 
-CHOOSING LABEL OF THE PROBLEM:
-1. Are the visual elements in the image consistent? If the visual elements, textual elements, etc are not consistent then the label of the problem can be "Visual Element Inconsistency".
-2. If the answer to any of the following questions is NO, then the label of the problem can be "Image-Message Alignment"
-- Does the image clearly convey "{self.shared_messages.ad_message}"?
-- Product/brand visible and prominent?
-- Message is the focus?
-- CRITICAL: If the specific product mentioned above is NOT clearly visible/recognizable → "Image-Message Alignment" (even if sensation is strong)
-- If NO → "Image-Message Alignment"
-
-3. 
-- If the answer to any of the following questions is NO, then the label of the problem can be "Sensation Evocation"
-- Does the image effectively evoke "{self.shared_messages.target_sensation}"?
-- Visual cues evoking the sensation are prominent and strong?
-- Sensation is strong?
-- If NO → "Sensation Evocation"
+CHOOSING LABEL:
+1) Visual Element Inconsistency: visual glitches/artifacts/contradictions.
+2) Image-Message Alignment: the ad message/product/brand is NOT clearly shown or the message is not the focus.
+3) Sensation Evocation: sensation cues are weak/absent.
 
 PRIORITY RULE (CRITICAL):
 1) If Visual Element Inconsistency applies → output "Visual Element Inconsistency"
@@ -414,6 +403,7 @@ Image-Message Alignment
 Sensation Evocation
 Line 2: exactly ONE sentence explaining why that label applies.
 
+Do NOT output editing suggestions or instructions (no verbs like: add, modify, enhance, incorporate, adjust, increase, include).
 Do NOT output anything else."""
                     }
                     self.group_chat.messages.append(retry_message)
@@ -460,6 +450,7 @@ Image-Message Alignment
 Sensation Evocation
 Line 2: exactly ONE sentence explaining why that label applies.
 
+Do NOT output editing suggestions or instructions (no verbs like: add, modify, enhance, incorporate, adjust, increase, include).
 Do NOT output anything else."""
                         }
                         self.group_chat.messages.append(retry_message)
