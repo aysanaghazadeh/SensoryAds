@@ -44,3 +44,13 @@ python evaluation.py --config_type=DEFAULT \
 --LLM=QWenLM \
 --T2I_model=QWenImage \
 --resume=True
+
+python evaluation.py --config_type=DEFAULT \
+--evaluation_type=Evosense_LLM_generated \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generation.csv \
+--MLLM=InternVL \
+--LLM=LLAMA3_instruct \
+--fine_tuned=True \
+--model_checkpoint=20000 \
+--T2I_model=AgenticEditing \
+--resume=True

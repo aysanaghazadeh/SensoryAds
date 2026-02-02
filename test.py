@@ -108,8 +108,23 @@
 #                 writer.writerow([ID, sensation, score.item()])
 
 
+# import json
+# file = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/IN_InternVL_train_images_total_ALL_description_generation.json'))
+# data = file['10/177623.png']
+# sorted_dict = dict(sorted(data.items(), key=lambda item: item[1][2], reverse=True))
+# print(sorted_dict)
+
 import json
-file = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/IN_InternVL_train_images_total_ALL_description_generation.json'))
-data = file['10/177623.png']
-sorted_dict = dict(sorted(data.items(), key=lambda item: item[1][2], reverse=True))
-print(sorted_dict)
+
+AIM = json.load(open('/Users/aysanaghazadeh/Evosense_GT_Sensation/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generation_LLAMA3_instruct_finetunedTrue_20000.json'))
+scores_sum = 0
+count = 0
+print(len(AIM))
+for image_url in AIM:
+    if count > 70:
+        continue
+    if isinstance(AIM[image_url], list):
+        score = AIM[image_url][1]
+        scores_sum += score
+        count += 1
+print(scores_sum / count)

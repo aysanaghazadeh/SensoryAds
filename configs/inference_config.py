@@ -34,6 +34,10 @@ def parse_args():
                         required=True,
                         help='Choose among ARGS for commandline arguments, DEFAULT for default values, or YAML for '
                              'config file')
+    parser.add_argument('--experiment_datetime',
+                        type=str,
+                        default=None,
+                        help='The datetime of the experiment')
     parser.add_argument('--project_name',
                         type=str,
                         default='SensoryAds',

@@ -90,6 +90,9 @@ def generate_images(args):
     AdImageGeneration = AdvertisementImageGeneration(args)
     QA, sensations = get_prompt_info(args)
     experiment_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if args.experiment_datetime:
+        experiment_datetime = args.experiment_datetime
+    
     print(f'experiment started at {experiment_datetime}')
     test_set_image_url = list(test_set)
     test_set_image_url = test_set_image_url
@@ -102,6 +105,10 @@ def generate_images(args):
         action_reasons = content[0]
         image_sensations = sensations[filename]['image_sensations']
         for sensation in image_sensations:
+            if args.experiment_datetime:
+                image_path = os.path.join(f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/AR_ALL_AgenticEditing', sensation, filename)
+                if os.path.exists(image_path):
+                    continue
             if args.T2I_model == 'AgenticEditing':
                 generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename))
                 image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))

@@ -7,15 +7,30 @@ python evaluation.py --config_type=DEFAULT \
 --resume=True \
 --AD_type=ALL
 
+
+
+python evaluation.py --config_type=DEFAULT \
+--evaluation_type=Evosense_GT_Sensation \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generation.csv \
+--LLM=LLAMA3_instruct \
+--fine_tuned=True \
+--model_checkpoint=20000 \
+--T2I_model=AgenticEditing \
+--AD_type=ALL \
+--resume=True
+
+python evaluate.py --config_type=DEFAULT \
+--evaluation_type=text_image_alignment \
+--result_path=../experiments/results/SensoryAds \
+--result_file=IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation.csv \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generation.csv \
+--LLM=LLAMA3_instruct \
+--fine_tuned=True 
+
 python evaluate.py --config_type=DEFAULT \
 --evaluation_type=llm_multi_question_persuasiveness_ranking \
+--result_path=../experiments/results/SensoryAds \
 --result_file=IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation.csv \
 --VLM=InternVL \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation.csv \
 --LLM=LLAMA3_instruct
-
-python evaluate.py --config_type=DEFAULT --evaluation_type=text_image_alignment \
---description_file=../experiments/results/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation.csv \
---LLM=LLAMA3_instruct \
---result_file=SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation.csv \
---fine_tuned=True
