@@ -106,8 +106,9 @@ def generate_images(args):
         image_sensations = sensations[filename]['image_sensations']
         for sensation in image_sensations:
             if args.experiment_datetime:
-                image_path = os.path.join(f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/AR_ALL_AgenticEditing', sensation, filename)
+                image_path = os.path.join(f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_{args.AD_type}_{args.T2I_model}', sensation, filename)
                 if os.path.exists(image_path):
+                    print(f'image {filename} for sensation {sensation} already exists and will be skipped...')
                     continue
             if args.T2I_model == 'AgenticEditing':
                 generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename))
