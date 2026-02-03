@@ -727,7 +727,7 @@ CRITICAL REQUIREMENTS:
         global image, ad_message, target_sensation, shared_messages, agent_response_round, agent_responses_table
         agent_response_round = 0
         
-        wandb.init(project="agentic-image-genetation", name=f"{filename}-{target_sensation_initial}")
+        wandb.init(project="agentic-image-genetation" if not getattr(self.args, "find_sensation", False) else "agentic-sensation-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
