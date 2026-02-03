@@ -22,18 +22,34 @@ from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATIONS_PAREN
 MIN_EDITS_BEFORE_NO_ISSUE = 2
 
 
-def _flatten_sensation_leaves(node):
-    """Return all leaf sensation strings under a hierarchy node."""
+def _flatten_sensations_all(node):
+    """
+    Return all sensation strings under a hierarchy node, INCLUDING intermediate categories.
+    - dict keys (e.g., "Touch", "Temperature") are included
+    - list items (leaf sensations) are included
+    """
     if node is None:
         return []
     if isinstance(node, list):
         return [x for x in node if isinstance(x, str)]
     if isinstance(node, dict):
         out = []
-        for v in node.values():
-            out.extend(_flatten_sensation_leaves(v))
+        for k, v in node.items():
+            if isinstance(k, str):
+                out.append(k)
+            out.extend(_flatten_sensations_all(v))
         return out
     return []
+
+
+def _dedupe_preserve_order(items):
+    seen = set()
+    out = []
+    for x in items:
+        if x not in seen:
+            seen.add(x)
+            out.append(x)
+    return out
 
 
 def _find_hierarchy_node(tree, node_name):
@@ -53,17 +69,17 @@ def _find_hierarchy_node(tree, node_name):
 def get_sensation_options(seed_sensation=None):
     """
     Choose a candidate list of sensations.
-    - If seed_sensation is provided, return the leaf sensations under its parent category (siblings).
-    - Otherwise return all leaf sensations in the hierarchy.
+    - If seed_sensation is provided, return all sensations under its parent category (siblings), INCLUDING categories.
+    - Otherwise return all sensations in the hierarchy (INCLUDING categories).
     """
     if seed_sensation:
         parent = SENSATIONS_PARENT_MAP.get(seed_sensation)
         if parent and parent != "root":
             parent_node = _find_hierarchy_node(SENSATION_HIERARCHY, parent)
-            options = _flatten_sensation_leaves(parent_node)
+            options = _flatten_sensations_all(parent_node)
             if options:
-                return options
-    return _flatten_sensation_leaves(SENSATION_HIERARCHY)
+                return _dedupe_preserve_order(options)
+    return _dedupe_preserve_order(_flatten_sensations_all(SENSATION_HIERARCHY))
 
 class SharedMessage:
     images: list
