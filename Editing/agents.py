@@ -739,7 +739,7 @@ CRITICAL REQUIREMENTS:
 
         if getattr(self.args, "find_sensation", False):
             # We'll pick the best sensation using the sensation_finder agent.
-            self.sensation_options = get_sensation_options(target_sensation_initial)
+            self.sensation_options = get_sensation_options(None)
             target_sensation = "UNKNOWN"
         else:
             target_sensation = target_sensation_initial if target_sensation_initial is not None else "Dryness"
