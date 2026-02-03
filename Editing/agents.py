@@ -731,6 +731,8 @@ CRITICAL REQUIREMENTS:
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
+            if getattr(self.args, "find_sensation", False):
+                image = Image.new("RGB", (256, 256), (255, 255, 255))
         else:
             image = Image.open('../experiments/generated_images/SensoryAds/20250918_122434/AR_ALL_PixArt/dryness/2/87112.jpg')
         if ad_message_initial is not None:
