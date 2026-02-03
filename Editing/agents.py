@@ -153,8 +153,9 @@ class ImageEditingAgent:
             max_consecutive_auto_reply=1,
             code_execution_config=False,
         )
+        agents=[self.user_proxy, self.sensation_finder_agent, self.planner_agent, self.critic_agent, self.text_refiner_agent] if getattr(self.args, "find_sensation", False) else [self.user_proxy, self.planner_agent, self.critic_agent, self.text_refiner_agent]
         self.group_chat = GroupChat(
-            agents=[self.user_proxy, self.sensation_finder_agent, self.planner_agent, self.critic_agent, self.text_refiner_agent],
+            agents=agents,
             messages=[],
             max_round=20,
             speaker_selection_method=self.custom_speaker_selection,
