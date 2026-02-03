@@ -104,6 +104,8 @@ def generate_images(args):
         
         action_reasons = content[0]
         image_sensations = sensations[filename]['image_sensations']
+        if args.find_sensation:
+            image_sensations = ['None']
         for sensation in image_sensations:
             if args.experiment_datetime:
                 image_path = os.path.join(f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_{args.AD_type}_{args.T2I_model}', sensation, filename)
