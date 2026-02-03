@@ -51,6 +51,12 @@ Guidelines
 - Output ONLY the JSON array, nothing else.
 """
 
+SENSATION_FINDER_SYSTEM_PROMPT = """You are an sensation finder agent.
+Given an advertisement message, your task is to find the sensation that should be evoked by the image to improve the impact of the image..
+
+Given the set of sensations, choose only one sensation that should be evoked in order to improve the impact of the image. """
+
+
 TEXT_REFINER_SYSTEM_PROMPT = """You are a text refiner agent.
 
 Your task is to convert structured image-editing instructions (in JSON format) into a single, clear, concise, and visually grounded natural language prompt suitable for guiding an image editing model.

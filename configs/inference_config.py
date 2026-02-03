@@ -94,6 +94,10 @@ def parse_args():
     parser.add_argument('--with_physical_sensation',
                         type=bool,
                         default=True)
+    parser.add_argument('--find_sensation',
+                        type=bool,
+                        default=False,
+                        help='True if you want to find the sensation for the AR statement to generate the image.')
     parser.add_argument('--model_path',
                         type=str,
                         default='../models',

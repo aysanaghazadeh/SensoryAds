@@ -17,8 +17,54 @@ from io import BytesIO
 import base64
 from diffusers.quantizers import PipelineQuantizationConfig
 from diffusers import Flux2Pipeline
+from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATIONS_PARENT_MAP
 
 MIN_EDITS_BEFORE_NO_ISSUE = 2
+
+
+def _flatten_sensation_leaves(node):
+    """Return all leaf sensation strings under a hierarchy node."""
+    if node is None:
+        return []
+    if isinstance(node, list):
+        return [x for x in node if isinstance(x, str)]
+    if isinstance(node, dict):
+        out = []
+        for v in node.values():
+            out.extend(_flatten_sensation_leaves(v))
+        return out
+    return []
+
+
+def _find_hierarchy_node(tree, node_name):
+    """Find a node by key name in nested sensation hierarchy."""
+    if not isinstance(tree, dict):
+        return None
+    if node_name in tree:
+        return tree[node_name]
+    for v in tree.values():
+        if isinstance(v, dict):
+            found = _find_hierarchy_node(v, node_name)
+            if found is not None:
+                return found
+    return None
+
+
+def get_sensation_options(seed_sensation=None):
+    """
+    Choose a candidate list of sensations.
+    - If seed_sensation is provided, return the leaf sensations under its parent category (siblings).
+    - Otherwise return all leaf sensations in the hierarchy.
+    """
+    if seed_sensation:
+        parent = SENSATIONS_PARENT_MAP.get(seed_sensation)
+        if parent and parent != "root":
+            parent_node = _find_hierarchy_node(SENSATION_HIERARCHY, parent)
+            options = _flatten_sensation_leaves(parent_node)
+            if options:
+                return options
+    return _flatten_sensation_leaves(SENSATION_HIERARCHY)
+
 class SharedMessage:
     images: list
     messages: list  
@@ -47,6 +93,8 @@ class SharedMessage:
 
 class ImageEditingAgent:
     def __init__(self, args):
+        self.args = args
+        self.sensation_options = None
         self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
         self.pipe.to("cuda")
         print("pipeline loaded")
@@ -72,6 +120,15 @@ class ImageEditingAgent:
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 512},
         )
+        
+        if args.find_sensation:
+            self.sensation_finder_agent = MultimodalConversableAgent(
+                name="sensation_finder",
+                system_message=SENSATION_FINDER_SYSTEM_PROMPT,
+                max_consecutive_auto_reply=10,
+                llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
+                            "max_tokens": 10},
+            )
 
         # Create a user proxy to initiate the conversation
         self.user_proxy = UserProxyAgent(
@@ -81,7 +138,7 @@ class ImageEditingAgent:
             code_execution_config=False,
         )
         self.group_chat = GroupChat(
-            agents=[self.user_proxy, self.planner_agent, self.critic_agent, self.text_refiner_agent],
+            agents=[self.user_proxy, self.sensation_finder_agent, self.planner_agent, self.critic_agent, self.text_refiner_agent],
             messages=[],
             max_round=20,
             speaker_selection_method=self.custom_speaker_selection,
@@ -196,12 +253,65 @@ class ImageEditingAgent:
 
         # Start with planner after user_proxy sends initial message
         if last_speaker is self.user_proxy:
+            if getattr(self.args, "find_sensation", False):
+                return self.sensation_finder_agent
             return self.planner_agent
 
         if not messages:
             return self.planner_agent
 
         if len(messages) <= 1:
+            if getattr(self.args, "find_sensation", False):
+                return self.sensation_finder_agent
+            return self.planner_agent
+
+        if getattr(self.args, "find_sensation", False) and last_speaker is getattr(self, "sensation_finder_agent", None):
+            raw = self.extract_text_content(messages[-1].get("content", "")).strip()
+            self.log_agent_response("sensation_finder", raw)
+
+            options = self.sensation_options or []
+            # Try to match exactly (case-insensitive)
+            choice = None
+            raw_norm = raw.strip().lower()
+            for opt in options:
+                if raw_norm == opt.lower():
+                    choice = opt
+                    break
+
+            # If not an exact match but the model wrote extra text, find first option substring match
+            if choice is None:
+                for opt in options:
+                    if opt.lower() in raw_norm:
+                        choice = opt
+                        break
+
+            if choice is None:
+                # Retry once with stricter instructions
+                retry_msg = {
+                    "role": "user",
+                    "content": "INVALID OUTPUT. Reply with ONLY ONE sensation from the provided list (verbatim)."
+                }
+                group_chat.messages.append(retry_msg)
+                return self.sensation_finder_agent
+
+            self.shared_messages.target_sensation = choice
+            wandb.log({"selected_sensation": choice})
+
+            # Now send the real editing request to planner
+            resized_initial_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
+            initial_img_uri = self.image_to_compressed_uri(resized_initial_image)
+            planner_start_message = {
+                "role": "user",
+                "content": f"""Here is the initial image to edit:
+<img {initial_img_uri}>
+Advertisement Message: {self.shared_messages.ad_message}
+Target Sensation: {self.shared_messages.target_sensation}
+
+Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation.
+
+CRITICAL: Output ONLY a valid JSON array in the exact format specified in your system instructions. No explanations, no markdown, no text before or after the JSON."""
+            }
+            group_chat.messages.append(planner_start_message)
             return self.planner_agent
 
         if last_speaker is self.planner_agent:
@@ -610,10 +720,14 @@ CRITICAL REQUIREMENTS:
             ad_message = ad_message_initial
         else:
             ad_message = "I should use this lipbalm because it makes my lips soft."
-        if target_sensation_initial is not None:
-            target_sensation = target_sensation_initial
+
+        if getattr(self.args, "find_sensation", False):
+            # We'll pick the best sensation using the sensation_finder agent.
+            self.sensation_options = get_sensation_options(target_sensation_initial)
+            target_sensation = "UNKNOWN"
         else:
-            target_sensation = "Dryness"    
+            target_sensation = target_sensation_initial if target_sensation_initial is not None else "Dryness"
+
         self.shared_messages = SharedMessage(image, ad_message, target_sensation)
 
         # Log initial image to wandb
@@ -627,15 +741,25 @@ CRITICAL REQUIREMENTS:
         resized_initial_image = self.resize_image_for_llm(image, max_size=256)
         initial_img_uri = self.image_to_compressed_uri(resized_initial_image)
 
-        # Send initial image to planner
-        initial_message = f"""Here is the initial image to edit:
-    <img {initial_img_uri}>
-    Advertisement Message: {ad_message}
-    Target Sensation: {target_sensation}
+        if getattr(self.args, "find_sensation", False):
+            options_text = "\n".join([f"- {opt}" for opt in (self.sensation_options or [])])
+            initial_message = f"""Advertisement Message: {ad_message}
 
-    Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation.
+Select the single best Target Sensation to evoke in the image to strengthen this advertisement.
 
-    CRITICAL: Output ONLY a valid JSON array in the exact format specified in your system instructions. No explanations, no markdown, no text before or after the JSON."""
+You MUST output ONLY ONE sensation from this list (verbatim, no extra text):
+{options_text}
+"""
+        else:
+            # Send initial image to planner
+            initial_message = f"""Here is the initial image to edit:
+<img {initial_img_uri}>
+Advertisement Message: {ad_message}
+Target Sensation: {target_sensation}
+
+Please generate a sequence of concrete visual edits to make this image effectively convey the advertisement message and evoke the target sensation.
+
+CRITICAL: Output ONLY a valid JSON array in the exact format specified in your system instructions. No explanations, no markdown, no text before or after the JSON."""
 
         # Start with user_proxy initiating to group chat manager
         self.user_proxy.initiate_chat(
