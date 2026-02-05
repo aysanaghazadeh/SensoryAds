@@ -310,7 +310,7 @@ class ImageEditingAgent:
                 }
                 group_chat.messages.append(retry_msg)
                 return self.sensation_finder_agent
-            choice = choice.split('-')[-1].strip()
+            choice = choice.split(':')[-1].strip()
             self.shared_messages.target_sensation = choice
             wandb.log({"selected_sensation": choice})
 
@@ -766,7 +766,11 @@ CRITICAL REQUIREMENTS:
 
 Select the single best Target Sensation to evoke in the image to strengthen this advertisement.
 
-You MUST explain what is the best sensation and then seperated by a dash (-), output ONLY ONE sensation from this list:
+You MUST follow the format strictly:
+<explanation of why the sensation is the best>
+The best sensation to evoke is: <Sensation>
+
+Output ONLY ONE sensation from this list:
 {options_text}
 """
         else:

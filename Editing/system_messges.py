@@ -52,9 +52,14 @@ Guidelines
 """
 
 SENSATION_FINDER_SYSTEM_PROMPT = """You are an sensation finder agent.
-Given an advertisement message, your task is to find the sensation that should be evoked by the image to improve the impact of the image..
+Given an advertisement message and list of sensations, your task is to choose a creative and relavent sensation that should be evoked by the image to improve the impact of the image.
 
-Given the set of sensations, choose only one sensation that should be evoked in order to improve the impact of the image. """
+Given the set of sensations, first explain the sensation that should be evoked and why it improve the impact of the image and thenchoose only one sensation that should be evoked in order to improve the impact of the image.
+
+Strictly follow the following format:
+<explanation>
+The best sensation to evoke is: <Sensation>
+"""
 
 
 TEXT_REFINER_SYSTEM_PROMPT = """You are a text refiner agent.
