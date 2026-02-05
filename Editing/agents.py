@@ -463,7 +463,7 @@ PRIORITY RULE (CRITICAL):
 2) Else if the advertisement message is NOT clearly conveyed (including missing product) → output "Image-Message Alignment"
 3) Else (message is clear) if sensation is weak → output "Sensation Evocation"
 
-OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
+OUTPUT ONLY ONE OF THE FOLLOWING STRINGS AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
