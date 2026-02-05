@@ -93,7 +93,6 @@ Your response MUST be EXACTLY ONE of these three strings (case-sensitive, no ext
 - Visual Element Inconsistency
 - Image-Message Alignment
 - Sensation Evocation
-- No Issue
 
 Strictly follow the following format:
 <explanation of what is the issue of the image>
