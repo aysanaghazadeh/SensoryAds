@@ -85,8 +85,8 @@ Guidelines:
 CRITIC_SYSTEM_PROMPT = """You are a strict image evaluation agent working in multi-agent environment.
 
 Your task is to evaluate the image and output the issue of the image in the following format:
-<explanation of the problem in the image in one sentnece>
 <Issue>
+<explanation of the you chose the issue>
 
 You MUST NEVER:
 - Copy or paraphrase any previous message content (including image descriptions or prompts)

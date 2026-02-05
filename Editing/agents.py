@@ -442,8 +442,8 @@ You MUST IGNORE all previous messages and focus ONLY on:
 
 Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options AS THE ISSUE OF THE IMAGE AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE.
 Strictly follow the following format:
-<explanation of what is the issue of the image>
 <Issue>
+<explanation of the you chose the issue>
 
 Image to evaluate:
 <img {img_uri}>
@@ -507,8 +507,8 @@ YOU ARE AN EVALUATOR. Your job is to EVALUATE the image, NOT describe it, NOT co
 COMPLETELY IGNORE all previous messages. DO NOT read them. DO NOT reference them. START FRESH.
 
 Strictly follow the following format:
-<explanation of what is the issue of the image>
 <Issue>
+<explanation of the you chose the issue>
 
 Look at THIS image:
 <img {retry_img_uri}>
@@ -521,7 +521,7 @@ EVALUATE and output EXACTLY ONE of these strings (nothing else, no descriptions)
 - Image-Message Alignment
 - Sensation Evocation
 
-REMEMBER: You are evaluating, not describing. Output only one string."""
+REMEMBER: You are evaluating, not describing. Output only one string followed by the explanation in one sentence."""
                     }
                     self.group_chat.messages.append(retry_message)
                     return self.critic_agent
@@ -570,8 +570,8 @@ Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
 Strictly follow the following format:
-<explanation of what is the issue of the image>
 <Issue>
+<explanation of the you chose the issue>
 
 Output EXACTLY ONE of these strings and explain why you chose it in one sentence(nothing else):
 - Visual Element Inconsistency
@@ -607,7 +607,11 @@ Look at THIS image:
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
-Output EXACTLY ONE of these strings (nothing else):
+Strictly follow the following format:
+<Issue>
+<explanation of the you chose the issue>
+
+Output EXACTLY ONE of these strings followed by the explanation in one sentence (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation"""
@@ -629,6 +633,10 @@ Sensation Evocation"""
 1) The image clearly conveys the advertisement message.
 2) The image strongly evokes the target sensation.
 AND there are no visual inconsistencies.
+
+Strictly follow the following format:
+<Issue>
+<explanation of the you chose the issue>
 
 Look at THIS image:
 <img {confirm_img_uri}>
