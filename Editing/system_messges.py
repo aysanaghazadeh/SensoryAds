@@ -130,7 +130,6 @@ PRIORITY RULE (CRITICAL):
 - If there is Visual Element Inconsistency → choose that.
 - Else if the advertisement message is NOT clearly conveyed → choose Image-Message Alignment.
 - Else (message is clear) if sensation is weak → choose Sensation Evocation.
-- Else if there are no visual inconsistencies and the message is clearly conveyed and the sensation is strongly evoked → choose No Issue.
 
 OUTPUT FORMAT REQUIREMENT (CRITICAL):
 - Output ONLY ONE of the three labels listed above and explain why you chose it in one sentence. Do not miss the explanation or label. 
