@@ -441,6 +441,9 @@ You MUST IGNORE all previous messages and focus ONLY on:
 - The target sensation
 
 Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options AS THE ISSUE OF THE IMAGE AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE.
+Strictly follow the following format:
+<explanation of what is the issue of the image>
+<Issue>
 
 Image to evaluate:
 <img {img_uri}>
@@ -464,10 +467,11 @@ PRIORITY RULE (CRITICAL):
 3) Else (message is clear) if sensation is weak → output "Sensation Evocation"
 
 EXPLAIN WHAT IS THE ISSUE OF THE IMAGE IN ONE SENTENCE AND OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
-Visual Element Inconsistency
-Image-Message Alignment
-Sensation Evocation
-No Issue
+- Visual Element Inconsistency
+- Image-Message Alignment
+- Sensation Evocation
+- No Issue
+
 """
             }
             self.group_chat.messages.append(critic_user_message)
@@ -503,6 +507,10 @@ YOU ARE AN EVALUATOR. Your job is to EVALUATE the image, NOT describe it, NOT co
 
 COMPLETELY IGNORE all previous messages. DO NOT read them. DO NOT reference them. START FRESH.
 
+Strictly follow the following format:
+<explanation of what is the issue of the image>
+<Issue>
+
 Look at THIS image:
 <img {retry_img_uri}>
 
@@ -510,10 +518,10 @@ Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
 EVALUATE and output EXACTLY ONE of these strings (nothing else, no descriptions):
-Visual Element Inconsistency
-Image-Message Alignment
-Sensation Evocation
-No Issue
+- Visual Element Inconsistency
+- Image-Message Alignment
+- Sensation Evocation
+- No Issue
 
 REMEMBER: You are evaluating, not describing. Output only one string."""
                     }
@@ -563,11 +571,16 @@ Look at this image:
 Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
+Strictly follow the following format:
+<explanation of what is the issue of the image>
+<Issue>
+
 Output EXACTLY ONE of these strings and explain why you chose it in one sentence(nothing else):
-Visual Element Inconsistency
-Image-Message Alignment
-Sensation Evocation
-No Issue"""
+- Visual Element Inconsistency
+- Image-Message Alignment
+- Sensation Evocation
+- No Issue
+"""
                         }
                         self.group_chat.messages.append(retry_message)
                         return self.critic_agent
