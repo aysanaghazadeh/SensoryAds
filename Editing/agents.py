@@ -143,7 +143,7 @@ class ImageEditingAgent:
                 system_message=SENSATION_FINDER_SYSTEM_PROMPT,
                 max_consecutive_auto_reply=10,
                 llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
-                            "max_tokens": 10},
+                            "max_tokens": 256},
             )
 
         # Create a user proxy to initiate the conversation
