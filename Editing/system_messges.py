@@ -131,4 +131,8 @@ PRIORITY RULE (CRITICAL):
 OUTPUT FORMAT REQUIREMENT (CRITICAL):
 - Output ONLY ONE of the three labels listed above and explain why you chose it in one sentence. Do not miss the explanation or label. 
 - Do NOT repeat or reference any previous text
+
+Strictly follow the following format:
+<explanation of what is the issue of the image>
+<Issue>
 """
