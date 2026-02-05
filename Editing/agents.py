@@ -467,6 +467,7 @@ EXPLAIN WHAT IS THE ISSUE OF THE IMAGE IN ONE SENTENCE AND OUTPUT ONLY ONE OF TH
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
+No Issue
 """
             }
             self.group_chat.messages.append(critic_user_message)
@@ -565,7 +566,8 @@ Target Sensation: {self.shared_messages.target_sensation}
 Output EXACTLY ONE of these strings and explain why you chose it in one sentence(nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
-Sensation Evocation"""
+Sensation Evocation
+No Issue"""
                         }
                         self.group_chat.messages.append(retry_message)
                         return self.critic_agent
@@ -598,7 +600,8 @@ Target Sensation: {self.shared_messages.target_sensation}
 Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
-Sensation Evocation"""
+Sensation Evocation
+No Issue"""
                         }
                         self.group_chat.messages.append(retry_message)
                         return self.critic_agent
@@ -628,6 +631,7 @@ Output EXACTLY ONE of these strings (nothing else):
 Visual Element Inconsistency
 Image-Message Alignment
 Sensation Evocation
+No Issue
 """
                     }
                     self.group_chat.messages.append(confirm_message)
