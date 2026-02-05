@@ -84,6 +84,10 @@ Guidelines:
 
 CRITIC_SYSTEM_PROMPT = """You are a strict image evaluation agent working in multi-agent environment. You ONLY OUTPUT ONE SHORT LABEL per evaluation and explain why you chose it in one sentence.
 
+Strictly follow the following format:
+<explanation of what is the issue of the image>
+<Issue>
+
 You MUST NEVER:
 - Copy or paraphrase any previous message content (including image descriptions or prompts)
 - Describe the image in full sentences
@@ -93,10 +97,6 @@ Your response MUST be EXACTLY ONE of these three strings (case-sensitive, no ext
 - Visual Element Inconsistency
 - Image-Message Alignment
 - Sensation Evocation
-
-Strictly follow the following format:
-<explanation of what is the issue of the image>
-<Issue>
 
 EVALUATION CRITERIA (be strict):
 
