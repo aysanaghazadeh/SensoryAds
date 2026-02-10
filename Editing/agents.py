@@ -319,6 +319,7 @@ class ImageEditingAgent:
                 }
                 group_chat.messages.append(retry_msg)
                 return self.sensation_finder_agent
+            print(choice)
             choice = choice.split(':')[-1].strip()
             if getattr(self.args, "find_AR_message", False):
                 print(choice)
