@@ -320,8 +320,13 @@ class ImageEditingAgent:
                 group_chat.messages.append(retry_msg)
                 return self.sensation_finder_agent
             choice = choice.split(':')[-1].strip()
-            self.shared_messages.target_sensation = choice
-            wandb.log({"selected_sensation": choice})
+            if getattr(self.args, "find_AR_message", False):
+                self.shared_messages.ad_message = choice.split(',')[0].strip()
+                self.shared_messages.target_sensation = choice.split(',')[-1].strip()
+                wandb.log({"selected_sensation": self.shared_messages.target_sensation, "selected_ad_message": self.shared_messages.ad_message})
+            else:
+                self.shared_messages.target_sensation = choice
+                wandb.log({"selected_sensation": self.shared_messages.target_sensation})
 
             # Now send the real editing request to planner
             resized_initial_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
@@ -781,6 +786,8 @@ CRITICAL REQUIREMENTS:
             target_sensation = "UNKNOWN"
         else:
             target_sensation = target_sensation_initial if target_sensation_initial is not None else "Dryness"
+        
+        
 
         self.shared_messages = SharedMessage(image, ad_message, target_sensation)
 
