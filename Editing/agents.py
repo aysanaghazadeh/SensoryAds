@@ -299,7 +299,6 @@ class ImageEditingAgent:
             # Try to match exactly (case-insensitive)
             choice = None
             raw_norm = raw.strip().lower()
-            print(raw_norm)
             for opt in options:
                 if raw_norm == opt.lower():
                     choice = opt
@@ -323,7 +322,7 @@ class ImageEditingAgent:
             raw_norm = raw_norm.split(':')[-1].strip()
             if getattr(self.args, "find_AR_message", False):
                 self.shared_messages.ad_message = raw_norm.split(',')[0].strip()
-                self.shared_messages.target_sensation = choice
+                self.shared_messages.target_sensation = raw_norm.split(',')[-1].strip()
                 wandb.log({"selected_sensation": self.shared_messages.target_sensation, "selected_ad_message": self.shared_messages.ad_message})
             else:
                 self.shared_messages.target_sensation = choice
