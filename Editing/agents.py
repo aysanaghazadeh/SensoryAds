@@ -321,6 +321,7 @@ class ImageEditingAgent:
                 return self.sensation_finder_agent
             choice = choice.split(':')[-1].strip()
             if getattr(self.args, "find_AR_message", False):
+                print(choice)
                 self.shared_messages.ad_message = choice.split(',')[0].strip()
                 self.shared_messages.target_sensation = choice.split(',')[-1].strip()
                 wandb.log({"selected_sensation": self.shared_messages.target_sensation, "selected_ad_message": self.shared_messages.ad_message})
