@@ -320,10 +320,10 @@ class ImageEditingAgent:
                 }
                 group_chat.messages.append(retry_msg)
                 return self.sensation_finder_agent
-            choice = choice.split(':')[-1].strip()
+            raw_norm = raw_norm.split(':')[-1].strip()
             if getattr(self.args, "find_AR_message", False):
-                self.shared_messages.ad_message = choice.split(',')[0].strip()
-                self.shared_messages.target_sensation = choice.split(',')[-1].strip()
+                self.shared_messages.ad_message = raw_norm.split(',')[0].strip()
+                self.shared_messages.target_sensation = choice
                 wandb.log({"selected_sensation": self.shared_messages.target_sensation, "selected_ad_message": self.shared_messages.ad_message})
             else:
                 self.shared_messages.target_sensation = choice
