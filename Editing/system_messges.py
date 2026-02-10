@@ -61,6 +61,15 @@ Strictly follow the following format:
 The best sensation to evoke is: <Sensation>
 """
 
+SENSATION_AND_AR_MESSAGE_FINDER_SYSTEM_PROMPT = """You are an sensation and AR message finder agent.
+Given an advertisement message and list of sensations, your task is to choose a creative and relavent sensation that should be evoked by the image to improve the impact of the image. Next, choose the single best Advertisement Message that is most describable of the possible image and has the strongest message.
+
+Given the set of sensations, first explain the sensation that should be evoked and why it improve the impact of the image and then choose only one sensation that should be evoked in order to improve the impact of the image. Next, explain the advertisement message that should be used and why it is the best message to use to improve the impact of the image and then choose only one advertisement message that should be used to improve the impact of the image.
+
+Strictly follow the following format:
+<explanation>
+Advertisement Message and Sensation: <Advertisement Message>, <Sensation>
+"""
 
 TEXT_REFINER_SYSTEM_PROMPT = """You are a text refiner agent.
 

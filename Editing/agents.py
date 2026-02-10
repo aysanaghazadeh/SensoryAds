@@ -138,13 +138,22 @@ class ImageEditingAgent:
         )
         
         if args.find_sensation:
-            self.sensation_finder_agent = MultimodalConversableAgent(
-                name="sensation_finder",
-                system_message=SENSATION_FINDER_SYSTEM_PROMPT,
-                max_consecutive_auto_reply=10,
-                llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
-                            "max_tokens": 256},
-            )
+            if args.find_AR_message:
+                self.sensation_finder_agent = MultimodalConversableAgent(
+                    name="sensation_finder",
+                    system_message=SENSATION_AND_AR_MESSAGE_FINDER_SYSTEM_PROMPT,
+                    max_consecutive_auto_reply=10,
+                    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
+                                "max_tokens": 256},
+                )
+            else:
+                self.sensation_finder_agent = MultimodalConversableAgent(
+                    name="sensation_finder",
+                    system_message=SENSATION_FINDER_SYSTEM_PROMPT,
+                    max_consecutive_auto_reply=10,
+                    llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
+                                "max_tokens": 256},
+                )
 
         # Create a user proxy to initiate the conversation
         self.user_proxy = UserProxyAgent(
@@ -746,8 +755,14 @@ CRITICAL REQUIREMENTS:
     def agentic_image_editing(self, filename, generated_image=None, ad_message_initial=None, target_sensation_initial=None):
         global image, ad_message, target_sensation, shared_messages, agent_response_round, agent_responses_table
         agent_response_round = 0
-        
-        wandb.init(project="agentic-image-genetation" if not getattr(self.args, "find_sensation", False) else "agentic-sensation-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
+        if getattr(self.args, "find_AR_message", False) and getattr(self.args, "find_sensation", False):
+            wandb.init(project="agentic-sensation-AR-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
+        elif getattr(self.args, "find_AR_message", False):
+            wandb.init(project="agentic-AR-message-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
+        elif getattr(self.args, "find_sensation", False):
+            wandb.init(project="agentic-sensation-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
+        else:  
+            wandb.init(project="agentic-image-genetation", name=f"{filename}-{target_sensation_initial}")
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
@@ -782,7 +797,21 @@ CRITICAL REQUIREMENTS:
 
         if getattr(self.args, "find_sensation", False):
             options_text = "\n".join([f"- {opt}" for opt in (self.sensation_options or [])])
-            initial_message = f"""Advertisement Message: {ad_message}
+            if getattr(self.args, "find_AR_message", False):
+                initial_message = f"""Advertisement Message: {ad_message}
+
+Select the single best Advertisement Message that is most describable of the possible image and has the strongest message. Next, select the single best Target Sensation to evoke in the image to strengthen this advertisement.
+
+You MUST follow the format strictly:
+<explanation of why the advertisement message is the best>
+<explanation of why the sensation is the best>
+Advertisement Message and Sensation: <Advertisement Message>, <Sensation>
+
+Output ONLY ONE advertisement message and one sensation from this list:
+{options_text}
+"""
+            else:
+                initial_message = f"""Advertisement Message: {ad_message}
 
 Select the single best Target Sensation to evoke in the image to strengthen this advertisement.
 

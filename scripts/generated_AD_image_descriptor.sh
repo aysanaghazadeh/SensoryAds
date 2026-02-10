@@ -7,6 +7,6 @@ python inference.py \
 --model_type=MLLM \
 --MLLM=InternVL \
 --description_goal=image_descriptor \
---test_set_images=../experiments/generated_images/SensoryAds/20260129_002256/AR_ALL_AgenticEditing \
---test_set_QA=../experiments/results/SensoryAds/AR_ALL_AgenticEditing_20260129_002256.csv \
+--test_set_images=../experiments/generated_images/SensoryAds/20260205_011533/AR_ALL_AgenticEditing \
+--test_set_QA=../experiments/results/SensoryAds/AR_ALL_AgenticEditing_20260205_011533.csv \
 --resume=True

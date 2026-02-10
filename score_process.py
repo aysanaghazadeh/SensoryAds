@@ -5,7 +5,7 @@ import os
 def average_score(metrics_scores):
     values = []
     for image_url in metrics_scores:
-        if len(values) > 77:
+        if len(values) > 270:
             break
         for sensation in metrics_scores[image_url]:
             scores = metrics_scores[image_url][sensation]
@@ -34,7 +34,7 @@ def compute_average_per_sensation(metrics_scores):
     average_score_per_sensation = {}
     count = 0
     for image_url in metrics_scores:
-        if count > 77:
+        if count > 270:
             break
         count += 1
         for sensation in metrics_scores[image_url]:
@@ -120,3 +120,6 @@ if __name__ == '__main__':
     # print(real_ads[image_url])
     # print(generated_ads[image_url])
     # # print(SD3_ads['2/39922.jpg'])
+    
+    
+    

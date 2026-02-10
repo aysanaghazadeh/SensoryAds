@@ -98,6 +98,10 @@ def parse_args():
                         type=bool,
                         default=False,
                         help='True if you want to find the sensation for the AR statement to generate the image.')
+    parser.add_argument('--find_AR_message',
+                        type=bool,
+                        default=False,
+                        help='True if you want to find the AR message for the sensation to generate the image.')
     parser.add_argument('--model_path',
                         type=str,
                         default='../models',
