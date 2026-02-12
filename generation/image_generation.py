@@ -118,6 +118,8 @@ def generate_images(args):
                 image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
             else:
                 image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''))
+            if image is None:
+                continue
             save_image(args, filename, image, experiment_datetime, sensation)
             save_results(args, prompt, action_reasons, filename, experiment_datetime, sensation)
             print(f'image url: {filename}')
