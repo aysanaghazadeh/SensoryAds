@@ -9,7 +9,6 @@ import io
 class DALLE3(nn.Module):
     def __init__(self, args):
         super(DALLE3, self).__init__()
-        os.environ["OPENAI_API_KEY"] = args.api_key
         self.client = OpenAI()
 
     def forward(self, prompt, seed=None):
