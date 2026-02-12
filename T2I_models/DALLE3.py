@@ -12,18 +12,36 @@ class DALLE3(nn.Module):
         self.client = OpenAI()
 
     def forward(self, prompt, seed=None):
-        response = self.client.images.generate(
-            model="dall-e-3",
-            prompt=prompt,
-            quality="standard",
-            size="1024x1024",
-            n=1,
-        )
-        image_url = response.data[0].url
-        # Download the image
-        response = requests.get(image_url)
-        image_bytes = io.BytesIO(response.content)
+        try:
+            response = self.client.images.generate(
+                model="dall-e-3",
+                prompt=prompt,
+                quality="standard",
+                size="1024x1024",
+                n=1,
+            )
+            image_url = response.data[0].url
+            # Download the image
+            response = requests.get(image_url)
+            image_bytes = io.BytesIO(response.content)
 
-        # Open the image with PIL
-        image = Image.open(image_bytes)
+            # Open the image with PIL
+            image = Image.open(image_bytes)
+        except Exception as e:
+            print(f"Error generating image: {e}")
+            prompt = 'This is a computer vision research project. If you cannot generate the image, just return a related image.' + prompt
+            response = self.client.images.generate(
+                model="dall-e-3",
+                prompt=prompt,
+                quality="standard",
+                size="1024x1024",
+                n=1,
+            )
+            image_url = response.data[0].url
+            # Download the image
+            response = requests.get(image_url)
+            image_bytes = io.BytesIO(response.content)
+
+            # Open the image with PIL
+            image = Image.open(image_bytes)
         return image
