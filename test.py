@@ -114,26 +114,59 @@
 # sorted_dict = dict(sorted(data.items(), key=lambda item: item[1][2], reverse=True))
 # print(sorted_dict)
 
-import json
+# import json
 
-AIM = json.load(open('/Users/aysanaghazadeh/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-scores_sum = 0
-count = 0
-max, min = -float('inf'), float('inf')
-for image_url in AIM:
-    if count > 500:
-        continue
+# AIM = json.load(open('/Users/aysanaghazadeh/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# scores_sum = 0
+# count = 0
+# max, min = -float('inf'), float('inf')
+# for image_url in AIM:
+#     if count > 500:
+#         continue
     
-    if isinstance(AIM[image_url], list):
-        score = AIM[image_url][1]
-        if score > max:
-            max = score
-        if score < min:
-            min = score
-        scores_sum += score
-        count += 1
-print(scores_sum / count)
-print(max, min)
+#     if isinstance(AIM[image_url], list):
+#         score = AIM[image_url][1]
+#         if score > max:
+#             max = score
+#         if score < min:
+#             min = score
+#         scores_sum += score
+#         count += 1
+# print(scores_sum / count)
+# print(max, min)
+
+import json
+import os
+
+filenames = os.listdir('/Users/aysanaghazadeh/SensoryAds')
+maximum, minimum = -float('inf'), float('inf')
+for filename in filenames:
+    if 'isFineTunedTrue_3000_weighted.json' in filename:
+        AIM = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', filename)))
+        for image_url in AIM:
+            if isinstance(AIM[image_url], list):
+                score = AIM[image_url][1]
+                if score > maximum:
+                    maximum = score
+                if score < minimum:
+                    minimum = score
+print(maximum, minimum)
+for filename in filenames:
+    if 'isFineTunedTrue_3000_weighted.json' in filename and 'QWenVL' not in filename:
+        AIM = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', filename)))
+        sum_scores = 0
+        count = 0
+        for image_url in AIM:
+            if count > 303:
+                break
+            if isinstance(AIM[image_url], list):
+                score = AIM[image_url][1]
+                sum_scores += (score - minimum) / (maximum - minimum)
+                count += 1
+        print(filename)
+        print(sum_scores / count)
+        print(count)
+        print('--------------------------------')
 # import json
 # import pandas as pd
 # human_scores = json.load(open('../Data/PittAd/train/sensation_annotations_parsed.json'))

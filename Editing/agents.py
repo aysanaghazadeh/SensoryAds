@@ -111,7 +111,8 @@ class ImageEditingAgent:
     def __init__(self, args):
         self.args = args
         self.sensation_options = None
-        self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
+        # self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
+        self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", load_in_8bit=True)
         self.pipe.to("cuda")
         print("pipeline loaded")
         self.planner_agent = MultimodalConversableAgent(
