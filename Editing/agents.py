@@ -122,6 +122,7 @@ class ImageEditingAgent:
         self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", 
                                                         torch_dtype=torch_dtype,
                                                         quantization_config=quantization_config)
+        self.pipe.enable_model_cpu_offload()
         self.pipe.to("cuda")
         print("pipeline loaded")
         self.planner_agent = MultimodalConversableAgent(
