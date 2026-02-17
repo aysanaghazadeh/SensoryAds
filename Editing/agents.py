@@ -768,7 +768,7 @@ CRITICAL REQUIREMENTS:
         elif getattr(self.args, "find_sensation", False):
             wandb.init(project="agentic-sensation-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
         else:  
-            wandb.init(project="agentic-image-genetation", name=f"{filename}-{target_sensation_initial}")
+            wandb.init(project="agentic-image-genetation_QWenImageEdit", name=f"{filename}-{target_sensation_initial}")
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
