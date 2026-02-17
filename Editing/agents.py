@@ -259,6 +259,7 @@ class ImageEditingAgent:
 
 
     def image_editing(self, prompt, control_image, group_chat):
+        seed = 0
         positive_magic = {
             "en": ", Ultra HD, 4K, cinematic composition.",  # for english prompt
             "zh": ", 超清，4K，电影级构图."  # for chinese prompt
