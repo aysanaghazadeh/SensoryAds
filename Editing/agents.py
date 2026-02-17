@@ -9,6 +9,7 @@ from autogen.agentchat.contrib.capabilities import generate_images
 import torch
 from diffusers import FluxKontextPipeline, QwenImageEditPipeline
 from diffusers.quantizers import PipelineQuantizationConfig
+from diffusers.models import AutoModel
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 from PIL import Image
@@ -115,14 +116,26 @@ class ImageEditingAgent:
         # self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
-        quantization_config = PipelineQuantizationConfig(
-            quant_backend="bitsandbytes_4bit",
-            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+        quantization_config = DiffusersBnBConfig(
+            load_in_8bit=True,
+            llm_int8_threshold=6.0,
         )
-        self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", 
-                                                        torch_dtype=torch_dtype,
-                                                        quantization_config=quantization_config)
-        self.pipe.to("cuda")
+
+        # Quantize only the transformer (the expensive part)
+        transformer = AutoModel.from_pretrained(
+            "Qwen/Qwen-Image-Edit",
+            subfolder="transformer",
+            quantization_config=quantization_config,
+            torch_dtype=torch.bfloat16,
+        )
+
+        # Load the rest of the pipeline in bf16
+        self.pipe = QwenImageEditPipeline.from_pretrained(
+            "Qwen/Qwen-Image-Edit",
+            transformer=transformer,
+            torch_dtype=torch.bfloat16,
+        )
+        # self.pipe.to("cuda")
         print("pipeline loaded")
         self.planner_agent = MultimodalConversableAgent(
             name="planner",
