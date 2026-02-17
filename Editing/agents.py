@@ -8,6 +8,7 @@ from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalCon
 from autogen.agentchat.contrib.capabilities import generate_images
 import torch
 from diffusers import FluxKontextPipeline, QwenImageEditPipeline
+from diffusers.quantizers import PipelineQuantizationConfig
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 from PIL import Image
@@ -112,7 +113,11 @@ class ImageEditingAgent:
         self.args = args
         self.sensation_options = None
         # self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
-        self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", load_in_4bit=True)
+        quantization_config = PipelineQuantizationConfig(
+            quant_backend="bitsandbytes_4bit",
+            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+        )
+        self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", quantization_config=quantization_config)
         self.pipe.to("cuda")
         print("pipeline loaded")
         self.planner_agent = MultimodalConversableAgent(
