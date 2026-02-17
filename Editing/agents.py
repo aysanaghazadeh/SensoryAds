@@ -117,7 +117,9 @@ class ImageEditingAgent:
             quant_backend="bitsandbytes_4bit",
             quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
         )
-        self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", quantization_config=quantization_config)
+        self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", 
+                                                        torch_dtype=torch_dtype,
+                                                        quantization_config=quantization_config)
         self.pipe.to("cuda")
         print("pipeline loaded")
         self.planner_agent = MultimodalConversableAgent(
