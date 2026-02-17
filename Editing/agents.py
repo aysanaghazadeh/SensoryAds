@@ -8,6 +8,8 @@ from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalCon
 from autogen.agentchat.contrib.capabilities import generate_images
 import torch
 from diffusers import FluxKontextPipeline, QwenImageEditPipeline
+from diffusers import BitsAndBytesConfig as DiffusersBitsAndBytesConfig
+from diffusers import QwenImageTransformer2DModel
 from diffusers.quantizers import PipelineQuantizationConfig
 from diffusers.utils import load_image
 from huggingface_hub import get_token
@@ -115,13 +117,48 @@ class ImageEditingAgent:
         # self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
-        quantization_config = PipelineQuantizationConfig(
-            quant_backend="bitsandbytes_8bit",
-            quant_kwargs={"load_in_8bit": True, "bnb_8bit_compute_dtype": torch.bfloat16},
+        # quantization_config = PipelineQuantizationConfig(
+        #     quant_backend="bitsandbytes_8bit",
+        #     quant_kwargs={"load_in_8bit": True, "bnb_8bit_compute_dtype": torch.bfloat16},
+        # )
+        # self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", 
+        #                                                 torch_dtype=torch_dtype,
+        #                                                 quantization_config=quantization_config)
+        model_id = "Qwen/Qwen-Image-Edit"
+        torch_dtype = torch.bfloat16
+        device = "cuda"
+
+        quantization_config = DiffusersBitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            llm_int8_skip_modules=["transformer_blocks.0.img_mod"],
         )
-        self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", 
-                                                        torch_dtype=torch_dtype,
-                                                        quantization_config=quantization_config)
+        transformer = QwenImageTransformer2DModel.from_pretrained(
+            model_id,
+            subfolder="transformer",
+            quantization_config=quantization_config,
+            torch_dtype=torch_dtype,
+        )
+        transformer = transformer.to("cpu")
+
+        quantization_config = TransformersBitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+
+        text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            model_id,
+            subfolder="text_encoder",
+            quantization_config=quantization_config,
+            torch_dtype=torch_dtype,
+        )
+        text_encoder = text_encoder.to("cpu")
+
+        pipe = QwenImageEditPipeline.from_pretrained(
+            model_id, transformer=transformer, text_encoder=text_encoder, torch_dtype=torch_dtype
+        )
         self.pipe.enable_model_cpu_offload()
         self.pipe.to("cuda")
         print("pipeline loaded")
