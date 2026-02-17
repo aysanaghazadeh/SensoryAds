@@ -122,18 +122,19 @@ class ImageEditingAgent:
         )
 
         # Quantize only the transformer (the expensive part)
-        transformer = AutoModel.from_pretrained(
-            "Qwen/Qwen-Image-Edit",
-            subfolder="transformer",
-            quantization_config=quantization_config,
-            torch_dtype=torch.bfloat16,
-        )
+        # transformer = AutoModel.from_pretrained(
+        #     "Qwen/Qwen-Image-Edit",
+        #     subfolder="transformer",
+        #     quantization_config=quantization_config,
+        #     torch_dtype=torch.bfloat16,
+        # )
 
         # Load the rest of the pipeline in bf16
         self.pipe = QwenImageEditPipeline.from_pretrained(
             "Qwen/Qwen-Image-Edit",
-            transformer=transformer,
+            # transformer=transformer,
             torch_dtype=torch.bfloat16,
+            quantization_config=quantization_config
         )
         self.pipe.to("cuda")
         print("pipeline loaded")
