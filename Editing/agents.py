@@ -135,7 +135,7 @@ class ImageEditingAgent:
             transformer=transformer,
             torch_dtype=torch.bfloat16,
         )
-        # self.pipe.to("cuda")
+        self.pipe.to("cuda")
         print("pipeline loaded")
         self.planner_agent = MultimodalConversableAgent(
             name="planner",
