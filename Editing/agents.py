@@ -157,7 +157,7 @@ class ImageEditingAgent:
         )
         text_encoder = text_encoder.to("cpu")
 
-        pipe = QwenImageEditPipeline.from_pretrained(
+        self.pipe = QwenImageEditPipeline.from_pretrained(
             model_id, transformer=transformer, text_encoder=text_encoder, torch_dtype=torch_dtype
         )
         self.pipe.enable_model_cpu_offload()
