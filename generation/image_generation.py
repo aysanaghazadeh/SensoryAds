@@ -114,7 +114,7 @@ def generate_images(args):
                     print(f'image {filename} for sensation {sensation} already exists and will be skipped...')
                     continue
             if args.T2I_model == 'AgenticEditing':
-                generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename))
+                generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250917_185403/AR_ALL_QWenImage', sensation, filename))
                 image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
             else:
                 image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''))
