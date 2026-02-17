@@ -282,7 +282,7 @@ class ImageEditingAgent:
             "2:3": (1056, 1584),
         }
 
-        width, height = 1024, 1024
+        width, height = 512, 512
         # image = self.pipe(
         #     image=control_image,
         #     prompt=prompt,
