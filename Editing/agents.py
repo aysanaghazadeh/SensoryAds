@@ -21,7 +21,8 @@ import base64
 from diffusers.quantizers import PipelineQuantizationConfig
 from diffusers import Flux2Pipeline
 from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATIONS_PARENT_MAP
-
+from transformers import BitsAndBytesConfig as TransformersBitsAndBytesConfig
+from transformers import Qwen2_5_VLForConditionalGeneration
 MIN_EDITS_BEFORE_NO_ISSUE = 2
 
 
