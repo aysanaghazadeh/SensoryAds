@@ -17,7 +17,7 @@ import wandb
 import json
 from io import BytesIO
 import base64
-from diffusers.quantizers import PipelineQuantizationConfig
+from diffusers import BitsAndBytesConfig
 from diffusers import Flux2Pipeline
 from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATIONS_PARENT_MAP
 
@@ -116,7 +116,7 @@ class ImageEditingAgent:
         # self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
-        quantization_config = PipelineQuantizationConfig(
+        quantization_config = BitsAndBytesConfig(
             load_in_8bit=True,
             llm_int8_threshold=6.0,
         )
