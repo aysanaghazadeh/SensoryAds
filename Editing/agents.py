@@ -294,6 +294,7 @@ class ImageEditingAgent:
             negative_prompt=negative_prompt,
             width=width,
             height=height,
+            guidance_scale=3,
             num_inference_steps=28,
             true_cfg_scale=4.0,
             generator=torch.Generator(device="cuda").manual_seed(seed)
