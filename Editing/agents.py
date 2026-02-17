@@ -116,7 +116,7 @@ class ImageEditingAgent:
         # self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
-        quantization_config = BitsAndBytesConfig(
+        quantization_config = PipelineQuantizationConfig(
             load_in_8bit=True,
             llm_int8_threshold=6.0,
         )
