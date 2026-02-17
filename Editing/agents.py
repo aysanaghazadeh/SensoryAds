@@ -7,7 +7,7 @@ from autogen.agentchat.contrib.img_utils import get_pil_image, pil_to_data_uri
 from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
 from autogen.agentchat.contrib.capabilities import generate_images
 import torch
-from diffusers import FluxKontextPipeline
+from diffusers import FluxKontextPipeline, QwenImageEditPipeline
 from diffusers.utils import load_image
 from huggingface_hub import get_token
 from PIL import Image
