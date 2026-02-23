@@ -3,6 +3,7 @@ import torch
 from torch import nn
 from diffusers.quantizers import PipelineQuantizationConfig
 import wandb
+import math
 
 
 class QWenImage(nn.Module):
