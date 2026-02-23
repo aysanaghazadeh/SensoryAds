@@ -157,7 +157,7 @@ for filename in filenames:
         sum_scores = 0
         count = 0
         for image_url in AIM:
-            if count > 303:
+            if count > 613:
                 break
             if isinstance(AIM[image_url], list):
                 score = AIM[image_url][1]
@@ -167,6 +167,39 @@ for filename in filenames:
         print(sum_scores / count)
         print(count)
         print('--------------------------------')
+
+# filenames = os.listdir('/Users/aysanaghazadeh/SensoryAds')
+# maximum, minimum = -float('inf'), float('inf')
+# for filename in filenames:
+#     if 'persuasion.json' in filename:
+#         persuasion = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', filename)))
+#         for image_url in persuasion:
+#             if isinstance(persuasion[image_url], list):
+#                 score = persuasion[image_url][-1] / 5
+#                 if score > maximum:
+#                     maximum = score
+#                 if score < minimum:
+#                     minimum = score
+# print(maximum, minimum)
+# for filename in filenames:
+#     if 'persuasion.json' in filename:
+#         persuasion = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', filename)))
+#         sum_scores = 0
+#         count = 0
+#         for image_url in persuasion:
+#             if count > 303:
+#                 break
+#             if isinstance(persuasion[image_url], list):
+#                 score = persuasion[image_url][-1] / 5
+#                 # sum_scores += (score - minimum) / (maximum - minimum)
+#                 sum_scores += score
+#                 count += 1
+#         print(filename)
+#         print(sum_scores / count)
+#         print(count)
+#         print('--------------------------------')
+        
+
 # import json
 # import pandas as pd
 # human_scores = json.load(open('../Data/PittAd/train/sensation_annotations_parsed.json'))

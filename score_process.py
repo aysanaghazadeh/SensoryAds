@@ -5,8 +5,6 @@ import os
 def average_score(metrics_scores):
     values = []
     for image_url in metrics_scores:
-        if len(values) > 270:
-            break
         for sensation in metrics_scores[image_url]:
             scores = metrics_scores[image_url][sensation]
             if isinstance(scores, list):
@@ -23,7 +21,7 @@ def compute_average_scores_per_file(metrics_file):
 
 def compute_all_average_scores_all_files(directory):
     for filename in os.listdir(directory):
-        if filename == '.DS_Store':
+        if filename == '.DS_Store' or '40000' not in filename:
             continue
         metrics_file = os.path.join(directory, filename)
         metrics_file = os.path.join(directory, filename)
@@ -34,8 +32,6 @@ def compute_average_per_sensation(metrics_scores):
     average_score_per_sensation = {}
     count = 0
     for image_url in metrics_scores:
-        if count > 270:
-            break
         count += 1
         for sensation in metrics_scores[image_url]:
             scores = metrics_scores[image_url][sensation]
@@ -50,7 +46,7 @@ def compute_average_per_sensation(metrics_scores):
 
 def compute_average_per_sensations_all_files(directory):
     for filename in os.listdir(directory):
-        if filename == '.DS_Store':
+        if filename == '.DS_Store' or '40000' not in filename:
             continue
         print(filename)
         metrics_file = os.path.join(directory, filename)
@@ -103,7 +99,7 @@ def compute_real_images_scores(real_ads, generated_ads):
 
 
 if __name__ == '__main__':
-    directory = '/Users/aysanaghazadeh/Evosense_GT_Sensation'
+    directory = '/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation'
     compute_all_average_scores_all_files(directory)
     compute_average_per_sensations_all_files(directory)
     # generated_ads = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))

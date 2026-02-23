@@ -11,6 +11,17 @@ python evaluation.py --config_type=DEFAULT \
 
 python evaluation.py --config_type=DEFAULT \
 --evaluation_type=Evosense_GT_Sensation \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20250918_040133_Sensation_PixArt_Sensation_description_generation.csv \
+--LLM=LLAMA3_instruct \
+--fine_tuned=True \
+--model_checkpoint=40000 \
+--model_name=my_HierarchicalCPO_data_annotation_LLAMA3_instruct \
+--T2I_model=PixArt \
+--AD_type=ALL \
+--resume=True
+
+python evaluation.py --config_type=DEFAULT \
+--evaluation_type=Evosense_GT_Sensation \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generation.csv \
 --LLM=LLAMA3_instruct \
 --fine_tuned=True \
