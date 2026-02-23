@@ -1,4 +1,5 @@
 from diffusers import FluxPipeline, DiffusionPipeline
+from diffusers import FlowMatchEulerDiscreteScheduler
 import torch
 from torch import nn
 from diffusers.quantizers import PipelineQuantizationConfig
