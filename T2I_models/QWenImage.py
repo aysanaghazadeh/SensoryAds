@@ -42,10 +42,18 @@ class QWenImage(nn.Module):
             "use_exponential_sigmas": False,
             "use_karras_sigmas": False,
         }
+        quantization_config = PipelineQuantizationConfig(
+                                    quant_backend="bitsandbytes_8bit",
+                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
+                                    components_to_quantize=["transformer", "text_encoder_2"],
+                                )
         scheduler = FlowMatchEulerDiscreteScheduler.from_config(scheduler_config)
         self.pipe = DiffusionPipeline.from_pretrained(
-            "Qwen/Qwen-Image", scheduler=scheduler, torch_dtype=torch.bfloat16
-        ).to(args.device)
+                "Qwen/Qwen-Image", 
+                scheduler=scheduler, 
+                torch_dtype=torch.bfloat16, 
+                quantization_config=quantization_config
+            ).to(args.device)
         self.pipe.load_lora_weights(
             "lightx2v/Qwen-Image-Lightning", weight_name="Qwen-Image-Lightning-8steps-V1.0.safetensors"
         )
