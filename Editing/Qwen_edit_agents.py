@@ -272,7 +272,8 @@ class ImageEditingAgent:
             image = self.pipe(
                 image=control_image,
                 prompt=prompt,
-                true_cfg_scale=5.0,
+                negative_prompt=" ",
+                true_cfg_scale=4.0,
                 num_inference_steps=28,
             ).images[0]
         self.shared_messages.images.append(image)
