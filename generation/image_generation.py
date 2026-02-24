@@ -117,14 +117,8 @@ def generate_images(args):
                 if args.Editing_model == 'FluxKontext':
                     generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename))
                 elif args.Editing_model == 'QwenImageEdit':
-                    # For agentic editing, start from the real (original) ad image by default.
-                    # This prevents the planner/critic from seeing a blank white canvas.
-                    base_image_path = os.path.join(args.data_path, args.test_set_images, filename)
-                    if os.path.exists(base_image_path):
-                        generated_image = Image.open(base_image_path).convert("RGB")
-                    else:
-                        print(f"WARNING: Base image not found at {base_image_path}. Falling back to a blank image.")
-                        generated_image = Image.new("RGB", (1024, 1024), (255, 255, 255))
+                    # generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20260223_212214/AR_ALL_QWenImage', sensation, filename))
+                    generated_image = Image.new("RGB", (1024, 1024), (255, 255, 255))
                 else:
                     raise ValueError(f'Editing model {args.Editing_model} not supported')
                 image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
