@@ -11,20 +11,20 @@ class QWenImage(nn.Module):
     def __init__(self, args):
         super(QWenImage, self).__init__()
         self.device = args.device
-        # model_name = "Qwen/Qwen-Image"
+        model_name = "Qwen/Qwen-Image"
 
-        # # Load the pipeline
-        # if torch.cuda.is_available():
-        #     torch_dtype = torch.bfloat16
-        # quantization_config = PipelineQuantizationConfig(
-        #     quant_backend="bitsandbytes_4bit",
-        #     quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
-        # )
-        # self.pipe = DiffusionPipeline.from_pretrained(model_name,
-        #                                               torch_dtype=torch_dtype,
-        #                                               quantization_config=quantization_config)
-        # self.args = args
-        # self.pipe = self.pipe.to(device=args.device)
+        # Load the pipeline
+        if torch.cuda.is_available():
+            torch_dtype = torch.bfloat16
+        quantization_config = PipelineQuantizationConfig(
+            quant_backend="bitsandbytes_4bit",
+            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+        )
+        self.pipe = DiffusionPipeline.from_pretrained(model_name,
+                                                      torch_dtype=torch_dtype,
+                                                      quantization_config=quantization_config)
+        self.args = args
+        self.pipe = self.pipe.to(device=args.device)
         # From https://github.com/ModelTC/Qwen-Image-Lightning/blob/342260e8f5468d2f24d084ce04f55e101007118b/generate_with_diffusers.py#L82C9-L97C10
         scheduler_config = {
             "base_image_seq_len": 256,
@@ -43,9 +43,9 @@ class QWenImage(nn.Module):
             "use_karras_sigmas": False,
         }
         quantization_config = PipelineQuantizationConfig(
-                                    quant_backend="bitsandbytes_8bit",
-                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
-                                    components_to_quantize=["transformer", "text_encoder_2"],
+                                    quant_backend="bitsandbytes_4bit",
+                                    quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+                                    components_to_quantize=["text_encoder", "text_encoder_2"],
                                 )
         scheduler = FlowMatchEulerDiscreteScheduler.from_config(scheduler_config)
         self.pipe = DiffusionPipeline.from_pretrained(
