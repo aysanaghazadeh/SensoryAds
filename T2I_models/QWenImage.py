@@ -91,7 +91,7 @@ class QWenImage(nn.Module):
             prompt=prompt,
             width=1024,
             height=1024,
-            num_inference_steps=14,
+            num_inference_steps=8,
             generator=torch.manual_seed(seed),
         ).images[0]
         wandb.log({
