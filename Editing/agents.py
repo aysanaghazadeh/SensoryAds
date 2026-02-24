@@ -7,9 +7,8 @@ from autogen.agentchat.contrib.img_utils import get_pil_image, pil_to_data_uri
 from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
 from autogen.agentchat.contrib.capabilities import generate_images
 import torch
-from diffusers import FluxKontextPipeline, QwenImageEditPipeline
+from diffusers import FluxKontextPipeline
 from diffusers import BitsAndBytesConfig as DiffusersBitsAndBytesConfig
-from diffusers import QwenImageTransformer2DModel
 from diffusers.quantizers import PipelineQuantizationConfig
 from diffusers.utils import load_image
 from huggingface_hub import get_token
@@ -115,54 +114,19 @@ class ImageEditingAgent:
     def __init__(self, args):
         self.args = args
         self.sensation_options = None
-        # self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", torch_dtype=torch.bfloat16)
+        quantization_config = PipelineQuantizationConfig(
+                                    quant_backend="bitsandbytes_8bit",
+                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
+                                    components_to_quantize=["transformer", "text_encoder_2"],
+                                )
+        self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", 
+                                                        torch_dtype=torch.bfloat16, 
+                                                        quantization_config=quantization_config)
+        self.pipe = self.pipe.to(device=args.device)
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
-        # quantization_config = PipelineQuantizationConfig(
-        #     quant_backend="bitsandbytes_8bit",
-        #     quant_kwargs={"load_in_8bit": True, "bnb_8bit_compute_dtype": torch.bfloat16},
-        # )
-        # self.pipe =QwenImageEditPipeline.from_pretrained("Qwen/Qwen-Image-Edit", 
-        #                                                 torch_dtype=torch_dtype,
-        #                                                 quantization_config=quantization_config)
-        model_id = "Qwen/Qwen-Image-Edit"
-        torch_dtype = torch.bfloat16
-        device = "cuda"
-
-        quantization_config = DiffusersBitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
-            llm_int8_skip_modules=["transformer_blocks.0.img_mod"],
-        )
-        transformer = QwenImageTransformer2DModel.from_pretrained(
-            model_id,
-            subfolder="transformer",
-            quantization_config=quantization_config,
-            torch_dtype=torch_dtype,
-        )
-        transformer = transformer.to("cpu")
-
-        quantization_config = TransformersBitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
-        )
-
-        text_encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            model_id,
-            subfolder="text_encoder",
-            quantization_config=quantization_config,
-            torch_dtype=torch_dtype,
-        )
-        text_encoder = text_encoder.to("cpu")
-
-        self.pipe = QwenImageEditPipeline.from_pretrained(
-            model_id, transformer=transformer, text_encoder=text_encoder, torch_dtype=torch_dtype
-        )
-        self.pipe.enable_model_cpu_offload()
-        self.pipe.to("cuda")
         print("pipeline loaded")
+        
         self.planner_agent = MultimodalConversableAgent(
             name="planner",
             system_message=PLANNER_SYSTEM_PROMPT,
@@ -847,7 +811,7 @@ CRITICAL REQUIREMENTS:
         elif getattr(self.args, "find_sensation", False):
             wandb.init(project="agentic-sensation-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
         else:  
-            wandb.init(project="agentic-image-genetation_QWenImageEdit", name=f"{filename}-{target_sensation_initial}")
+            wandb.init(project="agentic-image-genetation_FLUXKontext", name=f"{filename}-{target_sensation_initial}")
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
