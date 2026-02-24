@@ -272,7 +272,6 @@ class ImageEditingAgent:
             image = self.pipe(
                 image=control_image,
                 prompt=prompt,
-                generator=torch.manual_seed(seed),
                 true_cfg_scale=5.0,
                 num_inference_steps=28,
             ).images[0]
