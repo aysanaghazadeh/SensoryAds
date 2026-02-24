@@ -118,10 +118,13 @@ class ImageEditingAgent:
             components_to_quantize=["text_encoder"],
         )
         self.pipe = QwenImageEditPipeline.from_pretrained(
-            "Qwen/Qwen-Image-Edit", 
+            "Qwen/Qwen-Image-Edit-2511", 
             torch_dtype=torch.bfloat16,
             quantization_config=quantization_config,
             device_map='balanced'
+        )
+        self.pipe.load_lora_weights(    
+            "lightx2v/Qwen-Image-Edit-2511-Lightning"
         )
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
@@ -273,7 +276,7 @@ class ImageEditingAgent:
             generator=torch.manual_seed(seed),
             true_cfg_scale=4.0,
             negative_prompt=" ",
-            num_inference_steps=28,
+            num_inference_steps=18,
         ).images[0]
         self.shared_messages.images.append(image)
         self.shared_messages.step_counter += 1
