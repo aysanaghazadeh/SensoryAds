@@ -85,6 +85,7 @@ class QWenImage(nn.Module):
         # ).images[0]
         image = self.pipe(
             prompt=prompt + positive_magic["en"],
+            negative_prompt=negative_prompt,
             width=1024,
             height=1024,
             num_inference_steps=28,
