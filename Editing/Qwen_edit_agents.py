@@ -181,7 +181,7 @@ class ImageEditingAgent:
         self.group_chat = GroupChat(
             agents=agents,
             messages=[],
-            max_round=20,
+            max_round=15,
             speaker_selection_method=self.custom_speaker_selection,
         )
 
@@ -275,7 +275,7 @@ class ImageEditingAgent:
             generator=torch.manual_seed(seed),
             true_cfg_scale=4.0,
             negative_prompt=" ",
-            num_inference_steps=18,
+            num_inference_steps=14,
         ).images[0]
         self.shared_messages.images.append(image)
         self.shared_messages.step_counter += 1

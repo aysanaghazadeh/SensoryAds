@@ -783,10 +783,15 @@ CRITICAL REQUIREMENTS:
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
-            if getattr(self.args, "find_sensation", False):
-                image = Image.new("RGB", (256, 256), (255, 255, 255))
         else:
-            image = Image.open('../experiments/generated_images/SensoryAds/20250918_122434/AR_ALL_PixArt/dryness/2/87112.jpg')
+            # Default base image: the original ad image from the dataset.
+            base_image_path = os.path.join(self.args.data_path, self.args.test_set_images, filename)
+            if os.path.exists(base_image_path):
+                image = Image.open(base_image_path).convert("RGB")
+            else:
+                # Backward-compatible fallback for older experiments.
+                print(f"WARNING: Base image not found at {base_image_path}. Falling back to a hardcoded example image.")
+                image = Image.open('../experiments/generated_images/SensoryAds/20250918_122434/AR_ALL_PixArt/dryness/2/87112.jpg').convert("RGB")
         if ad_message_initial is not None:
             ad_message = ad_message_initial
         else:
