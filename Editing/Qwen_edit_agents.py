@@ -273,7 +273,7 @@ class ImageEditingAgent:
             image=control_image,
             prompt=prompt,
             generator=torch.manual_seed(seed),
-            true_cfg_scale=4.0,
+            true_cfg_scale=3.0,
             negative_prompt=" ",
             num_inference_steps=14,
         ).images[0]
