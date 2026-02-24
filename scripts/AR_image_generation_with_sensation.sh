@@ -2,6 +2,7 @@ python inference.py --config_type=DEFAULT \
                     --inference_type=image_generation \
                     --text_input_type=AR \
                     --T2I_model=AgenticEditing \
+                    --Editing_model=QwenImageEdit \
                     --T2I_prompt=AR_with_sensation.jinja \
                     --with_physical_sensation=True \
                     --test_set_sensation=train/sensation_annotations_parsed.json \

@@ -7,7 +7,8 @@ from T2I_models.DALLE3 import DALLE3
 from T2I_models.Flux import Flux
 from T2I_models.QWenImage import QWenImage
 from T2I_models.SD3 import SD3
-from Editing.agents import ImageEditingAgent
+from Editing.agents import ImageEditingAgent as FluxKontextEditingAgent
+from Editing.Qwen_edit_agents import ImageEditingAgent as QwenImageEditEditingAgent
 
 class T2IModel(nn.Module):
     def __init__(self, args):
@@ -24,7 +25,15 @@ class T2IModel(nn.Module):
             'SD3': SD3,
             'AgenticEditing': ImageEditingAgent
         }
-        self.model = model_map[args.T2I_model](args)
+        if args.T2I_model == 'AgenticEditing':
+            if args.Editing_model == 'FluxKontext':
+                self.model = FluxKontextEditingAgent(args)
+            elif args.Editing_model == 'QwenImageEdit':
+                self.model = QwenImageEditEditingAgent(args)
+            else:
+                raise ValueError(f'Editing model {args.Editing_model} not supported')
+        else:
+            self.model = model_map[args.T2I_model](args)
 
     def forward(self, filename, prompt, seed=None, generated_image=None, target_sensation_initial=None):
         if self.args.T2I_model == 'AgenticEditing':
