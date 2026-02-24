@@ -22,8 +22,7 @@ class T2IModel(nn.Module):
             'DALLE3': DALLE3,
             'Flux': Flux,
             'QWenImage': QWenImage,
-            'SD3': SD3,
-            'AgenticEditing': ImageEditingAgent
+            'SD3': SD3
         }
         if args.T2I_model == 'AgenticEditing':
             if args.Editing_model == 'FluxKontext':
