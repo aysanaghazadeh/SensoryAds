@@ -27,29 +27,33 @@ class QWenImage(nn.Module):
         # self.args = args
         # self.pipe = self.pipe.to(device=args.device)
         # From https://github.com/ModelTC/Qwen-Image-Lightning/blob/342260e8f5468d2f24d084ce04f55e101007118b/generate_with_diffusers.py#L82C9-L97C10
-        # scheduler_config = {
-        #     "base_image_seq_len": 256,
-        #     "base_shift": math.log(3),  # We use shift=3 in distillation
-        #     "invert_sigmas": False,
-        #     "max_image_seq_len": 8192,
-        #     "max_shift": math.log(3),  # We use shift=3 in distillation
-        #     "num_train_timesteps": 1000,
-        #     "shift": 1.0,
-        #     "shift_terminal": None,  # set shift_terminal to None
-        #     "stochastic_sampling": False,
-        #     "time_shift_type": "exponential",
-        #     "use_beta_sigmas": False,
-        #     "use_dynamic_shifting": True,
-        #     "use_exponential_sigmas": False,
-        #     "use_karras_sigmas": False,
-        # }
-        # scheduler = FlowMatchEulerDiscreteScheduler.from_config(scheduler_config)
+        scheduler_config = {
+            "base_image_seq_len": 256,
+            "base_shift": math.log(3),  # We use shift=3 in distillation
+            "invert_sigmas": False,
+            "max_image_seq_len": 8192,
+            "max_shift": math.log(3),  # We use shift=3 in distillation
+            "num_train_timesteps": 1000,
+            "shift": 1.0,
+            "shift_terminal": None,  # set shift_terminal to None
+            "stochastic_sampling": False,
+            "time_shift_type": "exponential",
+            "use_beta_sigmas": False,
+            "use_dynamic_shifting": True,
+            "use_exponential_sigmas": False,
+            "use_karras_sigmas": False,
+        }
+        scheduler = FlowMatchEulerDiscreteScheduler.from_config(scheduler_config)
         self.pipe = DiffusionPipeline.from_pretrained(
                 "Qwen/Qwen-Image", 
+                scheduler=scheduler,
                 torch_dtype=torch.bfloat16, 
                 quantization_config=quantization_config,
                 device_map='balanced'
             )
+        self.pipe.load_lora_weights(
+            "lightx2v/Qwen-Image-Lightning", weight_name="Qwen-Image-Lightning-8steps-V1.0.safetensors"
+        )
         wandb.init(project="QWenImage")
 
     def forward(self, prompt, seed=None):
@@ -87,7 +91,7 @@ class QWenImage(nn.Module):
             prompt=prompt,
             width=1024,
             height=1024,
-            num_inference_steps=28,
+            num_inference_steps=14,
             generator=torch.manual_seed(seed),
         ).images[0]
         wandb.log({
