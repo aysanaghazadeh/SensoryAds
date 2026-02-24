@@ -16,10 +16,11 @@ class QWenImage(nn.Module):
         # Load the pipeline
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
-        # quantization_config = PipelineQuantizationConfig(
-        #     quant_backend="bitsandbytes_4bit",
-        #     quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
-        # )
+        quantization_config = PipelineQuantizationConfig(
+            quant_backend="bitsandbytes_4bit",
+            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+            components_to_quantize=["text_encoder"],
+        )
         # self.pipe = DiffusionPipeline.from_pretrained(model_name,
         #                                               torch_dtype=torch_dtype,
         #                                               quantization_config=quantization_config)
@@ -42,10 +43,6 @@ class QWenImage(nn.Module):
             "use_exponential_sigmas": False,
             "use_karras_sigmas": False,
         }
-        quantization_config = PipelineQuantizationConfig(
-                                    quant_backend="bitsandbytes_8bit",
-                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
-                                )
         scheduler = FlowMatchEulerDiscreteScheduler.from_config(scheduler_config)
         self.pipe = DiffusionPipeline.from_pretrained(
                 "Qwen/Qwen-Image", 
