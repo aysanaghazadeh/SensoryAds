@@ -123,8 +123,8 @@ class ImageEditingAgent:
             quantization_config=quantization_config,
             device_map='balanced'
         )
-        self.pipe.load_lora_weights("peteromallet/Qwen-Image-Edit-InStyle", 
-                                    weight_name="InStyle-0.5.safetensors")
+        # self.pipe.load_lora_weights("peteromallet/Qwen-Image-Edit-InStyle", 
+        #                             weight_name="InStyle-0.5.safetensors")
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
         print("pipeline loaded")
