@@ -275,7 +275,7 @@ class ImageEditingAgent:
             generator=torch.manual_seed(seed),
             true_cfg_scale=3.0,
             negative_prompt=" ",
-            num_inference_steps=14,
+            num_inference_steps=28,
         ).images[0]
         self.shared_messages.images.append(image)
         self.shared_messages.step_counter += 1
