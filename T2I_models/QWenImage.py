@@ -94,8 +94,8 @@ class QWenImage(nn.Module):
         image = self.pipe(
             prompt=prompt,
             negative_prompt=negative_prompt,
-            width=512,
-            height=512,
+            width=256,
+            height=256,
             num_inference_steps=8,
             true_cfg_scale=4.0,
             generator=torch.manual_seed(seed),
