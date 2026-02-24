@@ -122,6 +122,10 @@ def parse_args():
                         type=str,
                         default='PixArt',
                         help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate, AgenticEditing')
+    parser.add_argument('--Editing_model',
+                        type=str,
+                        default='FluxKontext',
+                        help='Editing model chosen from: FluxKontext, QwenImageEdit')
     parser.add_argument('--LLM',
                         type=str,
                         default='LLAMA3_instruct',
