@@ -125,8 +125,7 @@ class ImageEditingAgent:
         )
         # self.pipe.load_lora_weights("peteromallet/Qwen-Image-Edit-InStyle", 
         #                             weight_name="InStyle-0.5.safetensors")
-        if torch.cuda.is_available():
-            torch_dtype = torch.bfloat16
+        
         print("pipeline loaded")
         
         self.planner_agent = MultimodalConversableAgent(
@@ -269,14 +268,14 @@ class ImageEditingAgent:
 
     def image_editing(self, prompt, control_image, group_chat):
         seed = 0
-        image = self.pipe(
-            image=control_image,
-            prompt=prompt,
-            generator=torch.manual_seed(seed),
-            true_cfg_scale=4.0,
-            negative_prompt=" ",
-            num_inference_steps=28,
-        ).images[0]
+        with torch.inference_mode():
+            image = self.pipe(
+                image=control_image,
+                prompt=prompt,
+                generator=torch.manual_seed(seed),
+                true_cfg_scale=4.0,
+                num_inference_steps=28,
+            ).images[0]
         self.shared_messages.images.append(image)
         self.shared_messages.step_counter += 1
 
