@@ -47,8 +47,9 @@ class QWenImage(nn.Module):
         self.pipe = DiffusionPipeline.from_pretrained(
                 "Qwen/Qwen-Image", 
                 torch_dtype=torch.bfloat16, 
-                quantization_config=quantization_config
-            ).to(device=args.device)
+                quantization_config=quantization_config,
+                device_map='balanced'
+            )
         wandb.init(project="QWenImage")
 
     def forward(self, prompt, seed=None):
