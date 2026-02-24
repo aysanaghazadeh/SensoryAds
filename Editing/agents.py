@@ -266,42 +266,11 @@ class ImageEditingAgent:
 
     def image_editing(self, prompt, control_image, group_chat):
         seed = 0
-        positive_magic = {
-            "en": ", Ultra HD, 4K, cinematic composition.",  # for english prompt
-            "zh": ", 超清，4K，电影级构图."  # for chinese prompt
-        }
-
-        negative_prompt = " "  # using an empty string if you do not have specific concept to remove
-
-        # Generate with different aspect ratios
-        aspect_ratios = {
-            "1:1": (1328, 1328),
-            "16:9": (1664, 928),
-            "9:16": (928, 1664),
-            "4:3": (1472, 1140),
-            "3:4": (1140, 1472),
-            "3:2": (1584, 1056),
-            "2:3": (1056, 1584),
-        }
-
-        width, height = 512, 512
-        # image = self.pipe(
-        #     image=control_image,
-        #     prompt=prompt,
-        #     guidance_scale=3
-        # ).images[0]
         image = self.pipe(
             image=control_image,
-            prompt=prompt + positive_magic["en"],
-            negative_prompt=negative_prompt,
-            width=width,
-            height=height,
-            guidance_scale=3,
-            num_inference_steps=28,
-            true_cfg_scale=4.0,
-            generator=torch.Generator(device="cuda").manual_seed(seed)
+            prompt=prompt,
+            guidance_scale=3
         ).images[0]
-
         self.shared_messages.images.append(image)
         self.shared_messages.step_counter += 1
 
