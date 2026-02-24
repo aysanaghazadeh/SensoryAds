@@ -273,7 +273,7 @@ class ImageEditingAgent:
                 image=control_image,
                 prompt=prompt,
                 generator=torch.manual_seed(seed),
-                true_cfg_scale=4.0,
+                true_cfg_scale=2.0,
                 num_inference_steps=28,
             ).images[0]
         self.shared_messages.images.append(image)
