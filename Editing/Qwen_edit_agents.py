@@ -118,14 +118,13 @@ class ImageEditingAgent:
             components_to_quantize=["text_encoder"],
         )
         self.pipe = QwenImageEditPipeline.from_pretrained(
-            "Qwen/Qwen-Image-Edit-2511", 
+            "Qwen/Qwen-Image-Edit", 
             torch_dtype=torch.bfloat16,
             quantization_config=quantization_config,
             device_map='balanced'
         )
-        self.pipe.load_lora_weights(    
-            "lightx2v/Qwen-Image-Edit-2511-Lightning"
-        )
+        self.pipe.load_lora_weights("peteromallet/Qwen-Image-Edit-InStyle", 
+                                    weight_name="InStyle-0.5.safetensors")
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
         print("pipeline loaded")
