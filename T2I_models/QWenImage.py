@@ -46,7 +46,6 @@ class QWenImage(nn.Module):
         # scheduler = FlowMatchEulerDiscreteScheduler.from_config(scheduler_config)
         self.pipe = DiffusionPipeline.from_pretrained(
                 "Qwen/Qwen-Image", 
-                scheduler=scheduler, 
                 torch_dtype=torch.bfloat16, 
                 quantization_config=quantization_config
             ).to(device=args.device)
