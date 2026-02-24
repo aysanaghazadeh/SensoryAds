@@ -123,7 +123,6 @@ class ImageEditingAgent:
             quantization_config=quantization_config,
             device_map='balanced'
         )
-        self.pipe = self.pipe.to(device=args.device)
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
         print("pipeline loaded")
