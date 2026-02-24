@@ -44,7 +44,7 @@ class QWenImage(nn.Module):
         }
         quantization_config = PipelineQuantizationConfig(
                                     quant_backend="bitsandbytes_8bit",
-                                    quant_kwargs={"load_in_8bit": True},
+                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
                                 )
         scheduler = FlowMatchEulerDiscreteScheduler.from_config(scheduler_config)
         self.pipe = DiffusionPipeline.from_pretrained(
@@ -54,9 +54,9 @@ class QWenImage(nn.Module):
                 quantization_config=quantization_config,
                 device_map='balanced'
             )
-        # self.pipe.load_lora_weights(
-        #     "lightx2v/Qwen-Image-Lightning", weight_name="Qwen-Image-Lightning-8steps-V1.0.safetensors"
-        # )
+        self.pipe.load_lora_weights(
+            "lightx2v/Qwen-Image-Lightning", weight_name="Qwen-Image-Lightning-8steps-V1.0.safetensors"
+        )
         wandb.init(project="QWenImage")
 
     def forward(self, prompt, seed=None):
