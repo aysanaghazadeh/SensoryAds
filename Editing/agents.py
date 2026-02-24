@@ -116,8 +116,7 @@ class ImageEditingAgent:
         self.sensation_options = None
         quantization_config = PipelineQuantizationConfig(
                                     quant_backend="bitsandbytes_8bit",
-                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
-                                    components_to_quantize=["transformer", "text_encoder_2"],
+                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16}
                                 )
         self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", 
                                                         torch_dtype=torch.bfloat16, 
