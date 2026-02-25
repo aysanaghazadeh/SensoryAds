@@ -82,6 +82,10 @@ def get_descriptions(args, images):
             print(f'{len(processed_images)} images are processed and will be skipped')
         else:
             print(f'all {len(set(pd.read_csv(description_file).ID.values))} processed images will be overwritten')
+            with open(description_file, 'w', newline='') as file:
+                writer = csv.writer(file)
+                # Write the header
+                writer.writerow(['ID', 'description'])
             processed_images = set()
     else:
         print(f'{description_file} does not exist and is generated.')
