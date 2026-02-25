@@ -8,5 +8,4 @@ python inference.py \
 --MLLM=InternVL \
 --description_goal=image_descriptor \
 --test_set_images=../experiments/generated_images/SensoryAds/20260224_024108/AR_ALL_QWenImage \
---test_set_QA=../experiments/results/SensoryAds/AR_ALL_QWenImage_20260224_024108.csv \
---resume=True
+--test_set_QA=../experiments/results/SensoryAds/AR_ALL_QWenImage_20260224_024108.csv 
