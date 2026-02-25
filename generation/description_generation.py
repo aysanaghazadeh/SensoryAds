@@ -1,5 +1,4 @@
 import json
-import re
 from jinja2 import Environment, FileSystemLoader
 from transformers import pipeline
 from utils.data.trian_test_split import get_test_data, get_train_data
@@ -11,68 +10,6 @@ from utils.prompt_engineering.prompt_generation import ImageGenerationPromptGene
 from LLMs.LLM import LLM
 from MLLMs.MLLM import MLLM
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
-
-
-_Q1_Q2_RE = re.compile(r'(?is)\bQ1\s*:\s*(.*?)\s*\bQ2\s*:\s*(.*)\s*$')
-_LEADING_ENUM_RE = re.compile(r'^\s*\d+\s*[\.\)\-:]\s*')
-_DOUBLE_QUOTED_TEXT_RE = re.compile(r'"[^"\n]{1,800}"')
-_SINGLE_QUOTED_TEXT_RE = re.compile(r"'[^'\n]{1,800}'")
-_I_SHOULD_CLAUSE_RE = re.compile(r"(?i)\bI\s*SHOULD(?:N'T| NOT)?\b[^.!\n\"]{0,800}")
-_BECAUSE_CLAUSE_RE = re.compile(r'(?i)\bBECAUSE\b[^.!\n\"]{0,800}')
-_READS_SAYS_RE = re.compile(r'(?i)\b(?:reads|says)\b\s*(?:that\s*)?[:,-]?\s*[^.!\n]{1,800}')
-_WORD_FOLLOWS_RE = re.compile(r'(?i)\b(?:the\s+word|word)\b\s+([A-Za-z0-9$€£¥]{2,30})')
-
-
-def _sanitize_q1_list(q1):
-    if not isinstance(q1, str):
-        return q1
-    raw = q1.replace('\n', ' ')
-    parts = [p.strip() for p in raw.split(',') if p.strip()]
-    cleaned_items = []
-    for p in parts:
-        item = _LEADING_ENUM_RE.sub('', p).strip()
-        if not item:
-            continue
-        lowered = item.lower()
-        if any(k in lowered for k in ['text', 'logo', 'wordmark', 'letters', 'numbers', 'caption', 'slogan']):
-            continue
-        cleaned_items.append(item)
-        if len(cleaned_items) >= 5:
-            break
-    if not cleaned_items:
-        return 'None'
-    return ', '.join([f'{i + 1}. {it}' for i, it in enumerate(cleaned_items)])
-
-
-def _sanitize_q2_paragraph(q2):
-    if not isinstance(q2, str):
-        return q2
-    cleaned = q2
-    cleaned = _DOUBLE_QUOTED_TEXT_RE.sub('[TEXT]', cleaned)
-    cleaned = _SINGLE_QUOTED_TEXT_RE.sub('[TEXT]', cleaned)
-    cleaned = _I_SHOULD_CLAUSE_RE.sub('[TEXT]', cleaned)
-    cleaned = _BECAUSE_CLAUSE_RE.sub('[TEXT]', cleaned)
-    cleaned = _READS_SAYS_RE.sub('reads [TEXT]', cleaned)
-    cleaned = _WORD_FOLLOWS_RE.sub(lambda m: m.group(0).replace(m.group(1), '[TEXT]'), cleaned)
-    cleaned = re.sub(r'\s+\[TEXT\]\s+\[TEXT\]\s+', ' [TEXT] ', cleaned)
-    cleaned = re.sub(r'\s{2,}', ' ', cleaned).strip()
-    return cleaned
-
-
-def _sanitize_image_descriptor_output(text):
-    """
-    Best-effort enforcement for prompts that should not include any on-image text.
-    Keeps Q1/Q2 format but redacts leaked OCR and removes 'Text/Logo' from Q1.
-    """
-    if not isinstance(text, str):
-        return text
-    m = _Q1_Q2_RE.search(text.strip())
-    if not m:
-        return _sanitize_q2_paragraph(text)
-    q1, q2 = m.group(1).strip(), m.group(2).strip()
-    q1 = _sanitize_q1_list(q1)
-    q2 = _sanitize_q2_paragraph(q2)
-    return f'Q1: {q1}\nQ2: {q2}'
 
 
 def get_model(args):
@@ -99,10 +36,6 @@ def get_single_description(args, image_url, pipe):
     template = env.get_template(args.MLLM_prompt)
     prompt = template.render()
     description = pipe(image, prompt=prompt, generate_kwargs={"max_new_tokens": 250})
-    if isinstance(args.MLLM_prompt, str) and (
-            'without_text' in args.MLLM_prompt or args.MLLM_prompt.strip() == 'description_generation.jinja'
-    ):
-        description = _sanitize_image_descriptor_output(description)
     return description
 
 
