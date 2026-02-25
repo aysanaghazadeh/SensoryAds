@@ -157,11 +157,9 @@ for filename in filenames:
         sum_scores = 0
         count = 0
         for image_url in AIM:
-            if count > 613:
-                break
             if isinstance(AIM[image_url], list):
                 score = AIM[image_url][1]
-                sum_scores += (score - minimum) / (maximum - minimum)
+                sum_scores += score#(score - minimum) / (maximum - minimum)
                 count += 1
         print(filename)
         print(sum_scores / count)
