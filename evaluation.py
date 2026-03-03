@@ -289,7 +289,7 @@ class SensationEvaluation:
             if image_url in scores:
                 print(f'{image_url} is already processed: {scores[image_url]}')
                 continue
-            description = row['description']
+            description = row['description'].split('Q2:')[-1]
             scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
                 score = get_LLM_Judge_Score(args, self.model, description, sensation)
