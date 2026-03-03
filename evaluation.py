@@ -39,6 +39,9 @@ class SensationEvaluation:
         if 'MLLM' in self.args.evaluation_type:
             from MLLMs.MLLM import MLLM
             self.model = MLLM(args)
+        if 'LLM' in self.args.evaluation_type:
+            from LLMs.LLM import LLM
+            self.model = LLM(args)
 
     def evaluate_Evosense_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
