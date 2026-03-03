@@ -277,7 +277,7 @@ class SensationEvaluation:
     def evaluate_LLM(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
-        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, f'{args.evaluation_type}_{args.LLM}')
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)
         scores = {}
@@ -300,7 +300,7 @@ class SensationEvaluation:
     def evaluate_MLLM_GT_Sensation(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
-        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, f'{args.evaluation_type}_{args.MLLM}')
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)
         if os.path.exists(result_file) and args.resume:
@@ -335,7 +335,7 @@ class SensationEvaluation:
     def evaluate_MLLM(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
-        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, f'{args.evaluation_type}_{args.MLLM}')
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)
         scores = {}
@@ -361,7 +361,7 @@ class SensationEvaluation:
     def evaluate_MLLM_generated(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = 'gen_images_human_annotated_images.json'
-        directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, f'{args.evaluation_type}_{args.MLLM}' )
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)
         if os.path.exists(result_file) and args.resume:
