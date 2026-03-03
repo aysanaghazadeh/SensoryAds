@@ -1,11 +1,9 @@
 python evaluation.py --config_type=DEFAULT \
 --evaluation_type=Evosense_LLM_generated \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20251123_225258_AR_ALL_SD3_ALL_description_generation.csv \
---MLLM=InternVL \
---LLM=LLAMA3_instruct \
---fine_tuned=True \
---model_checkpoint=40000 \
---model_name=my_HierarchicalCPO_data_annotation_LLAMA3_instruct \
+--evaluation_type=MLLM_generated \
+--MLLM=QWenVL \
+--MLLM_prompt=MLLM_judge.jinja \
 --T2I_model=SD3 \
 --resume=True
 
