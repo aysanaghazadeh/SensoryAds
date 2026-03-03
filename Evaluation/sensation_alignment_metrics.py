@@ -148,6 +148,7 @@ def get_LLM_Judge_Score(args, model, description, text):
     from utils.prompt_engineering.prompt_generation import generate_text_generation_prompt
     from PIL import Image
     # try:
+    print('sensation:', text)
     data = {
         'sensation': text,
         'description': description
