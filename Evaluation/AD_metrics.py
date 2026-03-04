@@ -232,35 +232,13 @@ class Metrics:
         generated_image_message = self.llm(prompt)
         generated_image_message = generated_image_message.lower()
         print(generated_image_message)
-        # tokenized_generated_image_message = self.llm.model.tokenizer(generated_image_message,
-        #                                                    padding=True,
-        #                                                    max_length=25,
-        #                                                    return_tensors="pt").to(device=args.device)
-        # tokenized_generated_image_message = tokenized_generated_image_message['input_ids'].to(torch.float16)
-        # encoded_input = self.tokenizer([generated_image_message], padding=True, truncation=True, return_tensors='pt')
-        # with torch.no_grad():
-        #     model_output = self.model(**encoded_input)
-        # generated_image_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
-        #
-        # # Normalize embeddings
-        # generated_image_embeddings = nn.functional.normalize(generated_image_embeddings, p=2, dim=1)
-        #
         similarity_score = 0
         similarity_scores_action = []
         similarity_scores_reason = []
         for action_reason in action_reasons:
             print(action_reason)
             action_reason = action_reason.lower()
-            # encoded_input = self.tokenizer([action_reason], padding=True, truncation=True,
-            #                                return_tensors='pt')
-            # with torch.no_grad():
-            #     model_output = self.model(**encoded_input)
-            # action_reason_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
-            #
-            # # Normalize embeddings
-            # action_reason_embeddings = nn.functional.normalize(action_reason_embeddings, p=2, dim=1)
-            # similarity_score += self.cos(action_reason_embeddings, generated_image_embeddings)
-        #
+            
             sentences = [
                 action_reason.split('because')[0],
                 generated_image_message.split('because')[0]
@@ -666,7 +644,6 @@ class Metrics:
                 print(f'action persuasion score: {output}')
             return score/len(action_reasons)
 
-        # image_url = '/'.join(generated_image1.split('/')[-2:])
         scores = {
             'has_story': evaluate_story(generated_image1, generated_image2, image_url),
             # 'unusualness': 0, #remove
@@ -679,20 +656,6 @@ class Metrics:
             'appeal': evaluate_appeal(generated_image1, generated_image2, image_url),
         }
 
-        # scores = {
-        #     'has_story': 0,
-        #     'unusualness': 0,
-        #     'originality': 0,
-        #     'artistic': 0,
-        #     'imagination': 0,
-        #     'audience': 0,
-        #     'maslow_need': 0,
-        #     'benefit': 0,
-        #     'appeal': 0,
-        #     'persuasion': evaluate_persuasion(generated_image1, generated_image2, image_url),
-        #     'creativity': evaluate_creativity(generated_image1, generated_image2, image_url),
-        #     'action_persuasion': evaluate_action_persuasion(generated_image1, generated_image2, image_url)
-        # }
         scores['persuasiveness'] = sum(list(scores.values())) / len(scores)
         persasiveness = scores['persuasiveness']
         print(f'persuasiveness score: {persasiveness}')
