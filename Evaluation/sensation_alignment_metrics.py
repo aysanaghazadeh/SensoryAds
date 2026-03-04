@@ -154,7 +154,13 @@ def get_LLM_Judge_Score(args, model, description, text):
     }
     prompt = generate_text_generation_prompt(args, data)
     output = model(prompt)
-    score = float(output.split(':')[-1]) / 5
+    try:
+        score = float(output.split(':')[-1]) / 5
+    except Exception as e:
+        # Log the error for this (ID, sensation) and continue
+        print(f"[WARN]sensation '{text}' failed: {e}")
+        # total_logprob, selected_logprobs = float('-inf'), []
+        score = float(0)
     # except Exception as e:
     #     # Log the error for this (ID, sensation) and continue
     #     print(f"[WARN]sensation '{text}' failed: {e}")

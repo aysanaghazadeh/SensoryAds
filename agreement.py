@@ -31,16 +31,15 @@ if __name__ == '__main__':
     get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
-    print('VQAScore')
+    print('LLM Judge')
     metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/VQA_score/IN_InternVL_train_images_total_ALL_description_generation.json'))
+        '/Users/aysanaghazadeh/SensoryAds/LLM_QWenLM/IN_QWenVL_train_images_total_ALL_description_generation.json'))
     # get_first_sensation_accuracy(metrics, human_annotations)
     # get_hierarchy_first_sensation_agreement(metrics, human_annotations)
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
     get_per_class_krippendorff_agreement(metrics, human_annotations)
-    exit()
 
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-40000')
