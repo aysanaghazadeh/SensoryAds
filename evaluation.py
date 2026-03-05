@@ -39,7 +39,7 @@ class SensationEvaluation:
         if 'MLLM' in self.args.evaluation_type:
             from MLLMs.MLLM import MLLM
             self.model = MLLM(args)
-        if 'LLM' in self.args.evaluation_type:
+        elif 'LLM' in self.args.evaluation_type:
             from LLMs.LLM import LLM
             self.model = LLM(args)
 
