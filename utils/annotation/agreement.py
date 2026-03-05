@@ -299,7 +299,7 @@ def get_kappa_agreement(metric_scores, human_annotations):
         human_preferences += human_preferences_per_image
 
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))
-
+    print(f'CI for kappa agreement for {count} images is:', bootstrap_kappa(metrics_preferences, human_preferences))
 
 def get_human_human_kappa_agreement(human1_annotations, human2_annotations):
     human1_preferences = []

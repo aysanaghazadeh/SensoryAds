@@ -360,7 +360,7 @@ class SensationEvaluation:
             
     def evaluate_MLLM_generated(self, args):
         descriptions = pd.read_csv(args.description_file)
-        result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
+        result_filename = f'gen_images_human_annotated_images_{args.MLLM}.json'
         directory_path = os.path.join(args.result_path, 'results', args.project_name, f'{args.evaluation_type}_{args.MLLM}' )
         os.makedirs(directory_path, exist_ok=True)
         result_file = os.path.join(directory_path, result_filename)

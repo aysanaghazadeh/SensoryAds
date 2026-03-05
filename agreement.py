@@ -31,9 +31,42 @@ if __name__ == '__main__':
     get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
-    print('LLM Judge')
+    print('QWenVL-QWenLM Judge')
     metrics = json.load(open(
-        '/Users/aysanaghazadeh/SensoryAds/LLM_QWenLM/IN_QWenVL_train_images_total_ALL_description_generation.json'))
+    '/Users/aysanaghazadeh/SensoryAds/LLM_QWenLM/IN_QWenVL_train_images_total_ALL_description_generation.json'))
+    # get_first_sensation_accuracy(metrics, human_annotations)
+    # get_hierarchy_first_sensation_agreement(metrics, human_annotations)
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('InternVL-QWenLM Judge')
+    metrics = json.load(open(
+    '/Users/aysanaghazadeh/SensoryAds/LLM_QWenLM/IN_InternVL_train_images_total_ALL_description_generation.json'))
+    # get_first_sensation_accuracy(metrics, human_annotations)
+    # get_hierarchy_first_sensation_agreement(metrics, human_annotations)
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('InternVL-LLAMA3_instruct Judge')
+    metrics = json.load(open(
+    '/Users/aysanaghazadeh/SensoryAds/LLM_LLAMA3_instruct/IN_InternVL_train_images_total_ALL_description_generation.json'))
+    # get_first_sensation_accuracy(metrics, human_annotations)
+    # get_hierarchy_first_sensation_agreement(metrics, human_annotations)
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('QWenVL-LLAMA3_instruct Judge')
+    metrics = json.load(open(
+    '/Users/aysanaghazadeh/SensoryAds/LLM_LLAMA3_instruct/IN_QWenVL_train_images_total_ALL_description_generation.json'))
     # get_first_sensation_accuracy(metrics, human_annotations)
     # get_hierarchy_first_sensation_agreement(metrics, human_annotations)
     get_human_score_agreement(metrics, human_annotations)

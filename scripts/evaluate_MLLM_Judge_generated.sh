@@ -1,7 +1,10 @@
 python evaluation.py --config_type=DEFAULT \
 --evaluation_type=MLLM_generated \
---description_file=../experiments/results/SensoryAds/gen_images_human_annotated_images.csv \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20251123_225258_AR_ALL_SD3_ALL_description_generation.csv \
 --evaluation_type=MLLM_generated \
+--test_set_images=20251123_225258/AR_ALL_SD3 \
+--T2I_model=SD3 \
+--Image_type=generated \
 --MLLM=InternVL \
 --MLLM_prompt=MLLM_judge.jinja \
 --resume=True

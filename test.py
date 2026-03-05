@@ -262,7 +262,8 @@ for i, filename in enumerate(filenames):
         per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores = zip(*sorted(zip(per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores)))
         per_file_AIM_scores = gaussian_filter1d(per_file_AIM_scores, sigma=40)
         per_file_persuasion_scores = gaussian_filter1d(per_file_persuasion_scores, sigma=40)
-        plt.plot(per_file_sensation_scores, per_file_AIM_scores, label=filename.split('_')[6], marker=markers[count])
+        
+        plt.plot(per_file_sensation_scores, per_file_AIM_scores, label=filename.split('_')[6] if 'AgenticEditing' not in filename else 'SAGA', marker=markers[count])
         plt.xlabel('SenseScore', fontsize=16)
         plt.ylabel('AIM', fontsize=16)
         # plt.title(filename.split('_')[6])
@@ -313,8 +314,8 @@ for i, filename in enumerate(filenames):
                     p = persuasion[image_url][-1] / 5
                     a = (AIM[image_url][1] - 0.38) / (0.95 - 0.38)
                     e = Evosense[image_file][sensation][-1]
-                    # if e > 1.02:
-                    #     continue
+                    if e > 1.02:
+                        continue
                     if e < minimum:
                         minimum = e
                     if e > maximum:
@@ -327,7 +328,7 @@ for i, filename in enumerate(filenames):
         per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores = zip(*sorted(zip(per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores)))
         per_file_AIM_scores = gaussian_filter1d(per_file_AIM_scores, sigma=40)
         per_file_persuasion_scores = gaussian_filter1d(per_file_persuasion_scores, sigma=40)
-        plt.plot(per_file_sensation_scores, per_file_persuasion_scores, label=filename.split('_')[6], marker=markers[count])
+        plt.plot(per_file_sensation_scores, per_file_persuasion_scores, label=filename.split('_')[6] if 'AgenticEditing' not in filename else 'SAGA', marker=markers[count])
         plt.xlabel('SenseScore', fontsize=16)
         plt.ylabel('Persuasion', fontsize=16)
 plt.title('Persuasion vs SenseScore for different models', fontsize=18)
