@@ -8,7 +8,7 @@ from T2I_models.Flux import Flux
 from T2I_models.QWenImage import QWenImage
 from T2I_models.SD3 import SD3
 from Editing.Qwen_edit_agents import ImageEditingAgent as QwenImageEditEditingAgent
-from Editing.Flux_Kontext_agents import ImageEditingAgent as FluxKontextEditingAgent
+from Editing.FLUX_Kontext_agents import ImageEditingAgent as FluxKontextEditingAgent
 
 class T2IModel(nn.Module):
     def __init__(self, args):
