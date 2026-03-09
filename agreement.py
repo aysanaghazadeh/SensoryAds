@@ -6,6 +6,33 @@ import json
 
 
 if __name__ == '__main__':
+    
+    
+    human_annotations = json.load(open('/Users/aysanaghazadeh/Downloads/gen_images_annotations_parsed.json'))
+    print('LLAMA3-InternVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/SensoryAds/LLM_generated_LLAMA3_instruct/gen_images_human_annotated_images_LLAMA3_instruct.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    # get_krippendorff_agreement(metrics, human_annotations)
+    
+    print('QWenLM-InternVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/SensoryAds/LLM_generated_QWenLM/gen_images_human_annotated_images_QWenLM.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    # get_krippendorff_agreement(metrics, human_annotations)
+    
+    print('InternVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/SensoryAds/MLLM_generated_InternVL/gen_images_human_annotated_images_InternVL.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    # get_krippendorff_agreement(metrics, human_annotations)
+    
+    print('QWenVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/SensoryAds/MLLM_generated_QWenVL/gen_images_human_annotated_images_QWenVL.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    # get_krippendorff_agreement(metrics, human_annotations)
+    exit()
     # args = get_args()
     # human_annotations = json.load(open(args.sensation_annotations))
     # metrics = json.load(open(args.description_file))

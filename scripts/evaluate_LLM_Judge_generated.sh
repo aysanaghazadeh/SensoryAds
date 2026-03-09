@@ -1,45 +1,42 @@
 python evaluation.py --config_type=DEFAULT \
---evaluation_type=MLLM_generated \
+--evaluation_type=LLM_generated \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20250917_185403_AR_ALL_QWenImage_ALL_description_generation.csv \
---test_set_images=20250917_185403/AR_ALL_QWenImage \
 --T2I_model=QWenImage \
 --Image_type=generated \
---MLLM=QWenVL \
---MLLM_prompt=MLLM_judge.jinja \
+--model_type=LLM \
+--LLM=QWenLM \
+--LLM_prompt=LLM_judge.jinja \
 --resume=True
 
 python evaluation.py \
 --config_type=DEFAULT \
---evaluation_type=MLLM_generated \
+--evaluation_type=LLM_generated \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20251123_225258_AR_ALL_SD3_ALL_description_generation.csv \
---evaluation_type=MLLM_generated \
---test_set_images=20251123_225258/AR_ALL_SD3 \
 --T2I_model=SD3 \
 --Image_type=generated \
---MLLM=QWenVL \
---MLLM_prompt=MLLM_judge.jinja \
+--model_type=LLM \
+--LLM=LLAMA3_instruct \
+--LLM_prompt=LLM_judge.jinja \
 --resume=True
 
 python evaluation.py \
 --config_type=DEFAULT \
---evaluation_type=MLLM_generated \
+--evaluation_type=LLM_generated \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation.csv \
---evaluation_type=MLLM_generated \
---test_set_images=20250916_122348/AR_ALL_Flux \
 --T2I_model=FLUX \
 --Image_type=generated \
---MLLM=InternVL \
---MLLM_prompt=MLLM_judge.jinja \
+--model_type=LLM \
+--LLM=QWenLM \
+--LLM_prompt=LLM_judge.jinja \
 --resume=True
 
 python evaluation.py \
 --config_type=DEFAULT \
---evaluation_type=MLLM_generated \
+--evaluation_type=LLM_generated \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation.csv \
---evaluation_type=MLLM_generated \
---test_set_images=20250916_220717/AR_ALL_AuraFlow \
 --T2I_model=AuraFlow \
 --Image_type=generated \
---MLLM=InternVL \
---MLLM_prompt=MLLM_judge.jinja \
+--model_type=LLM \
+--LLM=LLAMA3_instruct \
+--LLM_prompt=LLM_judge.jinja \
 --resume=True
