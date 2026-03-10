@@ -111,20 +111,23 @@ class SharedMessage:
 class ImageEditingAgent:
     def __init__(self, args):
         self.args = args
-        self.sensation_options = None
-        quantization_config = PipelineQuantizationConfig(
-            quant_backend="bitsandbytes_4bit",
-            quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
-            components_to_quantize=["text_encoder"],
-        )
-        self.pipe = QwenImageEditPipeline.from_pretrained(
-            "Qwen/Qwen-Image-Edit", 
-            torch_dtype=torch.bfloat16,
-            quantization_config=quantization_config,
-            device_map='balanced'
-        )
-        # self.pipe.load_lora_weights("peteromallet/Qwen-Image-Edit-InStyle", 
-        #                             weight_name="InStyle-0.5.safetensors")
+        '''
+        change the pipeline to the editing model
+        '''
+        # self.sensation_options = None
+        # quantization_config = PipelineQuantizationConfig(
+        #     quant_backend="bitsandbytes_4bit",
+        #     quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
+        #     components_to_quantize=["text_encoder"],
+        # )
+        # self.pipe = QwenImageEditPipeline.from_pretrained(
+        #     "Qwen/Qwen-Image-Edit", 
+        #     torch_dtype=torch.bfloat16,
+        #     quantization_config=quantization_config,
+        #     device_map='balanced'
+        # )
+        self.pipe = None
+        
         
         print("pipeline loaded")
         
@@ -267,6 +270,9 @@ class ImageEditingAgent:
 
 
     def image_editing(self, prompt, control_image, group_chat):
+        '''
+        change this according to the editing model.
+        '''
         seed = 0
         with torch.inference_mode():
             image = self.pipe(
@@ -784,7 +790,7 @@ CRITICAL REQUIREMENTS:
         elif getattr(self.args, "find_sensation", False):
             wandb.init(project="agentic-sensation-finding-image-generation", name=f"{filename}-{target_sensation_initial}")
         else:  
-            wandb.init(project="agentic-image-genetation_QwenImageEdit", name=f"{filename}-{target_sensation_initial}")
+            wandb.init(project=f"agentic-image-genetation_{self.args.Editing_model}", name=f"{filename}-{target_sensation_initial}")
         agent_responses_table = wandb.Table(columns=["step", "round", "agent", "response"])
         if generated_image is not None:
             image = generated_image
