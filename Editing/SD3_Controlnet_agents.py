@@ -128,7 +128,7 @@ class ImageEditingAgent:
             "InstantX/SD3-Controlnet-Canny", torch_dtype=torch.float16)
         self.pipe = StableDiffusion3ControlNetPipeline.from_pretrained(
             "stabilityai/stable-diffusion-3-medium-diffusers",
-            controlnet=controlnet,
+            controlnet=controlnet,  
             torch_dtype=torch.float16,
             quantization_config=quantization_config,
             device_map="balanced"
