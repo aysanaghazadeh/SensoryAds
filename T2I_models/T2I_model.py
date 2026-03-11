@@ -11,7 +11,7 @@ from Editing.Qwen_edit_agents import ImageEditingAgent as QwenImageEditEditingAg
 from Editing.FLUX_Kontext_agents import ImageEditingAgent as FluxKontextEditingAgent
 #change this place holder name to actual name
 from Editing.Editing_model_PlaceHolder_agents import ImageEditingAgent as EditingModelPlaceHolderEditingAgent
-
+from Editing.SD3_Controlnet_agents import ImageEditingAgent as SD3ControlnetEditingAgent
 class T2IModel(nn.Module):
     def __init__(self, args):
         super(T2IModel, self).__init__()
@@ -32,8 +32,8 @@ class T2IModel(nn.Module):
             elif args.Editing_model == 'QwenImageEdit':
                 self.model = QwenImageEditEditingAgent(args)
             #change this place holder name to actual name
-            elif args.Editing_model == 'EditingModelPlaceHolder':
-                self.model = EditingModelPlaceHolderEditingAgent(args)
+            elif args.Editing_model == 'SD3ControlnetEdit':
+                self.model = SD3ControlnetEditingAgent(args)
             else:
                 raise ValueError(f'Editing model {args.Editing_model} not supported')
         else:
