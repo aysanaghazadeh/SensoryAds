@@ -120,7 +120,7 @@ def generate_images(args):
                     generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20260224_024108/AR_ALL_QWenImage', sensation, filename))
                     # generated_image = Image.new("RGB", (1024, 1024), (255, 255, 255))
                 elif args.Editing_model == 'SD3ControlnetEdit':
-                    generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20261024_024214/AR_ALL_SD3Controlnet', sensation, filename))
+                    generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20251123_225258/AR_ALL_SD3', sensation, filename))
                 else:
                     raise ValueError(f'Editing model {args.Editing_model} not supported')
                 image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
