@@ -131,7 +131,7 @@ class ImageEditingAgent:
             controlnet=controlnet,  
             torch_dtype=torch.float16,
             quantization_config=quantization_config,
-            device_map="auto"
+            device_map="balanced"
             )
 
         
