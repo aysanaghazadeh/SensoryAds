@@ -194,7 +194,7 @@ class ImageEditingAgent:
         self.group_chat = GroupChat(
             agents=agents,
             messages=[],
-            max_round=15,
+            max_round=20,
             speaker_selection_method=self.custom_speaker_selection,
         )
 
