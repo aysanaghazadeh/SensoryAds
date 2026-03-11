@@ -120,9 +120,10 @@ class ImageEditingAgent:
         '''
         # self.sensation_options = None
         quantization_config = PipelineQuantizationConfig(
-            quant_backend="bitsandbytes_8bit",
-            quant_kwargs={
-                "load_in_8bit": True})
+                                    quant_backend="bitsandbytes_8bit",
+                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16},
+                                    components_to_quantize=["transformer", "text_encoder_2"],
+                                )
         controlnet = SD3ControlNetModel.from_pretrained(
             "InstantX/SD3-Controlnet-Canny", torch_dtype=torch.float16).to("cuda")
         self.pipe = StableDiffusion3ControlNetPipeline.from_pretrained(
@@ -297,8 +298,6 @@ class ImageEditingAgent:
             image = self.pipe(
                 control_image=edges_pil,
                 prompt=prompt,
-                guidance_scale=7.0,
-                num_inference_steps=28,
                 controlnet_conditioning_scale=0.4,
             ).images[0]
         self.shared_messages.images.append(image)
