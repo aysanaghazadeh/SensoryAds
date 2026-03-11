@@ -296,7 +296,7 @@ class ImageEditingAgent:
 
         with torch.inference_mode():
             image = self.pipe(
-                image=edges_pil,
+                control_image=edges_pil,
                 prompt=prompt,
                 guidance_scale=7.0,
                 num_inference_steps=28,
