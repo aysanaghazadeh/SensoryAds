@@ -125,13 +125,13 @@ class ImageEditingAgent:
             components_to_quantize=["transformer", "text_encoder", "text_encoder_2", "text_encoder_3"],
         )
         controlnet = SD3ControlNetModel.from_pretrained(
-            "InstantX/SD3-Controlnet-Canny", torch_dtype=torch.float16)
+            "InstantX/SD3-Controlnet-Canny", torch_dtype=torch.float16).to("cuda")
         self.pipe = StableDiffusion3ControlNetPipeline.from_pretrained(
             "stabilityai/stable-diffusion-3-medium-diffusers",
             controlnet=controlnet,  
             torch_dtype=torch.float16,
             quantization_config=quantization_config,
-            device_map="balanced"
+            device_map="auto"
             )
 
         
