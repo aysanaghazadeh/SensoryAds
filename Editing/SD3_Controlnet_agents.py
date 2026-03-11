@@ -137,7 +137,7 @@ class ImageEditingAgent:
         
         
         # self.pipe.to("cuda")
-        self.pipe.enable_model_cpu_offload()
+        # self.pipe.enable_model_cpu_offload()
         
         
         print("pipeline loaded")
