@@ -114,6 +114,7 @@ def get_descriptions(args, images):
         with open(description_file, 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(pair)
+            print('-' * 80)
 
     return pd.read_csv(description_file)
 
