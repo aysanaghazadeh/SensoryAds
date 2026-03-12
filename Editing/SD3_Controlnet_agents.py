@@ -145,6 +145,7 @@ class ImageEditingAgent:
         self.planner_agent = MultimodalConversableAgent(
             name="planner",
             system_message=PLANNER_SYSTEM_PROMPT,
+            human_input_mode="NEVER",
             max_consecutive_auto_reply=10,
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 512},
@@ -153,6 +154,7 @@ class ImageEditingAgent:
         self.critic_agent = MultimodalConversableAgent(
             name="critic",
             system_message=CRITIC_SYSTEM_PROMPT,
+            human_input_mode="NEVER",
             max_consecutive_auto_reply=10,
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 75},  # Enough for the three strings but not too much
@@ -161,6 +163,7 @@ class ImageEditingAgent:
         self.text_refiner_agent = ConversableAgent(
             name="text_refiner",
             system_message=TEXT_REFINER_SYSTEM_PROMPT,
+            human_input_mode="NEVER",
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 512},
         )
@@ -200,6 +203,7 @@ class ImageEditingAgent:
 
         self.group_chat_manager = GroupChatManager(
             groupchat=self.group_chat,
+            human_input_mode="NEVER",
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}]},
         )
 
