@@ -130,13 +130,12 @@ class ImageEditingAgent:
             "stabilityai/stable-diffusion-3-medium-diffusers",
             controlnet=controlnet,  
             torch_dtype=torch.float16,
-            quantization_config=quantization_config,
-            device_map="balanced"
+            quantization_config=quantization_config
             )
 
         
         
-        # self.pipe.to("cuda")
+        self.pipe.to("cuda")
         # self.pipe.enable_model_cpu_offload()
         
         
