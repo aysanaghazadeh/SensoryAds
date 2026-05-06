@@ -32,7 +32,6 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     # get_krippendorff_agreement(metrics, human_annotations)
-    exit()
     # args = get_args()
     # human_annotations = json.load(open(args.sensation_annotations))
     # metrics = json.load(open(args.description_file))
@@ -50,12 +49,10 @@ if __name__ == '__main__':
     metrics = json.load(open(
         '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_data_annotation_LLAMA3_instruct55000.json'))
     print(len(metrics))
-    get_first_sensation_accuracy(metrics, human_annotations)
-    get_hierarchy_first_sensation_agreement(metrics, human_annotations)
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('QWenVL-QWenLM Judge')
@@ -66,7 +63,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
     
     print('-' * 100)
     print('InternVL-QWenLM Judge')
@@ -77,7 +74,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
     
     print('-' * 100)
     print('InternVL-LLAMA3_instruct Judge')
@@ -88,7 +85,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
     
     print('-' * 100)
     print('QWenVL-LLAMA3_instruct Judge')
@@ -99,7 +96,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-40000')
@@ -109,7 +106,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-30000')
@@ -118,7 +115,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-25000')
@@ -129,7 +126,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-21000')
@@ -139,7 +136,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-QWenLM-InternVL')
@@ -148,7 +145,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-LLAMA3-QWenVL')
@@ -157,7 +154,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-QWenLM-QWenVL')
@@ -166,7 +163,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-QWenLM-InternVL_Zeroshot')
@@ -174,7 +171,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL_Zeroshot')
@@ -182,7 +179,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('VQAScore')
@@ -190,7 +187,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('PickScore')
@@ -198,7 +195,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('Image-Reward')
@@ -206,7 +203,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('CLIP-score')
@@ -214,7 +211,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-' * 100)
     print('MLLM - InternVL')
@@ -222,7 +219,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
 
     print('-'*100)
     print('MLLM - QWenVL')
@@ -230,4 +227,4 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)

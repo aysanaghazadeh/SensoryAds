@@ -17,7 +17,7 @@ def get_model(args):
     model = prepare_model_for_kbit_training(model)
     peft_config = LoraConfig(inference_mode=False,
                              r=8,
-                             lora_alpha=32,
+                             lora_alpha=16,
                              lora_dropout=0.1,
                              peft_type=TaskType.CAUSAL_LM)
     model = get_peft_model(model, peft_config).to(device=args.device)
@@ -61,7 +61,7 @@ def train(args):
     cpo_args = get_training_args(args)
     model, tokenizer = get_model(args)
     cpo_config = CPOConfig(beta=0.1,
-                           output_dir=args.model_path+f'/my_{args.LLM}',)
+                           output_dir=args.model_path+f'/myCPO_{args.LLM}',)
     train_dataset = get_train_LLM_CPO_Dataloader(args)
     tmp = train_dataset.train_test_split(test_size=0.1)
     train_dataset = tmp["train"]
@@ -76,5 +76,10 @@ def train(args):
     )
 
     # train and save the model
-    trainer.train()
+    if args.model_checkpoint is not None:
+        print('loading checkpoint')
+        trainer.train(resume_from_checkpoint=args.model_path+f'/my_HierarchicalCPO_{args.LLM}/checkpoint-{args.model_checkpoint}')
+    else:
+        print('training from scratch')
+        trainer.train()
     trainer.save_model(cpo_args.output_dir)

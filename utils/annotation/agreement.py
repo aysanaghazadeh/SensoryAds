@@ -145,8 +145,6 @@ def get_human_score_agreement(metric_scores, human_annotations):
         count += 1
         if count < 40:
             continue
-        if count > 140:
-            break
         human_scores_per_image = get_human_scores_per_image(human_annotations, image_url, sensation_list)
         metrics_scores_per_image = get_scores_per_image(metric_scores, image_url, sensation_list)
         
@@ -188,8 +186,6 @@ def get_krippendorff_agreement(metric_scores, human_annotations):
         count += 1
         if count < 40:
             continue
-        if count > 140:
-            break
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
@@ -291,15 +287,12 @@ def get_kappa_agreement(metric_scores, human_annotations):
         count += 1
         if count < 40:
             continue
-        if count > 140:
-            break
-
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
 
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))
-    print(f'CI for kappa agreement for {count} images is:', bootstrap_kappa(metrics_preferences, human_preferences))
+    # print(f'CI for kappa agreement for {count} images is:', bootstrap_kappa(metrics_preferences, human_preferences))
 
 def get_human_human_kappa_agreement(human1_annotations, human2_annotations):
     human1_preferences = []
