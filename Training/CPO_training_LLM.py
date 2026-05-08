@@ -78,7 +78,7 @@ def train(args):
     # train and save the model
     if args.model_checkpoint is not None:
         print('loading checkpoint')
-        trainer.train(resume_from_checkpoint=args.model_path+f'/my_HierarchicalCPO_{args.LLM}/checkpoint-{args.model_checkpoint}')
+        trainer.train(resume_from_checkpoint=args.model_path+f'/my_{args.LLM}/checkpoint-{args.model_checkpoint}')
     else:
         print('training from scratch')
         trainer.train()
