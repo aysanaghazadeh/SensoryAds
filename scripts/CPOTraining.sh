@@ -4,4 +4,5 @@ python train.py --config_type=DEFAULT \
 --LLM=LLAMA3_instruct \
 --sensation_annotations=train/sensation_annotations_parsed.json \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_train_images_total_ALL_description_generation.csv
+--model_checkpoint=18000 \
 
