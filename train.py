@@ -1,5 +1,5 @@
 from configs.training_config import get_args
-from Training.SFT_train_LLM import train as SFT_train_LLM
+from Training.SFT_training_LLM import train as SFT_train_LLM
 from Training.CPO_training_LLM import train as CPO_training_LLM
 from Training.Hierarchical_CPO_training_LLM import train as HierarchicalCPO_training_LLM
 from Training.SD3_training import train as SD3_training
