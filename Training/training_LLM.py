@@ -1,13 +1,11 @@
 from utils.data.CPO_LLM_data import get_train_LLM_CPO_Dataloader
 from configs.training_config import get_args
-from transformers import DataCollatorForLanguageModeling
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
 import torch
 from peft import get_peft_model, LoraConfig, TaskType, prepare_model_for_kbit_training
-from trl import CPOConfig, CPOTrainer, ModelConfig, get_peft_config
+from trl import SFTConfig, SFTTrainer
 import os
-import transformers
 from LLMs.LLM import LLM
+
 
 def get_model(args):
 
@@ -32,9 +30,18 @@ def get_model(args):
     return model, tokenizer
 
 
+def cpo_rows_to_sft(dataset):
+    """Turn pairwise CPO rows into plain LM text using the preferred (chosen) completion."""
+    return dataset.map(
+        lambda ex: {"text": ex["chosen"]},
+        remove_columns=[c for c in dataset.column_names if c != "text"],
+    )
+
+
 def get_training_args(args):
-    training_args = CPOConfig(
-        output_dir=args.model_path+f'/myCPO_{args.LLM}',
+    out = args.model_path + f"/mySFT_{args.LLM}"
+    training_args = SFTConfig(
+        output_dir=out,
         remove_unused_columns=False,
         per_device_train_batch_size=args.batch_size,
         gradient_checkpointing=True,
@@ -48,38 +55,37 @@ def get_training_args(args):
         eval_strategy="steps",
         eval_steps=1000,
         do_eval=True,
-        label_names=["input_ids", "labels", "attention_mask"],
         report_to="none",
-        logging_dir=os.path.join(args.results, 'logs')
+        logging_dir=os.path.join(args.results, "logs"),
+        dataset_text_field="text",
     )
-    if not os.path.exists(os.path.join(args.results, 'logs')):
-        os.makedirs(os.path.join(args.results, 'logs'))
+    if not os.path.exists(os.path.join(args.results, "logs")):
+        os.makedirs(os.path.join(args.results, "logs"))
     return training_args
 
 
 def train(args):
-    cpo_args = get_training_args(args)
+    sft_args = get_training_args(args)
     model, tokenizer = get_model(args)
-    cpo_config = CPOConfig(beta=0.1,
-                           output_dir=args.model_path+f'/myCPO_{args.LLM}',)
-    train_dataset = get_train_LLM_CPO_Dataloader(args, tokenizer=tokenizer)
-    tmp = train_dataset.train_test_split(test_size=0.1)
-    train_dataset = tmp["train"]
-    eval_dataset = tmp["test"]
-    data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
-    trainer = CPOTrainer(
-        model,
-        args=cpo_args,
+    raw = get_train_LLM_CPO_Dataloader(args, tokenizer=tokenizer)
+    tmp = raw.train_test_split(test_size=0.1)
+    train_dataset = cpo_rows_to_sft(tmp["train"])
+    eval_dataset = cpo_rows_to_sft(tmp["test"])
+    trainer = SFTTrainer(
+        model=model,
+        args=sft_args,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
     )
 
-    # train and save the model
     if args.model_checkpoint is not None:
-        print('loading checkpoint')
-        trainer.train(resume_from_checkpoint=args.model_path+f'/myCPO_{args.LLM}/checkpoint-{args.model_checkpoint}')
+        print("loading checkpoint")
+        trainer.train(
+            resume_from_checkpoint=args.model_path
+            + f"/mySFT_{args.LLM}/checkpoint-{args.model_checkpoint}"
+        )
     else:
-        print('training from scratch')
+        print("training from scratch")
         trainer.train()
-    trainer.save_model(cpo_args.output_dir)
+    trainer.save_model(sft_args.output_dir)
