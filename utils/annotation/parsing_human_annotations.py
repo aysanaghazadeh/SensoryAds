@@ -1,4 +1,11 @@
 import pandas as pd
+import sys
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATIONS_PARENT_MAP
 import json
 # from configs.inference_config import get_args
@@ -157,7 +164,7 @@ if __name__ == '__main__':
     # sensation_parent_map = get_SENSATIONS_PARENT_MAP(SENSATION_HIERARCHY)
     # print(sensation_parent_map)
     # annotation_file = args.description_file
-    annotation_file = '/Users/aysanaghazadeh/Downloads/human_human_data.csv'
+    annotation_file = '/Users/aysanaghazadeh/Downloads/ExtendedRealAdAnnotationsClean.csv'
     annotations = pd.read_csv(annotation_file).values
-    # parse_sensation_annotations(annotation_file)
-    human_score1, human_score2 = get_human_human_annotations(annotations, SENSATIONS_PARENT_MAP.keys())
+    parse_sensation_annotations(annotation_file)
+    # human_score1, human_score2 = get_human_human_annotations(annotations, SENSATIONS_PARENT_MAP.keys())

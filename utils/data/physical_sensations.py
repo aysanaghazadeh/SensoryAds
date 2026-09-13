@@ -59,7 +59,7 @@ SENSATION_HIERARCHY = {
             ],
             'Chemical and Pungent Smell':[
                 'Medicine and Antiseptic Smell',
-                'Cleaning Products and Chemicals Smells',
+                'Cleaning Products and Chemicals Smell',
                 'Pungent Smell',
                 'Sickening Smell'
             ]
@@ -169,7 +169,7 @@ SENSATIONS_PARENT_MAP = {'Touch': 'root',
                          'Natural Greenery Smell': 'Earthy and Musky Smell',
                          'Chemical and Pungent Smell': 'Smell',
                          'Medicine and Antiseptic Smell': 'Chemical and Pungent Smell',
-                         'Cleaning Products and Chemicals Smells': 'Chemical and Pungent Smell',
+                         'Cleaning Products and Chemicals Smell': 'Chemical and Pungent Smell',
                          'Pungent Smell': 'Chemical and Pungent Smell',
                          'Sickening Smell': 'Chemical and Pungent Smell',
                          'Taste': 'root',

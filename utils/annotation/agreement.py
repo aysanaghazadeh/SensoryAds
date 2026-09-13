@@ -3,7 +3,7 @@ import numpy as np
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP, SENSATION_HIERARCHY
 import krippendorff
 from sklearn.metrics import cohen_kappa_score
-
+import pandas as pd
 def compute_pearson_correlation(scores, human_annotations):
     correlation = np.corrcoef(scores, human_annotations)[0, 1]
     return correlation
@@ -58,18 +58,32 @@ def get_preference_per_image(human_annotations, metric_annotations, sensation_li
                 metric_preferences.append(2)
     return human_preferences, metric_preferences
 
-
+ERRORs = {}
+parent_error_count = {}
 def get_human_human_preference_per_image(human1_annotations, human2_annotations, sensation_list, image_url):
     human2_preferences = []
     human1_preferences = []
 
     for sensation1 in sensation_list:
         for sensation2 in sensation_list:
+            level_parents = ['root']
+            if SENSATIONS_PARENT_MAP[sensation1] not in level_parents or SENSATIONS_PARENT_MAP[sensation2] not in level_parents:
+                continue
+            if sensation1.lower() == sensation2.lower():
+                continue
+            if 'sensation_scores' in human1_annotations[image_url]:
+                human1_annotations[image_url] = human1_annotations[image_url]['sensation_scores']
+            if 'sensation_scores' in human2_annotations[image_url]:
+                human2_annotations[image_url] = human2_annotations[image_url]['sensation_scores']
             if (sensation1 == sensation2
                     or sensation1.lower() not in human1_annotations[image_url]
                     or sensation1.lower() not in human2_annotations[image_url]
                     or sensation2.lower() not in human2_annotations[image_url]
                     or sensation2.lower() not in human1_annotations[image_url]) :
+                print(image_url, sensation1.lower(), sensation2.lower())
+                print(human1_annotations[image_url])
+                print('-' * 100)
+                print(human2_annotations[image_url])
                 continue
             human1_score_sensation1 = human1_annotations[image_url][sensation1.lower()]
             human1_score_sensation2 = human1_annotations[image_url][sensation2.lower()]
@@ -91,6 +105,20 @@ def get_human_human_preference_per_image(human1_annotations, human2_annotations,
                 human2_preferences.append(1)
             else:
                 human2_preferences.append(2)
+            if human1_preferences[-1] != human2_preferences[-1] and SENSATIONS_PARENT_MAP[sensation1] == SENSATIONS_PARENT_MAP[sensation2]:
+                ERRORs[image_url] = [sensation1, sensation2, human1_preferences[-1], human2_preferences[-1]]
+                # if SENSATIONS_PARENT_MAP[sensation1] not in parent_error_count:
+                #     parent_error_count[SENSATIONS_PARENT_MAP[sensation1]] = 1
+                # else:
+                #     parent_error_count[SENSATIONS_PARENT_MAP[sensation1]] += 1
+                if sensation1 not in parent_error_count:
+                    parent_error_count[sensation1] = 1
+                else:
+                    parent_error_count[sensation1] += 1
+                if sensation2 not in parent_error_count:
+                    parent_error_count[sensation2] = 1
+                else:
+                    parent_error_count[sensation2] += 1
     return human1_preferences, human2_preferences
 
 
@@ -143,8 +171,8 @@ def get_human_score_agreement(metric_scores, human_annotations):
         if image_url not in human_annotations:
             continue
         count += 1
-        if count < 40:
-            continue
+        # if count < 40:
+        #     continue
         human_scores_per_image = get_human_scores_per_image(human_annotations, image_url, sensation_list)
         metrics_scores_per_image = get_scores_per_image(metric_scores, image_url, sensation_list)
         
@@ -184,8 +212,8 @@ def get_krippendorff_agreement(metric_scores, human_annotations):
         if image_url not in human_annotations:
             continue
         count += 1
-        if count < 40:
-            continue
+        # if count < 40:
+        #     continue
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
@@ -276,46 +304,55 @@ def bootstrap_kappa(rater1, rater2, n_boot=10000, ci=95, random_state=None, **ka
     return k_obs, (lower, upper)
 
 
+def get_sensations(human_annotations, image_url):
+    sensation_scores= human_annotations[image_url]['sensation_scores']
+    sensations = [sensation for sensation in sensation_scores if sensation_scores[sensation] > 0]
+    return sensations
+
+
 def get_kappa_agreement(metric_scores, human_annotations):
     human_preferences = []
     metrics_preferences = []
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
+    descriptions = pd.read_csv('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/IN_InternVL_train_images_total_ALL_description_generation.csv')
     for image_url in metric_scores:
         if image_url not in human_annotations:
             continue
-        count += 1
-        if count < 100:
+        # if count < 100:
+        #     continue
+        description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0]
+        sensations = get_sensations(human_annotations, image_url)
+        sensations_splitted = []
+        for sensation in sensations:
+            sensations_splitted += sensation.split(' ')
+        if any(sensation.lower() in description.lower() for sensation in sensations):
             continue
+        count += 1
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
-
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))
-    print(f'CI for kappa agreement for {count} images is:', bootstrap_kappa(metrics_preferences, human_preferences))
+    # print(f'CI for kappa agreement for {count} images is:', bootstrap_kappa(metrics_preferences, human_preferences))
 
 def get_human_human_kappa_agreement(human1_annotations, human2_annotations):
     human1_preferences = []
     human2_preferences = []
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
-    image_urls_redundunt = ['0/122910.jpg', '0/119030.jpg', '0/120020.jpg']
     for image_url in human1_annotations:
-        if image_url not in human2_annotations or image_url in image_urls_redundunt:
+        if image_url not in human2_annotations:
+            print(image_url)
             continue
         count += 1
-        # if count < 40:
-        #     continue
-        # if count > 140:
-        #     break
 
         human1_preferences_per_image, human2_preferences_per_image = get_human_human_preference_per_image(human1_annotations, human2_annotations, sensation_list, image_url)
         human1_preferences += human1_preferences_per_image
         human2_preferences += human2_preferences_per_image
-
-
+    print(len(human1_preferences), len(human2_preferences))
     print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(human1_preferences, human2_preferences))
-
+    print(ERRORs)
+    print(parent_error_count)
 
 def get_first_sensation_accuracy(metric_scores, human_annotations):
     correct_count = 0

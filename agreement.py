@@ -1,14 +1,38 @@
 # from configs.inference_config import get_args
+import json
+import warnings
+
 import numpy as np
 
+warnings.filterwarnings("ignore")
+
 from utils.annotation.agreement import get_human_score_agreement, get_kappa_agreement, get_krippendorff_agreement, get_per_class_krippendorff_agreement, get_human_human_kappa_agreement, get_human_human_score_agreement, get_first_sensation_accuracy, get_hierarchy_first_sensation_agreement
-import json
 
 
 if __name__ == '__main__':
     
+    human_annotations = json.load(open('../Data/PittAd/train/human_human_datahuman_1_parsed.json'))
     
-    human_annotations = json.load(open('/Users/aysanaghazadeh/Downloads/gen_images_annotations_parsed.json'))
+    print('-' * 100)
+    print('Human-Human Agreement')
+    human_local_annotations = json.load(open(
+        '../Data/PittAd/train/human_human_datahuman_2_parsed.json'))
+    print(len(human_local_annotations))
+    get_human_human_kappa_agreement(human_local_annotations, human_annotations)
+    # get_human_human_score_agreement(human_local_annotations, human_annotations)
+    
+    human_annotations = json.load(open('../Data/PittAd/train/sensation_annotations_parsed.json'))
+    
+    print('-' * 100)
+    print('Human-Human Agreement')
+    human_local_annotations = json.load(open(
+        '../Data/PittAd/train/human_agreement_local_annotation_parsed.json'))
+    print(len(human_local_annotations))
+    get_human_human_kappa_agreement(human_local_annotations, human_annotations)
+    # get_human_human_score_agreement(human_local_annotations, human_annotations)
+    
+    
+  
     print('LLAMA3-InternVL')
     metrics = json.load(open('/Users/aysanaghazadeh/SensoryAds/LLM_generated_LLAMA3_instruct/gen_images_human_annotated_images_LLAMA3_instruct.json'))
     get_human_score_agreement(metrics, human_annotations)
@@ -45,9 +69,46 @@ if __name__ == '__main__':
     # get_human_human_score_agreement(human_1_annotations, human_2_annotations)
 
     print('-' * 100)
+    print('Evosense-LLAMA3-InternVL-5000')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_LLAMA3_instruct5000.json'))
+    print(len(metrics))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('Evosense-LLAMA3-InternVL-10000')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_LLAMA3_instruct10000.json'))
+    print(len(metrics))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('Evosense-LLAMA3-InternVL-15000')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_LLAMA3_instruct15000.json'))
+    print(len(metrics))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
     print('Evosense-LLAMA3-InternVL-20000')
     metrics = json.load(open(
         '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_data_annotation_LLAMA3_instruct55000.json'))
+    print(len(metrics))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    # get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('Evosense-LLAMA3-InternV-SFT-OnlyL-19000')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_mySFT_LLAMA3_instruct19000.json'))
     print(len(metrics))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
