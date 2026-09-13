@@ -7,6 +7,6 @@ python inference.py \
 --model_type=MLLM \
 --MLLM=InternVL \
 --description_goal=image_descriptor \
---test_set_images=../experiments/generated_images/SensoryAds/20260212_004312/AR_ALL_DALLE3 \
---test_set_QA=../experiments/results/SensoryAds/AR_ALL_DALLE3_20260212_004312.csv \
+--test_set_images=../Data/PittAd/train_images_total \
+--test_set_QA=../Data/PittAd/train/ExtendedRealAdAnnotationsClean_list.csv \
 --resume=True
