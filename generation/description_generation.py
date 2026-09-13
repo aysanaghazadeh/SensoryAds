@@ -156,8 +156,8 @@ def generate_description(args):
     #         for i in range(10):
     #             test_images.append(f'{sensation}/{str(i)}.png')
     # else:
-    if args.Image_type == 'generated':
-        test_images = pd.read_csv(args.test_set_QA).generated_image_url.values
+    # if args.Image_type == 'generated':
+    test_images = pd.read_csv(args.test_set_QA).generated_image_url.values
     # else:
     #     test_images = get_test_data(args)
     if args.description_goal == 'image_descriptor':
