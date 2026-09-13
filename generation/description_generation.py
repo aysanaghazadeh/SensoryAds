@@ -30,7 +30,7 @@ def get_llm(args):
 def get_single_description(args, image_url, pipe):
     if args.Image_type == 'generated':
         # image = Image.open(image_url)
-        image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
+        image = Image.open(os.path.join(args.test_set_images, image_url))
     else:
         image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
     env = Environment(loader=FileSystemLoader(args.prompt_path))
