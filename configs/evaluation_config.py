@@ -179,6 +179,12 @@ def parse_args():
                         default=False,
                         type=bool,
                         help='True if continuing the process from saved file.')
+    parser.add_argument('--evaluate_other_evoked_sensations',
+                        default=False,
+                        type=bool,
+                        help='True if you also want to score every sensation that has a score higher than 0 for '
+                             'the image in data_path + test_set_sensation (excluding the sensation actually used '
+                             'to generate the image), and report the average of those scores.')
     parser.add_argument('--evaluation_type',
                         default='sensation_extraction',
                         type=str,

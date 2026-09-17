@@ -78,9 +78,9 @@ if __name__ == '__main__':
     get_krippendorff_agreement(metrics, human_annotations)
     
     print('-' * 100)
-    print('Evosense-LLAMA3-InternVL-70000')
+    print('Evosense-LLAMA3-InternVL-90000')
     metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_LLAMA3_instruct70000.json'))
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_LLAMA3_instruct90000.json'))
     print(len(metrics))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)

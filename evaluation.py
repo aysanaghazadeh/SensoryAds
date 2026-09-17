@@ -127,6 +127,8 @@ class SensationEvaluation:
             else:
                 print(f'{result_file} does not exist and will be created.')
             scores = {}
+        if args.evaluate_other_evoked_sensations:
+            sensation_annotations = json.load(open(os.path.join(args.data_path, args.test_set_sensation)))
         for index, row in descriptions.iterrows():
             image_url = '/'.join(row.ID.split('/')[-2:])
             sensation = row.ID.split('/')[0]
@@ -135,13 +137,28 @@ class SensationEvaluation:
             description = row.description.split('Q2:')[-1]
             if image_url not in scores:
                 scores[image_url] = {}
-            if image_url in scores and sensation in scores[image_url]:
-                continue
-            total_logprob, _, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model, description,
-                                                                                     sensation)
-            average_logprob = (average_logprob - (-38.970709800720215)) / (-2.043711707713487 - (
-                -38.970709800720215))  # the values are to normalize the log probabilities based on the train images.
-            scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
+
+            other_sensations = []
+            if args.evaluate_other_evoked_sensations:
+                sensation_scores = sensation_annotations.get(image_url, {}).get('sensation_scores', {})
+                other_sensations = [s for s, sc in sensation_scores.items()
+                                    if sc > 0 and s.lower() != sensation.lower()]
+
+            for target_sensation in [sensation] + other_sensations:
+                if target_sensation in scores[image_url]:
+                    continue
+                total_logprob, _, last_token_logprob, average_logprob = get_EvoSense_LLM(args, self.model,
+                                                                                         description,
+                                                                                         target_sensation)
+                average_logprob = (average_logprob - (-38.970709800720215)) / (-2.043711707713487 - (
+                    -38.970709800720215))  # the values are to normalize the log probabilities based on the train images.
+                scores[image_url][target_sensation] = [total_logprob, last_token_logprob, average_logprob]
+
+            if other_sensations:
+                other_sensation_averages = [scores[image_url][s][2] for s in other_sensations
+                                           if s in scores[image_url]]
+                scores[image_url]['other_sensations_average'] = sum(other_sensation_averages) / len(other_sensation_averages)
+
             print(image_url)
             print(json.dumps(scores[image_url], indent=4))
             json.dump(scores, open(result_file, 'w'))
