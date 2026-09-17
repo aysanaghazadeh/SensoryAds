@@ -20,7 +20,7 @@ class AuraFlow(nn.Module):
             # variant="fp16",
             quantization_config=quantization_config
         )
-        self.pipeline.vae.to(torch.float16)
+        self.pipeline.vae.to(torch.float32)
 
     def forward(self, prompt, seed=None):
         seed = seed if seed is not None else 0
