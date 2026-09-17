@@ -94,6 +94,12 @@ def parse_args():
     parser.add_argument('--with_physical_sensation',
                         type=bool,
                         default=True)
+    parser.add_argument('--use_opposite_sensation',
+                        type=bool,
+                        default=False,
+                        help='True if you want to target the opposite sensation (from SENSATION_OPPOSITES in '
+                             'utils/data/physical_sensations.py) instead of the annotated one when generating '
+                             'the image. Sensations with no entry (or no opposite) in that map are skipped.')
     parser.add_argument('--find_sensation',
                         type=bool,
                         default=False,

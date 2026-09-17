@@ -169,7 +169,7 @@ SENSATIONS_PARENT_MAP = {'Touch': 'root',
                          'Natural Greenery Smell': 'Earthy and Musky Smell',
                          'Chemical and Pungent Smell': 'Smell',
                          'Medicine and Antiseptic Smell': 'Chemical and Pungent Smell',
-                         'Cleaning Products and Chemicals Smell': 'Chemical and Pungent Smell',
+                         'Cleaning Products and Chemicals Smells': 'Chemical and Pungent Smell',
                          'Pungent Smell': 'Chemical and Pungent Smell',
                          'Sickening Smell': 'Chemical and Pungent Smell',
                          'Taste': 'root',
@@ -375,4 +375,159 @@ SENSATION_DEFINITION = {
 """,
 'Bursting Sound': None,
 'None': None
+}
+
+
+SENSATION_OPPOSITES = {
+    # =========================================================
+    # TOUCH — Temperature
+    # =========================================================
+    'Freezing Cold': 'Intense Heat',
+    'Cool and Refreshing': 'Comforting Warmth',
+    'Comforting Warmth': 'Cool and Refreshing',
+    'Intense Heat': 'Freezing Cold',
+
+    # =========================================================
+    # TOUCH — Texture
+    # =========================================================
+    'Softness': 'Roughness',
+    'Silky Smoothness': 'Roughness',
+    'Stickinenss': 'Silky Smoothness',
+    'Roughness': 'Silky Smoothness',
+    'Sharpness': 'Softness',
+    'Wrinkly': 'Silky Smoothness',
+
+    # =========================================================
+    # TOUCH — Moisture and Dryness
+    # =========================================================
+    'Soaking Wetness': 'Dryness',
+    'Mistiness': 'Dryness',
+    'Greasiness and Oiliness': 'Dryness',
+    'Dryness': 'Soaking Wetness',
+
+    # =========================================================
+    # TOUCH — Motion and Weight
+    # =========================================================
+    'High Speed and Acceleration': None,
+    'Weightlessness': 'Heaviness',
+    'Heaviness': 'Weightlessness',
+    'Tension': 'Soothing Relief and Numbing',
+    'Vibration': None,
+
+    # =========================================================
+    # TOUCH — Pain and Relief
+    # =========================================================
+    'Sharp Pain': 'Soothing Relief and Numbing',
+    'Aching Pain': 'Soothing Relief and Numbing',
+    'Soothing Relief and Numbing': 'Sharp Pain',
+
+    # =========================================================
+    # SMELL — Fresh and Clean
+    # =========================================================
+    'Fresh Fruit Smell': 'Sickening Smell',
+    'Fresh Greenery Smell': 'Sickening Smell',
+    'Clean and Soapy Smell': 'Sickening Smell',
+    'Refreshing Minty Smell': 'Sickening Smell',
+    'Refreshing Ocean Smell': 'Sickening Smell',
+    'Floral Smell': 'Pungent Smell',
+    'Fragrant Smell': 'Sickening Smell',
+
+    # =========================================================
+    # SMELL — Culinary
+    # =========================================================
+    'Drinks Smell': 'Cleaning Products and Chemicals Smell',
+    'Savory Food Smell': 'Cleaning Products and Chemicals Smell',
+    'Spices Smell': 'Cleaning Products and Chemicals Smell',
+    'Bakery Smell': 'Cleaning Products and Chemicals Smell',
+    'Sweet Smell': 'Cleaning Products and Chemicals Smell',
+
+    # =========================================================
+    # SMELL — Earthy and Musky
+    # =========================================================
+    'Woody Smell': 'Sickening Smell',
+    'Leather Smell': 'Sickening Smell',
+    'Earth and Soil Smell': 'Cleaning Products and Chemicals Smell',
+    'Natural Greenery Smell': 'Cleaning Products and Chemicals Smell',
+
+    # =========================================================
+    # SMELL — Chemical and Pungent
+    # =========================================================
+    'Medicine and Antiseptic Smell': 'Fragrant Smell',
+    'Cleaning Products and Chemicals Smell': 'Natural Greenery Smell',
+    'Pungent Smell': 'Floral Smell',
+    'Sickening Smell': 'Fresh and Clean Smell',
+
+    # NOTE:
+    # "Fresh and Clean Smell" is a parent category rather than a leaf
+    # sensation. If you require leaf-only mappings, replace the above
+    # with something like "Fresh Greenery Smell" or "Clean and Soapy Smell".
+
+    # =========================================================
+    # TASTE
+    # =========================================================
+    'Sweet Taste': 'Bitter Taste',
+    'Sour Taste': 'Sweet Taste',
+    'Bitter Taste': 'Sweet Taste',
+    'Spicy Taste': 'Cooling Minty Taste',
+    'Umami Taste': 'Sweet Taste',
+    'Salty Taste': 'Sweet Taste',
+    'Cooling Minty Taste': 'Spicy Taste',
+
+    # =========================================================
+    # SOUND — Music
+    # =========================================================
+    'Instruments Sound': 'Silence and Quiet',
+    'Singing Voice': 'Silence and Quiet',
+
+    # =========================================================
+    # SOUND — Rural / Industrial
+    # =========================================================
+    'Vehicles Sound': 'Silence and Quiet',
+    'Traffic Jam or Human Crowd Sound': 'Silence and Quiet',
+    'Machinery Sound': 'Silence and Quiet',
+
+    # =========================================================
+    # SOUND — Nature
+    # =========================================================
+    'Animal Sounds': 'Silence and Quiet',
+    'Natural Water Sound': 'Silence and Quiet',
+    'Atmospheric Phenomena Sound': 'Silence and Quiet',
+    'Geological Events Sound': 'Silence and Quiet',
+    'Peaceful Ambient': 'Bursting Sound',
+
+    # =========================================================
+    # SOUND — Liquid
+    # =========================================================
+    'Bubbling and Fizzing Sound': 'Silence and Quiet',
+    'Liquid Splash Sound': 'Silence and Quiet',
+    'Liquid Pouring Sound': 'Silence and Quiet',
+
+    # =========================================================
+    # SOUND — Silence
+    # =========================================================
+    'Silence and Quiet': 'Bursting Sound',
+
+    # =========================================================
+    # SOUND — Human Voice
+    # =========================================================
+    'Sad Voice': 'Happy Voice',
+    'Rushing Voice': 'Compassion Voice',
+    'Compassion Voice': 'Harsh Voice',
+    'Happy Voice': 'Sad Voice',
+    'Argument Voice': 'Compassion Voice',
+    'Harsh Voice': 'Compassion Voice',
+    'Human Crowd Noises': 'Silence and Quiet',
+
+    # =========================================================
+    # SOUND — Bursting
+    # =========================================================
+    'Bursting Sound': 'Silence and Quiet',
+
+    # =========================================================
+    # SIGHT
+    # =========================================================
+    'Brilliance and Glow': 'Darkness',
+    'Clarity': 'Blur',
+    'Blur': 'Clarity',
+    'Darkness': 'Brilliance and Glow',
 }

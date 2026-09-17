@@ -7,8 +7,17 @@ import os
 from datetime import datetime
 import csv
 from utils.data.trian_test_split import get_test_data
+from utils.data.physical_sensations import SENSATION_OPPOSITES
 import random
 from PIL import Image
+
+SENSATION_OPPOSITES_LOWER = {k.lower(): v for k, v in SENSATION_OPPOSITES.items()}
+
+
+def get_opposite_sensation(sensation):
+    """Case-insensitive lookup into SENSATION_OPPOSITES. Returns None if the
+    sensation has no entry (or no opposite) in the map."""
+    return SENSATION_OPPOSITES_LOWER.get(sensation.lower())
 
 
 def get_prompt_info(args):
@@ -108,10 +117,17 @@ def generate_images(args):
             if len(image_sensations) > 1:
                 image_sensations = [image_sensations[0]]
         for sensation in image_sensations:
+            target_sensation = sensation
+            if args.use_opposite_sensation:
+                opposite_sensation = get_opposite_sensation(sensation)
+                if not opposite_sensation:
+                    print(f'sensation {sensation} has no opposite in SENSATION_OPPOSITES and will be skipped...')
+                    continue
+                target_sensation = opposite_sensation.lower()
             if args.experiment_datetime:
-                image_path = os.path.join(f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_{args.AD_type}_{args.T2I_model}', sensation, filename)
+                image_path = os.path.join(f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_{args.AD_type}_{args.T2I_model}', target_sensation, filename)
                 if os.path.exists(image_path):
-                    print(f'image {filename} for sensation {sensation} already exists and will be skipped...')
+                    print(f'image {filename} for sensation {target_sensation} already exists and will be skipped...')
                     continue
             if args.T2I_model == 'AgenticEditing':
                 if args.Editing_model == 'FluxKontext':
@@ -123,15 +139,15 @@ def generate_images(args):
                     generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20251123_225258/AR_ALL_SD3', sensation, filename)) # SD3-Controlnet 20260311_093216
                 else:
                     raise ValueError(f'Editing model {args.Editing_model} not supported')
-                image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
+                image, prompt = AdImageGeneration(image_filename=filename, sensation=target_sensation.replace(' sensation', ''), generated_image=generated_image, prompt=process_action_reason(action_reasons))
             else:
-                image, prompt = AdImageGeneration(image_filename=filename, sensation=sensation.replace(' sensation', ''))
+                image, prompt = AdImageGeneration(image_filename=filename, sensation=target_sensation.replace(' sensation', ''))
             if image is None:
                 continue
-            save_image(args, filename, image, experiment_datetime, sensation)
-            save_results(args, prompt, action_reasons, filename, experiment_datetime, sensation)
+            save_image(args, filename, image, experiment_datetime, target_sensation)
+            save_results(args, prompt, action_reasons, filename, experiment_datetime, target_sensation)
             print(f'image url: {filename}')
-            print(f'sensation: {sensation}')
+            print(f'sensation: {target_sensation}')
             print(f'action-reason statements: {process_action_reason(action_reasons)}')
             print('-' * 20)
         
