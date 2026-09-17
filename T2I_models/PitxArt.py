@@ -16,7 +16,6 @@ class PixArt(nn.Module):
                                                         torch_dtype=torch.float16,
                                                         quantization_config=quantization_config)
         self.pipe = self.pipe.to(device=args.device)
-        self.pipe.vae.to(torch.float16)
 
     def forward(self, prompt, seed=None):
         seed = seed if seed is not None else 0
