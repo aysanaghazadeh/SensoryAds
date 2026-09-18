@@ -78,7 +78,8 @@ def get_descriptions(args, images):
                                         f'_{args.AD_type}'
                                         f'_{args.MLLM_prompt.replace(".jinja", "")}.csv')
     else:
-        description_file = os.path.join(args.data_path,
+        description_file = os.path.join(args.result_path,
+                                        'results',
                                         args.project_name,
                                         f'{args.description_type}'
                                         f'_{args.MLLM}'
