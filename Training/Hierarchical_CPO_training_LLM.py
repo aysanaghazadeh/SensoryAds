@@ -108,7 +108,7 @@ def get_model(args):
 
 def get_training_args(args):
     training_args = CPOConfig(
-        output_dir=args.model_path+f'/my_HierarchicalCPO_{args.LLM}',
+        output_dir=args.model_path+f'/my_HierarchicalCPO_extended_annotation_{args.LLM}',
         remove_unused_columns=False,
         per_device_train_batch_size=args.batch_size,
         gradient_checkpointing=True,
@@ -135,7 +135,7 @@ def train(args):
     cpo_args = get_training_args(args)
     model, tokenizer = get_model(args)
     train_dataset = get_train_LLM_HierarchicalCPO_Dataloader(args, tokenizer)
-    tmp = train_dataset.train_test_split(test_size=0.1)
+    tmp = train_dataset.train_test_split(test_size=0.01)
     train_dataset = tmp["train"]
 
     eval_dataset = tmp["test"]
@@ -150,7 +150,7 @@ def train(args):
     # train and save the model
     if args.model_checkpoint is not None:
         print('loading checkpoint')
-        trainer.train(resume_from_checkpoint=args.model_path+f'/my_HierarchicalCPO_{args.LLM}/checkpoint-{args.model_checkpoint}')
+        trainer.train(resume_from_checkpoint=args.model_path+f'/my_HierarchicalCPO_extended_annotation_{args.LLM}/checkpoint-{args.model_checkpoint}')
     else:
         print('training from scratch')
         trainer.train()
