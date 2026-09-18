@@ -42,6 +42,8 @@ def parse_sensation_annotations(annotation_file):
         most_evoked_sensation = []
         for i in range(1, 21):
             if str(row[i]) != 'nan':
+                if 'other' in str(row[i]).lower():
+                    continue
                 if int(row[21]) == max_score:
                     most_evoked_sensation.append(row[i].lower())
                 row[i] = row[i].strip().lower()
@@ -51,6 +53,8 @@ def parse_sensation_annotations(annotation_file):
         temp_sensation = []
         for i in range(24, 44):
             if str(row[i]) != 'nan':
+                if 'other' in str(row[i]).lower():
+                    continue
                 if int(row[21]) == max_score:
                     temp_sensation.append(row[i].lower())
                 row[i] = row[i].strip().lower()
@@ -62,6 +66,8 @@ def parse_sensation_annotations(annotation_file):
         temp_sensation = []
         for i in range(47, 67):
             if str(row[i]) != 'nan':
+                if 'other' in str(row[i]).lower():
+                    continue
                 if int(row[21]) == max_score:
                     temp_sensation.append(row[i].lower())
                 row[i] = row[i].strip().lower()
@@ -164,7 +170,7 @@ if __name__ == '__main__':
     # sensation_parent_map = get_SENSATIONS_PARENT_MAP(SENSATION_HIERARCHY)
     # print(sensation_parent_map)
     # annotation_file = args.description_file
-    annotation_file = '/Users/aysanaghazadeh/Downloads/ExtendedRealAdAnnotationsClean.csv'
+    annotation_file = '/Users/aysanaghazadeh/Downloads/ExtendedRealAdAnnotationsClean_full_set.csv'
     annotations = pd.read_csv(annotation_file).values
     parse_sensation_annotations(annotation_file)
     # human_score1, human_score2 = get_human_human_annotations(annotations, SENSATIONS_PARENT_MAP.keys())

@@ -85,6 +85,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
     
     # print('-' * 100)
     # print('Evosense-LLAMA3-InternVL-5000')
@@ -131,7 +132,7 @@ if __name__ == '__main__':
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    # get_per_class_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
     
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-CPO-Only-21000')

@@ -10,7 +10,7 @@ from utils.data.mapping import TOPIC_MAP as topic_map
 def get_train_data(args):
     train_file = os.path.join(args.data_path, f'train/train_image_large_{args.AD_type}.csv')
     if args.AD_type=='ALL':
-        train_file = os.path.join(args.data_path, f'train/SensoryAd_image_list_all.csv')
+        train_file = os.path.join(args.data_path, args.train_set_QA)
     if os.path.exists(train_file):
         return pd.read_csv(train_file).ID.values
     if os.path.exists(os.path.join(args.data_path, 'Action_Reason_statements.json')):
@@ -49,7 +49,7 @@ def get_train_data(args):
 def get_test_data(args):
     topics_data_file = os.path.join(args.data_path, 'train/Topics_train.json')
     if args.AD_type=='ALL':
-        test_file = os.path.join(args.data_path, f'train/SensoryAd_image_list_all.csv')
+        test_file = os.path.join(args.data_path, args.test_set_QA)
     elif args.AD_type=='WHOLE':
         QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
         return list(QA.keys())

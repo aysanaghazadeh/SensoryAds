@@ -1,9 +1,12 @@
 python inference.py \
 --config_type=DEFAULT \
---AD_type=WHOLE \
+--AD_type=ALL \
+--Image_type=real \
 --inference_type=description_generation \
 --MLLM_prompt=description_generation.jinja \
 --model_type=MLLM \
---MLLM=Gemma \
+--MLLM=InternVL \
 --description_goal=image_descriptor \
+--test_set_images=train_images_total \
+--test_set_QA=train/sensation_annotations_parsed_1200_train.csv \
 --resume=True
