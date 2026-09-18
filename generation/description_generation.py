@@ -68,14 +68,24 @@ def get_descriptions(args, images):
 
     print(f'number of images in the set: {len(images)}')
     print('*' * 100)
-    description_file = os.path.join(args.result_path,
-                                    'results',
-                                    args.project_name,
-                                    f'{args.description_type}'
-                                    f'_{args.MLLM}'
-                                    f'_{"_".join(args.test_set_images.split("/")[-2:])}'
-                                    f'_{args.AD_type}'
-                                    f'_{args.MLLM_prompt.replace(".jinja", "")}.csv')
+    if args.Image_type == 'generated':
+        description_file = os.path.join(args.result_path,
+                                        'results',
+                                        args.project_name,
+                                        f'{args.description_type}'
+                                        f'_{args.MLLM}'
+                                        f'_{"_".join(args.test_set_images.split("/")[-2:])}'
+                                        f'_{args.AD_type}'
+                                        f'_{args.MLLM_prompt.replace(".jinja", "")}.csv')
+    else:
+        description_file = os.path.join(args.data_path,
+                                        args.project_name,
+                                        f'{args.description_type}'
+                                        f'_{args.MLLM}'
+                                        f'_{args.test_set_QA.split("/")[-1].split(".")[0]}'
+                                        f'_{args.AD_type}'
+                                        f'_{args.Image_type}'
+                                        f'_{args.MLLM_prompt.replace(".jinja", "")}.csv')
     if os.path.exists(description_file):
         print(f'{description_file} exists, reading the processed files')
         if args.resume:

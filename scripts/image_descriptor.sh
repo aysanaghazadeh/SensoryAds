@@ -8,5 +8,5 @@ python inference.py \
 --MLLM=InternVL \
 --description_goal=image_descriptor \
 --test_set_images=train_images_total \
---test_set_QA=train/sensation_annotations_parsed_1200_train.csv \
+--test_set_QA=train/sensation_annotations_parsed_1200_test.csv \
 --resume=True
