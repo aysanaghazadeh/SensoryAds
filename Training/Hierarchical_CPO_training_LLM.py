@@ -43,6 +43,15 @@ class HierarchicalCPOTrainer(CPOTrainer):
         super().__init__(*args, **kwargs)
         self.hierarchy_loss_weight = hierarchy_loss_weight
 
+    def _wrap_model(self, model, training=True, dataloader=None):
+        model = super()._wrap_model(model, training, dataloader)
+        # compute_loss runs three forwards per backward, so each parameter's DDP
+        # hook fires more than once; static graph defers the all-reduce instead
+        # of erroring on the repeat.
+        if isinstance(model, nn.parallel.DistributedDataParallel):
+            model._set_static_graph()
+        return model
+
     def compute_loss(
             self,
             model: Union[PreTrainedModel, nn.Module],
@@ -117,6 +126,7 @@ def get_training_args(args):
         # so rank 0 can sit in the setup collective for a long time.
         ddp_timeout=7200,
         gradient_checkpointing=True,
+        gradient_checkpointing_kwargs={"use_reentrant": False},
         gradient_accumulation_steps=4,
         max_steps=200000,
         learning_rate=args.lr,
