@@ -7,7 +7,10 @@ else
     LAUNCH_ARGS="--num_processes=1"
 fi
 
-accelerate launch $LAUNCH_ARGS train.py --config_type=DEFAULT \
+# Invoked as a module, not via the `accelerate` console script: that script's
+# shebang hardcodes the interpreter of whichever env installed it, which breaks
+# when the env is copied between machines.
+python -m accelerate.commands.launch $LAUNCH_ARGS train.py --config_type=DEFAULT \
 --training_type=HierarchicalCPO_train_LLM \
 --batch_size=1 \
 --LLM=LLAMA3_instruct \

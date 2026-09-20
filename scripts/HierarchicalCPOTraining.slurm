@@ -28,5 +28,9 @@ cd $SLURM_SUBMIT_DIR
 # No srun here: accelerate launch spawns one process per GPU itself, so wrapping
 # it in an srun with multiple tasks would start the whole training N times over.
 bash scripts/HierarchicalCPOTraining.sh
+training_status=$?
 
 crc-job-stats
+
+# Exit on training's status, not crc-job-stats', so Slurm reports failures.
+exit $training_status
