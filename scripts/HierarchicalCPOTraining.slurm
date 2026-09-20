@@ -19,7 +19,7 @@ module load python/ondemand-jupyter-python3.11
 # `source activate` uses the script on PATH and does work here.
 source activate /ix/akovashka/aya34/envs/SensoryAds/
 
-export HF_TOKEN=<your_hf_token>
+: "${HF_TOKEN:?set 'export HF_TOKEN=...' in ~/.bashrc on the cluster; do not commit it}"
 export HF_HOME=/ix/akovashka/aya34/.cache/huggingface
 export TOKENIZERS_PARALLELISM=false
 
