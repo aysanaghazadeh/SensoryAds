@@ -2,6 +2,7 @@ from torch import nn
 from transformers import BitsAndBytesConfig, pipeline, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 import torch
 from peft import PeftModel
+from accelerate import PartialState
 import os
 
 
@@ -39,9 +40,11 @@ class LLAMA3Instruct(nn.Module):
                 self.tokenizer = AutoTokenizer.from_pretrained(model_id,
                                                                token=os.environ.get('HF_TOKEN'))
         else:
+            # One full replica per process so accelerate can wrap it in DDP and split
+            # batches across GPUs, instead of sharding one model over all of them.
             self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",
                                                               token=os.environ.get('HF_TOKEN'),
-                                                              device_map='auto')
+                                                              device_map={"": PartialState().process_index})
             self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",
                                                            token=os.environ.get('HF_TOKEN'),
                                                            trust_remote_code=True,

@@ -1,5 +1,6 @@
 from utils.data.HierarchicalCPO_LLM_data import get_train_LLM_HierarchicalCPO_Dataloader
 from configs.training_config import get_args
+from accelerate import PartialState
 from transformers import DataCollatorForLanguageModeling
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
 import torch
@@ -94,12 +95,8 @@ def get_model(args):
                              lora_alpha=32,
                              lora_dropout=0.1,
                              peft_type=TaskType.CAUSAL_LM)
-    model = get_peft_model(model, peft_config).to(device=args.device)
+    model = get_peft_model(model, peft_config)
     print(f'model\'s trainable parameters: {model.print_trainable_parameters()}')
-    if torch.cuda.device_count() > 1:
-        print(f'torch cuda count: {torch.cuda.device_count()}')
-        model.is_parallelizable = True
-        model.model_parallel = True
     tokenizer = pipe.model.tokenizer
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
@@ -107,10 +104,15 @@ def get_model(args):
 
 
 def get_training_args(args):
+    # args.batch_size is the total batch size across GPUs, so split it per process.
+    num_processes = PartialState().num_processes
+    per_device_train_batch_size = max(1, args.batch_size // num_processes)
+    print(f'total batch size: {args.batch_size} over {num_processes} process(es) '
+          f'-> per-device batch size: {per_device_train_batch_size}')
     training_args = CPOConfig(
         output_dir=args.model_path+f'/my_HierarchicalCPO_extended_annotation_{args.LLM}',
         remove_unused_columns=False,
-        per_device_train_batch_size=args.batch_size,
+        per_device_train_batch_size=per_device_train_batch_size,
         gradient_checkpointing=True,
         gradient_accumulation_steps=4,
         max_steps=200000,
@@ -135,7 +137,8 @@ def train(args):
     cpo_args = get_training_args(args)
     model, tokenizer = get_model(args)
     train_dataset = get_train_LLM_HierarchicalCPO_Dataloader(args, tokenizer)
-    tmp = train_dataset.train_test_split(test_size=0.01)
+    # Fixed seed so every process splits the dataset identically under multi-GPU.
+    tmp = train_dataset.train_test_split(test_size=0.01, seed=42)
     train_dataset = tmp["train"]
 
     eval_dataset = tmp["test"]

@@ -315,19 +315,19 @@ def get_kappa_agreement(metric_scores, human_annotations):
     metrics_preferences = []
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
-    descriptions = pd.read_csv('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/IN_InternVL_train_images_total_ALL_description_generation.csv')
+    # descriptions = pd.read_csv('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/IN_InternVL_train_images_total_ALL_description_generation.csv')
     for image_url in metric_scores:
         if image_url not in human_annotations:
             continue
         # if count < 100:
         #     continue
-        description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0]
+        # description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0]
         sensations = get_sensations(human_annotations, image_url)
         sensations_splitted = []
         for sensation in sensations:
             sensations_splitted += sensation.split(' ')
-        if any(sensation.lower() in description.lower() for sensation in sensations):
-            continue
+        # if any(sensation.lower() in description.lower() for sensation in sensations):
+        #     continue
         count += 1
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image

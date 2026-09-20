@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # metrics = json.load(open(args.description_file))
     human_1_annotations = json.load(open('../Data/PittAd/train/human_human_datahuman_1_parsed.json'))
     human_2_annotations = json.load(open('../Data/PittAd/train/human_human_datahuman_2_parsed.json'))
-    human_annotations = json.load(open('../Data/PittAd/train/sensation_annotations_parsed.json'))
+    human_annotations = json.load(open('../Data/PittAd/train/sensation_annotations_parsed_1200_test.json'))
     # print('Agreement Computation Started')
     # print('-' * 100)
     # print('Human Human Agreement')
@@ -69,14 +69,14 @@ if __name__ == '__main__':
     # get_human_human_score_agreement(human_1_annotations, human_2_annotations)
 
     print('-' * 100)
-    print('Evosense-LLAMA3-InternVL-65000')
+    print('Evosense-LLAMA3-InternVL-11000')
     metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_LLAMA3_instruct64500.json'))
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_extended_annotation_LLAMA3_instruct11000.json'))
     print(len(metrics))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
-    
+    exit()
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-90000')
     metrics = json.load(open(
