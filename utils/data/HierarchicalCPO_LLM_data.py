@@ -48,7 +48,7 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
     descriptions = pd.read_csv(args.description_file)
     dataset = {'prompt': [], 'chosen': [], 'rejected': [], 'parent_of_chosen': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
-    for image_url in image_urls[0:20]:
+    for image_url in image_urls:
         if image_url in sensations:
             sensation_scores = sensations[image_url]['sensation_scores']
             description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0].split('Q2:')[-1]
