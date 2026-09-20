@@ -20,7 +20,7 @@ module load python/ondemand-jupyter-python3.11
 source activate /ix/akovashka/aya34/envs/SensoryAds/
 
 : "${HF_TOKEN:?set 'export HF_TOKEN=...' in ~/.bashrc on the cluster; do not commit it}"
-export HF_HOME=/ix/akovashka/aya34/.cache/huggingface
+export HF_HOME=/ix/akovashka/aya34/HF_CACHE
 export TOKENIZERS_PARALLELISM=false
 
 cd $SLURM_SUBMIT_DIR
