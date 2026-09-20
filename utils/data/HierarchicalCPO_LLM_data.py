@@ -48,16 +48,17 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
     descriptions = pd.read_csv(args.description_file)
     dataset = {'prompt': [], 'chosen': [], 'rejected': [], 'parent_of_chosen': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
-    for image_url in image_urls:
+    for image_url in image_urls[0:20]:
         if image_url in sensations:
             sensation_scores = sensations[image_url]['sensation_scores']
             description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0].split('Q2:')[-1]
             prompt = f"""Context: Description of an image is {description}.
                          Sensation that the image evokes the most is: """
-            for sensation1 in sensation_scores:
-                for sensation2 in sensation_scores:
-                    sensation1 = sensation1.strip()
-                    sensation2 = sensation2.strip()
+            # Unordered pairs only: (a, b) and (b, a) resolve to the same
+            # chosen/rejected, so walking the full product doubled the dataset.
+            sensation_list = [sensation.strip() for sensation in sensation_scores]
+            for i, sensation1 in enumerate(sensation_list):
+                for sensation2 in sensation_list[i + 1:]:
                     if sensation_scores[sensation1] == sensation_scores[sensation2]:
                         continue
 

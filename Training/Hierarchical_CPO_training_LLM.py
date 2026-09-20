@@ -113,6 +113,9 @@ def get_training_args(args):
         output_dir=args.model_path+f'/my_HierarchicalCPO_extended_annotation_{args.LLM}',
         remove_unused_columns=False,
         per_device_train_batch_size=per_device_train_batch_size,
+        # Each rank tokenizes the dataset independently before reaching DDP init,
+        # so rank 0 can sit in the setup collective for a long time.
+        ddp_timeout=7200,
         gradient_checkpointing=True,
         gradient_accumulation_steps=4,
         max_steps=200000,
