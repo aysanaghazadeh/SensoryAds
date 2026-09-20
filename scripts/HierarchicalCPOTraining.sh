@@ -1,4 +1,7 @@
-NUM_GPUS=$(python -c "import torch; print(torch.cuda.device_count())")
+PYTHON=${PYTHON:-python}
+echo "using interpreter: $($PYTHON -c 'import sys; print(sys.executable)')"
+
+NUM_GPUS=$($PYTHON -c "import torch; print(torch.cuda.device_count())")
 echo "detected ${NUM_GPUS} GPU(s)"
 
 if [ "$NUM_GPUS" -gt 1 ]; then
@@ -10,7 +13,7 @@ fi
 # Invoked as a module, not via the `accelerate` console script: that script's
 # shebang hardcodes the interpreter of whichever env installed it, which breaks
 # when the env is copied between machines.
-python -m accelerate.commands.launch $LAUNCH_ARGS train.py --config_type=DEFAULT \
+$PYTHON -m accelerate.commands.launch $LAUNCH_ARGS train.py --config_type=DEFAULT \
 --training_type=HierarchicalCPO_train_LLM \
 --batch_size=1 \
 --LLM=LLAMA3_instruct \

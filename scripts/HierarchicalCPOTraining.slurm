@@ -13,11 +13,11 @@
 #SBATCH --mail-type=END,FAIL
 
 module purge
-module load python/ondemand-jupyter-python3.11
 
-# `conda activate` needs a shell function this module never initializes;
-# `source activate` uses the script on PATH and does work here.
-source activate /ix/akovashka/aya34/envs/SensoryAds/
+# Calling the env's interpreter directly: conda's activate relies on a shell
+# function that never gets initialized in a non-interactive batch shell, which
+# silently leaves you on the system python instead.
+export PYTHON=/ix/akovashka/aya34/envs/SensoryAds/bin/python
 
 : "${HF_TOKEN:?set 'export HF_TOKEN=...' in ~/.bashrc on the cluster; do not commit it}"
 export HF_HOME=/ix/akovashka/aya34/HF_CACHE
