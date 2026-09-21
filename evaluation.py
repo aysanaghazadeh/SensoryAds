@@ -72,7 +72,9 @@ class SensationEvaluation:
                 scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
             print(image_url)
             print(json.dumps(scores[image_url], indent=4))
-            json.dump(scores, open(result_file, 'w'))
+            if index % 20 == 0:
+                json.dump(scores, open(result_file, 'w'))
+        json.dump(scores, open(result_file, 'w'))
 
     def evaluate_Evosense_LLM_generated(self, args):
         descriptions = pd.read_csv(args.description_file)
