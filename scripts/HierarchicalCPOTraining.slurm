@@ -2,6 +2,10 @@
 #SBATCH --job-name=hcpo_llama3
 #SBATCH --cluster=gpu
 #SBATCH --partition=h200
+# gpu-n89 has twice given a fresh `ls` a false "file not found" for data that
+# was present moments earlier from the login node (jobs 3994716, 3994726) -
+# excluding it to test whether gpu-n90 doesn't have the same issue.
+#SBATCH --exclude=gpu-n89
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=16
