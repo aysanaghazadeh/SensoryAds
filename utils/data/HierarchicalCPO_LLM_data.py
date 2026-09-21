@@ -46,12 +46,19 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
     for sensation in SENSATIONS_PARENT_MAP:
         LOWER_SENSATIONS_PARENT_MAP[sensation.lower()] = SENSATIONS_PARENT_MAP[sensation].lower()
     descriptions = pd.read_csv(args.description_file)
+    description_by_id = dict(zip(descriptions['ID'], descriptions['description']))
     dataset = {'prompt': [], 'chosen': [], 'rejected': [], 'parent_of_chosen': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
     for image_url in image_urls:
         if image_url in sensations:
+            # A handful of IDs carry stray whitespace from the original
+            # annotation parse and don't match description_file's clean copy.
+            # Kept as a skip (not a fix) so resuming from a checkpoint sees
+            # the same effective training set the checkpoint was trained on.
+            if image_url not in description_by_id:
+                continue
             sensation_scores = sensations[image_url]['sensation_scores']
-            description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0].split('Q2:')[-1]
+            description = description_by_id[image_url].split('Q2:')[-1]
             prompt = f"""Context: Description of an image is {description}.
                          Sensation that the image evokes the most is: """
             # Unordered pairs only: (a, b) and (b, a) resolve to the same
