@@ -69,9 +69,9 @@ if __name__ == '__main__':
     # get_human_human_score_agreement(human_1_annotations, human_2_annotations)
 
     print('-' * 100)
-    print('Evosense-LLAMA3-InternVL-72000')
+    print('Evosense-LLAMA3-InternVL-144000')
     metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_extended_annotation_LLAMA3_instruct6500.json'))
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_extended_annotation_LLAMA3_instruct9000.json'))
     print(len(metrics))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     get_per_class_krippendorff_agreement(metrics, human_annotations)
     
     print('-' * 100)
-    print('Evosense-LLAMA3-InternVL-11000')
+    print('Evosense-LLAMA3-InternVL-30000')
     metrics = json.load(open(
         '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_extended_annotation_LLAMA3_instruct30000.json'))
     print(len(metrics))
