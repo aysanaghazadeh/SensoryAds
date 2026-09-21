@@ -33,6 +33,15 @@ export HF_HUB_OFFLINE=1
 
 cd $SLURM_SUBMIT_DIR
 
+# Compute nodes have shown stale NFS lookups for files that exist and were
+# recently written from the login node (seen twice now, always as a spurious
+# FileNotFoundError). A fresh ls/stat here forces the client to re-resolve the
+# path before Python ever opens it, which clears a stale negative cache entry.
+echo "-- verifying data files resolve on this node --"
+ls -la "$DATA_PATH/train/sensation_annotations_parsed_1200_train.json" \
+       "$DATA_PATH/train/sensation_annotations_parsed_1200_train.csv" \
+       "$EXPERIMENTS_PATH/results/SensoryAds/IN_InternVL_sensation_annotations_parsed_1200_train_ALL_real_description_generation.csv"
+
 # No srun here: accelerate launch spawns one process per GPU itself, so wrapping
 # it in an srun with multiple tasks would start the whole training N times over.
 bash scripts/HierarchicalCPOTraining.sh

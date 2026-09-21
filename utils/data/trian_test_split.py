@@ -4,6 +4,7 @@ import random
 import csv
 import json
 from collections import Counter, defaultdict
+from accelerate import PartialState
 from utils.data.mapping import TOPIC_MAP as topic_map
 
 
@@ -11,39 +12,38 @@ def get_train_data(args):
     train_file = os.path.join(args.data_path, f'train/train_image_large_{args.AD_type}.csv')
     if args.AD_type=='ALL':
         train_file = os.path.join(args.data_path, args.train_set_QA)
-    if os.path.exists(train_file):
-        return pd.read_csv(train_file).ID.values
-    if os.path.exists(os.path.join(args.data_path, 'Action_Reason_statements.json')):
-        QA_base = json.load(open(os.path.join(args.data_path, 'Action_Reason_statements.json')))
-    else:
-        QA_base = {}
-    if os.path.exists(os.path.join(args.data_path, 'train/test_image.csv')):
-        test_files = set(list(pd.read_csv(os.path.join(args.data_path, 'train/test_image.csv')).ID.values))
-    else:
-        test_files = set()
-    QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
-    train_QA = {}
-    for image_url in QA:
-        if image_url not in test_files:
-            train_QA[image_url] = QA[image_url]
-    # image_urls = list(QA.keys())
-    # print(len(image_urls))
-    # train_size = int(args.train_ratio * len(image_urls))
-    # train_image_urls = random.sample(image_urls, train_size)
-    train_image_urls = list(train_QA.keys())
-    train_size = int(args.train_ratio * len(train_image_urls))
-    train_image_urls = random.sample(train_image_urls, train_size)
-    print(f'train size is: {len(train_image_urls)}')
-    print('saving train data')
-    with open(train_file, 'w', newline='') as file:
-        writer = csv.writer(file)
-        # Write the header
-        writer.writerow(['ID'])
+    # Guarded so only one rank regenerates a missing file under DDP; without
+    # this every rank independently samples and writes the same path at once,
+    # racing each other and clobbering whatever split was there before.
+    with PartialState().local_main_process_first():
+        if not os.path.exists(train_file):
+            if os.path.exists(os.path.join(args.data_path, 'Action_Reason_statements.json')):
+                QA_base = json.load(open(os.path.join(args.data_path, 'Action_Reason_statements.json')))
+            else:
+                QA_base = {}
+            if os.path.exists(os.path.join(args.data_path, 'train/test_image.csv')):
+                test_files = set(list(pd.read_csv(os.path.join(args.data_path, 'train/test_image.csv')).ID.values))
+            else:
+                test_files = set()
+            QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
+            train_QA = {}
+            for image_url in QA:
+                if image_url not in test_files:
+                    train_QA[image_url] = QA[image_url]
+            train_image_urls = list(train_QA.keys())
+            train_size = int(args.train_ratio * len(train_image_urls))
+            train_image_urls = random.sample(train_image_urls, train_size)
+            print(f'train size is: {len(train_image_urls)}')
+            print('saving train data')
+            with open(train_file, 'w', newline='') as file:
+                writer = csv.writer(file)
+                # Write the header
+                writer.writerow(['ID'])
 
-        # Write the data
-        for i in train_image_urls:
-            writer.writerow([i])
-    return pd.read_csv(train_file)
+                # Write the data
+                for i in train_image_urls:
+                    writer.writerow([i])
+    return pd.read_csv(train_file).ID.values
 
 
 def get_test_data(args):
