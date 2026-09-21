@@ -21,6 +21,8 @@ export PYTHON=/ix/akovashka/aya34/envs/SensoryAds/bin/python
 
 : "${HF_TOKEN:?set 'export HF_TOKEN=...' in ~/.bashrc on the cluster; do not commit it}"
 export HF_HOME=/ix/akovashka/aya34/HF_CACHE
+export DATA_PATH=/ix/akovashka/aya34/projects/Data/PittAd
+export EXPERIMENTS_PATH=/ix/akovashka/aya34/projects/experiments
 export TOKENIZERS_PARALLELISM=false
 # Python block-buffers stdout when it isn't a TTY, so prints would otherwise
 # only reach the .out file in chunks (or at process exit).

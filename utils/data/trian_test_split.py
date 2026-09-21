@@ -30,7 +30,7 @@ def get_train_data(args):
     # print(len(image_urls))
     # train_size = int(args.train_ratio * len(image_urls))
     # train_image_urls = random.sample(image_urls, train_size)
-    train_image_urls = train_QA.keys()
+    train_image_urls = list(train_QA.keys())
     train_size = int(args.train_ratio * len(train_image_urls))
     train_image_urls = random.sample(train_image_urls, train_size)
     print(f'train size is: {len(train_image_urls)}')
