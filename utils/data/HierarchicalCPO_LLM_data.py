@@ -77,8 +77,11 @@ def get_LLM_HierarchicalCPO_training_data(args, tokenizer, image_urls):
                     dataset['parent_of_chosen'].append(parent_of_chosen)
     print(f'total number of sensation pairs: {len(dataset["prompt"])}')
     dataset = Dataset.from_dict(dataset)
+    # Tokenizing ~295k examples single-process takes minutes, and each rank
+    # repeats the work, so ranks drift far apart before DDP init.
+    num_proc = min(16, len(os.sched_getaffinity(0)))
     with PartialState().local_main_process_first():
-        ds = dataset.map(process, batched=False)
+        ds = dataset.map(process, batched=False, num_proc=num_proc)
 
     train_dataset = ds
     return train_dataset

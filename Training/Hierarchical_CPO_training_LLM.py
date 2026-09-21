@@ -1,6 +1,7 @@
 from utils.data.HierarchicalCPO_LLM_data import get_train_LLM_HierarchicalCPO_Dataloader
 from configs.training_config import get_args
 from accelerate import PartialState
+from datetime import timedelta
 from transformers import DataCollatorForLanguageModeling
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
 import torch
@@ -147,6 +148,11 @@ def get_training_args(args):
 
 
 def train(args):
+    # Must come before anything else touches PartialState: the process group's
+    # timeout is fixed when it is created, so CPOConfig's ddp_timeout arrives
+    # too late. Each rank tokenizes the dataset independently before DDP init,
+    # which overruns the 10 minute default.
+    PartialState(timeout=timedelta(seconds=7200))
     cpo_args = get_training_args(args)
     model, tokenizer = get_model(args)
     train_dataset = get_train_LLM_HierarchicalCPO_Dataloader(args, tokenizer)
