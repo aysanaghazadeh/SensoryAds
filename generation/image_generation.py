@@ -41,7 +41,7 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                                  'generated_images',
                                  args.project_name,
                                  experiment_datetime,
-                                 '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                 '_'.join([text_input, 'All', args.T2I_model]),
                                  sensation,
                                  subdirectory)
     else:
@@ -49,18 +49,14 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                                  'generated_images',
                                  args.project_name,
                                  experiment_datetime,
-                                 '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                 '_'.join([text_input, 'All', args.T2I_model]),
                                  subdirectory)
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    image.save(os.path.join(args.result_path,
-                            'generated_images',
-                            args.project_name,
-                            experiment_datetime,
-                            '_'.join([text_input, args.AD_type, args.T2I_model]),
-                            sensation,
-                            filename))
+    # Reuses `directory` as-is (rather than rebuilding the path) so this can
+    # never drift from the with_physical_sensation branch above again.
+    image.save(os.path.join(directory, os.path.basename(filename)))
 
 
 def save_results(args, prompt, action_reason, filename, experiment_datetime, sensation):
@@ -74,7 +70,7 @@ def save_results(args, prompt, action_reason, filename, experiment_datetime, sen
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    csv_file_name = '_'.join([text_input, args.AD_type, args.T2I_model, experiment_datetime])
+    csv_file_name = '_'.join([text_input, 'All', args.T2I_model, experiment_datetime])
     csv_file_name = f'{csv_file_name}.csv'
     csv_file = os.path.join(directory, csv_file_name)
     if not os.path.exists(csv_file):
@@ -92,7 +88,7 @@ def save_results(args, prompt, action_reason, filename, experiment_datetime, sen
                                            'generated_images',
                                            args.project_name,
                                            experiment_datetime,
-                                           '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                           '_'.join([text_input, 'All', args.T2I_model]),
                                            sensation,
                                            filename)
     else:
@@ -100,7 +96,7 @@ def save_results(args, prompt, action_reason, filename, experiment_datetime, sen
                                            'generated_images',
                                            args.project_name,
                                            experiment_datetime,
-                                           '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                           '_'.join([text_input, 'All', args.T2I_model]),
                                            filename)
     with open(csv_file, 'a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
@@ -151,7 +147,11 @@ def generate_images(args):
                     continue
                 target_sensation = opposite_sensation.lower()
             if args.experiment_datetime:
-                image_path = os.path.join(f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_{args.AD_type}_{args.T2I_model}', target_sensation, filename)
+                run_dir = f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_All_{args.T2I_model}'
+                if args.with_physical_sensation:
+                    image_path = os.path.join(run_dir, target_sensation, filename)
+                else:
+                    image_path = os.path.join(run_dir, filename)
                 if os.path.exists(image_path):
                     print(f'image {filename} for sensation {target_sensation} already exists and will be skipped...')
                     continue
