@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=evosense_eval_llama3
 #SBATCH --cluster=gpu
-#SBATCH --partition=h200
+#SBATCH --partition=a100_nvlink
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=16
