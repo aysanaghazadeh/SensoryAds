@@ -41,7 +41,7 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                                  'generated_images',
                                  args.project_name,
                                  experiment_datetime,
-                                 '_'.join([text_input, 'All', args.T2I_model]),
+                                 '_'.join([text_input, 'ALL', args.T2I_model]),
                                  sensation,
                                  subdirectory)
     else:
@@ -49,7 +49,7 @@ def save_image(args, filename, image, experiment_datetime, sensation):
                                  'generated_images',
                                  args.project_name,
                                  experiment_datetime,
-                                 '_'.join([text_input, 'All', args.T2I_model]),
+                                 '_'.join([text_input, 'ALL', args.T2I_model]),
                                  subdirectory)
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -70,7 +70,7 @@ def save_results(args, prompt, action_reason, filename, experiment_datetime, sen
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    csv_file_name = '_'.join([text_input, 'All', args.T2I_model, experiment_datetime])
+    csv_file_name = '_'.join([text_input, 'ALL', args.T2I_model, experiment_datetime])
     csv_file_name = f'{csv_file_name}.csv'
     csv_file = os.path.join(directory, csv_file_name)
     if not os.path.exists(csv_file):
@@ -88,7 +88,7 @@ def save_results(args, prompt, action_reason, filename, experiment_datetime, sen
                                            'generated_images',
                                            args.project_name,
                                            experiment_datetime,
-                                           '_'.join([text_input, 'All', args.T2I_model]),
+                                           '_'.join([text_input, 'ALL', args.T2I_model]),
                                            sensation,
                                            filename)
     else:
@@ -96,7 +96,7 @@ def save_results(args, prompt, action_reason, filename, experiment_datetime, sen
                                            'generated_images',
                                            args.project_name,
                                            experiment_datetime,
-                                           '_'.join([text_input, 'All', args.T2I_model]),
+                                           '_'.join([text_input, 'ALL', args.T2I_model]),
                                            filename)
     with open(csv_file, 'a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
@@ -136,7 +136,7 @@ def generate_images(args):
         else:
             # Single pass, no sensation involved: 'no sensation' round-trips
             # cleanly through the existing sensation.replace(' sensation', '')
-            # calls below into a grammatical "no sensation" prompt/folder name.
+            # cALLs below into a grammatical "no sensation" prompt/folder name.
             image_sensations = ['no sensation']
         for sensation in image_sensations:
             target_sensation = sensation
@@ -147,7 +147,7 @@ def generate_images(args):
                     continue
                 target_sensation = opposite_sensation.lower()
             if args.experiment_datetime:
-                run_dir = f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_All_{args.T2I_model}'
+                run_dir = f'../experiments/generated_images/SensoryAds/{args.experiment_datetime}/{args.text_input_type}_ALL_{args.T2I_model}'
                 if args.with_physical_sensation:
                     image_path = os.path.join(run_dir, target_sensation, filename)
                 else:
