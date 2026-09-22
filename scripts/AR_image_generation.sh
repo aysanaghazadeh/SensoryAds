@@ -1,10 +1,10 @@
 python inference.py --config_type=DEFAULT \
                     --inference_type=image_generation \
                     --text_input_type=AR \
-                    --T2I_model=SD3 \
+                    --T2I_model=QWenImage \
                     --T2I_prompt=AR.jinja \
                     --with_physical_sensation=True \
                     --test_set_sensation=train/sensation_annotations_parsed.json \
                     --test_set_QA=train/SensoryAd_Action_Reason.json \
                     --AD_type=SensoryAdsAll \
-                    --experiment_datetime=20260908_001151
+                    --experiment_datetime=20260908_002057
