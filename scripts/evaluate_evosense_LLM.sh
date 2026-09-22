@@ -5,5 +5,4 @@ python evaluation.py --config_type=DEFAULT \
 --fine_tuned=True \
 --model_checkpoint=11000 \
 --model_name=my_HierarchicalCPO_extended_annotation_LLAMA3_instruct \
---resume=True \
 --sensation_annotations=train/sensation_annotations_parsed_1200_test.json
