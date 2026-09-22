@@ -408,93 +408,143 @@
 # # print(count)
 
 
-import json
-from scipy.stats import ttest_ind
+# import json
+# from scipy.stats import ttest_ind
 
-saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
+# saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
 
-flux = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
-sample1, sample2 = [], []
-for image_url in saga:
-    if image_url not in flux:
-        continue
-    for sensation in saga[image_url]:
-        if sensation not in flux[image_url]:
-            continue
-        sample1.append(saga[image_url][sensation][-1])
-        sample2.append(flux[image_url][sensation][-1])
-stat, p_val = ttest_ind(sample1, sample2)
-print('saga, flux', stat, p_val)
+# flux = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
+# sample1, sample2 = [], []
+# for image_url in saga:
+#     if image_url not in flux:
+#         continue
+#     for sensation in saga[image_url]:
+#         if sensation not in flux[image_url]:
+#             continue
+#         sample1.append(saga[image_url][sensation][-1])
+#         sample2.append(flux[image_url][sensation][-1])
+# stat, p_val = ttest_ind(sample1, sample2)
+# print('saga, flux', stat, p_val)
 
-auraflow = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
-sample1, sample2 = [], []
-for image_url in saga:
-    if image_url not in auraflow:
-        continue
-    for sensation in saga[image_url]:
-        if sensation not in auraflow[image_url]:
-            continue
-        sample1.append(saga[image_url][sensation][-1])
-        sample2.append(auraflow[image_url][sensation][-1])
-stat, p_val = ttest_ind(sample1, sample2)
-print(len(sample1), len(sample2))
-print('saga, auraflow', stat, p_val)
+# auraflow = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
+# sample1, sample2 = [], []
+# for image_url in saga:
+#     if image_url not in auraflow:
+#         continue
+#     for sensation in saga[image_url]:
+#         if sensation not in auraflow[image_url]:
+#             continue
+#         sample1.append(saga[image_url][sensation][-1])
+#         sample2.append(auraflow[image_url][sensation][-1])
+# stat, p_val = ttest_ind(sample1, sample2)
+# print(len(sample1), len(sample2))
+# print('saga, auraflow', stat, p_val)
 
-QwenImage = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250917_185403_AR_ALL_QWenImage_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
-sample1, sample2 = [], []
-for image_url in saga:
-    if image_url not in QwenImage:
-        continue
-    for sensation in saga[image_url]:
-        if sensation not in QwenImage[image_url]:
-            continue
-        sample1.append(saga[image_url][sensation][-1])
-        sample2.append(QwenImage[image_url][sensation][-1])
-stat, p_val = ttest_ind(sample1, sample2)
-print(len(sample1), len(sample2))
-print('saga, QwenImage', stat, p_val)
+# QwenImage = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250917_185403_AR_ALL_QWenImage_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
+# sample1, sample2 = [], []
+# for image_url in saga:
+#     if image_url not in QwenImage:
+#         continue
+#     for sensation in saga[image_url]:
+#         if sensation not in QwenImage[image_url]:
+#             continue
+#         sample1.append(saga[image_url][sensation][-1])
+#         sample2.append(QwenImage[image_url][sensation][-1])
+# stat, p_val = ttest_ind(sample1, sample2)
+# print(len(sample1), len(sample2))
+# print('saga, QwenImage', stat, p_val)
 
-PixArt = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
-sample1, sample2 = [], []
-for image_url in saga:
-    if image_url not in PixArt:
-        continue
-    for sensation in saga[image_url]:
-        if sensation not in PixArt[image_url]:
-            continue
-        sample1.append(saga[image_url][sensation][-1])
-        sample2.append(PixArt[image_url][sensation][-1])
-stat, p_val = ttest_ind(sample1, sample2)
-print(len(sample1), len(sample2))
-print('saga, PixArt', stat, p_val)
+# PixArt = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
+# sample1, sample2 = [], []
+# for image_url in saga:
+#     if image_url not in PixArt:
+#         continue
+#     for sensation in saga[image_url]:
+#         if sensation not in PixArt[image_url]:
+#             continue
+#         sample1.append(saga[image_url][sensation][-1])
+#         sample2.append(PixArt[image_url][sensation][-1])
+# stat, p_val = ttest_ind(sample1, sample2)
+# print(len(sample1), len(sample2))
+# print('saga, PixArt', stat, p_val)
 
-SD3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
-sample1, sample2 = [], []
-for image_url in saga:
-    if image_url not in SD3:
-        continue
-    for sensation in saga[image_url]:
-        if sensation not in SD3[image_url]:
-            continue
-        sample1.append(saga[image_url][sensation][-1])
-        sample2.append(SD3[image_url][sensation][-1])
-stat, p_val = ttest_ind(sample1, sample2)
-print(len(sample1), len(sample2))
-print('saga, SD3', stat, p_val)
+# SD3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))
+# sample1, sample2 = [], []
+# for image_url in saga:
+#     if image_url not in SD3:
+#         continue
+#     for sensation in saga[image_url]:
+#         if sensation not in SD3[image_url]:
+#             continue
+#         sample1.append(saga[image_url][sensation][-1])
+#         sample2.append(SD3[image_url][sensation][-1])
+# stat, p_val = ttest_ind(sample1, sample2)
+# print(len(sample1), len(sample2))
+# print('saga, SD3', stat, p_val)
 
-DALLE3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20260212_004312_AR_ALL_DALLE3_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
-sample1, sample2 = [], []
-for image_url in saga:
-    if image_url not in DALLE3:
-        continue
-    for sensation in saga[image_url]:
-        if sensation not in DALLE3[image_url]:
-            continue
-        sample1.append(saga[image_url][sensation][-1])
-        sample2.append(DALLE3[image_url][sensation][-1])
+# DALLE3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20260212_004312_AR_ALL_DALLE3_ALL_description_generation_LLAMA3_instruct_finetunedTrue_40000.json'))
+# sample1, sample2 = [], []
+# for image_url in saga:
+#     if image_url not in DALLE3:
+#         continue
+#     for sensation in saga[image_url]:
+#         if sensation not in DALLE3[image_url]:
+#             continue
+#         sample1.append(saga[image_url][sensation][-1])
+#         sample2.append(DALLE3[image_url][sensation][-1])
         
-sample1 += sample1[:63]
-sample2 += sample2[:63]
-stat, p_val = ttest_ind(sample1, sample2)
-print(len(sample1), len(sample2))
-print('saga, DALLE3', stat, p_val)
+# sample1 += sample1[:63]
+# sample2 += sample2[:63]
+# stat, p_val = ttest_ind(sample1, sample2)
+# print(len(sample1), len(sample2))
+# print('saga, DALLE3', stat, p_val)
+
+import json
+import numpy as np
+flux = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+pixart = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+auraflow = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+dalle3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260212_004312_AR_ALL_DALLE3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+sd3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+qwenimage = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260224_024108_AR_ALL_QWenImage_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+scores = []
+flux_scores = []
+pixart_scores = []
+auraflow_scores = []
+dalle3_scores = []
+sd3_scores = []
+qwenimage_scores = []
+saga_scores = []
+for image_url in saga:
+    if image_url == 'average':
+        continue
+    if image_url in saga:
+        scores.append(saga[image_url][1])
+        saga_scores.append((saga[image_url][1]))  
+    if image_url in flux:
+        scores.append(flux[image_url][1])
+        flux_scores.append((flux[image_url][1]))  
+    if image_url in pixart:
+        scores.append(pixart[image_url][1])
+        pixart_scores.append((pixart[image_url][1]))  
+    if image_url in auraflow:
+        scores.append(auraflow[image_url][1])
+        auraflow_scores.append((auraflow[image_url][1]))  
+    if image_url in dalle3:
+        scores.append(dalle3[image_url][1])
+        dalle3_scores.append((dalle3[image_url][1]))  
+    if image_url in qwenimage:
+        scores.append(qwenimage[image_url][1])
+        qwenimage_scores.append((qwenimage[image_url][1]))  
+    if image_url in sd3:
+        scores.append(sd3[image_url][1])
+        sd3_scores.append((sd3[image_url][1]))  
+print('flux', np.mean(flux_scores), len(flux_scores))
+print('pixart', np.mean(pixart_scores), len(pixart_scores))
+print('auraflow', np.mean(auraflow_scores), len(auraflow_scores))
+print('dalle3', np.mean(dalle3_scores), len(dalle3_scores))
+print('qwenimage', np.mean(qwenimage_scores), len(qwenimage_scores))
+print('sd3', np.mean(sd3_scores), len(sd3_scores))
+print('saga', np.mean(saga_scores), len(saga_scores))
+print(np.mean(scores), np.std(scores))

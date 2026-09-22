@@ -6,5 +6,4 @@ python inference.py --config_type=DEFAULT \
                     --with_physical_sensation=True \
                     --test_set_sensation=train/sensation_annotations_parsed.json \
                     --test_set_QA=train/SensoryAd_Action_Reason.json \
-                    --AD_type=SensoryAdsAll \
-                    --experiment_datetime=20260908_002057
+                    --AD_type=SensoryAdsAll 
