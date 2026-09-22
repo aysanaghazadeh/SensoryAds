@@ -22,7 +22,9 @@ def get_opposite_sensation(sensation):
 
 def get_prompt_info(args):
     QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
-    sensations = json.load(open(os.path.join(args.data_path, args.test_set_sensation)))
+    sensations = {}
+    if args.with_physical_sensation:
+        sensations = json.load(open(os.path.join(args.data_path, args.test_set_sensation)))
     return QA, sensations
 
 
@@ -34,13 +36,21 @@ def save_image(args, filename, image, experiment_datetime, sensation):
         text_input = '_'.join([args.LLM, 'generated_prompt'])
     else:
         text_input = args.description_file.split('/')[-1].split('.')[0]
-    directory = os.path.join(args.result_path,
-                             'generated_images',
-                             args.project_name,
-                             experiment_datetime,
-                             '_'.join([text_input, args.AD_type, args.T2I_model]),
-                             sensation,
-                             subdirectory)
+    if args.with_physical_sensation:
+        directory = os.path.join(args.result_path,
+                                 'generated_images',
+                                 args.project_name,
+                                 experiment_datetime,
+                                 '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                 sensation,
+                                 subdirectory)
+    else:
+        directory = os.path.join(args.result_path,
+                                 'generated_images',
+                                 args.project_name,
+                                 experiment_datetime,
+                                 '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                 subdirectory)
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -77,13 +87,21 @@ def save_results(args, prompt, action_reason, filename, experiment_datetime, sen
                              'T2I_prompt',
                              'generated_image_url',
                              'sensation'])
-    generated_image_url = os.path.join(args.result_path,
-                                       'generated_images',
-                                       args.project_name,
-                                       experiment_datetime,
-                                       '_'.join([text_input, args.AD_type, args.T2I_model]),
-                                       sensation,
-                                       filename)
+    if args.with_physical_sensation:
+        generated_image_url = os.path.join(args.result_path,
+                                           'generated_images',
+                                           args.project_name,
+                                           experiment_datetime,
+                                           '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                           sensation,
+                                           filename)
+    else:
+        generated_image_url = os.path.join(args.result_path,
+                                           'generated_images',
+                                           args.project_name,
+                                           experiment_datetime,
+                                           '_'.join([text_input, args.AD_type, args.T2I_model]),
+                                           filename)
     with open(csv_file, 'a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow([filename, action_reason, prompt, generated_image_url, sensation])
@@ -108,14 +126,22 @@ def generate_images(args):
     if args.text_input_type == 'original_description':
         test_set_image_url = pd.read_csv(args.description_file).ID.values
     for filename, content in QA.items():
-        if filename not in test_set_image_url or filename not in sensations:
+        if filename not in test_set_image_url:
             continue
-        
+        if args.with_physical_sensation and filename not in sensations:
+            continue
+
         action_reasons = content[0]
-        image_sensations = sensations[filename]['image_sensations']
-        if args.find_sensation:
-            if len(image_sensations) > 1:
-                image_sensations = [image_sensations[0]]
+        if args.with_physical_sensation:
+            image_sensations = sensations[filename]['image_sensations']
+            if args.find_sensation:
+                if len(image_sensations) > 1:
+                    image_sensations = [image_sensations[0]]
+        else:
+            # Single pass, no sensation involved: 'no sensation' round-trips
+            # cleanly through the existing sensation.replace(' sensation', '')
+            # calls below into a grammatical "no sensation" prompt/folder name.
+            image_sensations = ['no sensation']
         for sensation in image_sensations:
             target_sensation = sensation
             if args.use_opposite_sensation:

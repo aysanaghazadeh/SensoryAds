@@ -1,4 +1,4 @@
 python evaluation.py --config_type=DEFAULT \
 --evaluation_type=CLIPScore \
---description_file=../experiments/results/SensoryAds/IN_InternVL_train_images_total_ALL_description_generation.csv \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.csv \
 --resume=True

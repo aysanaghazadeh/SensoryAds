@@ -49,7 +49,7 @@ def parse_args():
     parser.add_argument('--AD_type',
                         type=str,
                         default='ALL',
-                        choices=['COM', 'PSA', 'ALL', 'Sensation', 'WHOLE'])
+                        choices=['COM', 'PSA', 'ALL', 'Sensation', 'WHOLE', 'SensoryAdsAll'])
     parser.add_argument('--Image_type',
                         type=str,
                         default='real',

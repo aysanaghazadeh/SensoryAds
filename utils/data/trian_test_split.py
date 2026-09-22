@@ -12,6 +12,8 @@ def get_train_data(args):
     train_file = os.path.join(args.data_path, f'train/train_image_large_{args.AD_type}.csv')
     if args.AD_type=='ALL':
         train_file = os.path.join(args.data_path, args.train_set_QA)
+    if args.AD_type=='SensoryAdsAll':
+        train_file = os.path.join(args.data_path, 'train/SensoryAd_image_list_all.csv')
     # Guarded so only one rank regenerates a missing file under DDP; without
     # this every rank independently samples and writes the same path at once,
     # racing each other and clobbering whatever split was there before.
@@ -53,6 +55,8 @@ def get_test_data(args):
     elif args.AD_type=='WHOLE':
         QA = json.load(open(os.path.join(args.data_path, args.test_set_QA)))
         return list(QA.keys())
+    elif args.AD_type=='SensoryAdsAll':
+        test_file = os.path.join(args.data_path, 'train/SensoryAd_image_list_all.csv')
     else:
         test_file = os.path.join(args.data_path, f'train/test_set_images_{args.AD_type}.csv')
     if os.path.exists(test_file):
