@@ -8,7 +8,7 @@
 #SBATCH --exclude=gpu-n89
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=20
 #SBATCH --gres=gpu:2
 #SBATCH --mem=128G
 #SBATCH --time=0-05:00:00

@@ -1,4 +1,4 @@
-import os
+ import os
 import json
 from collections import defaultdict
 
@@ -7,24 +7,22 @@ from SensoryVisualElements.extraction_agent import ObjectExtractionAgent
 from SensoryVisualElements.canonicalization_agent import CanonicalizationAgent
 
 
-def find_sensation_folders(image_root, sensations=None):
-    entries = sorted(
-        entry for entry in os.listdir(image_root)
-        if os.path.isdir(os.path.join(image_root, entry))
-    )
-    if sensations:
-        entries = [entry for entry in entries if entry in sensations]
-    return entries
-
-
-def find_images(sensation_dir, extensions):
+def find_images_by_sensation(image_root, extensions, sensations=None):
+    """Walk image_root once and group every image by its sensation, read directly
+    off the path: image_root / <sensation> / <...any subfolders...> / <image>."""
     extensions = {ext.lower() for ext in extensions}
-    images = []
-    for dirpath, _, filenames in os.walk(sensation_dir):
+    images_by_sensation = defaultdict(list)
+    for dirpath, _, filenames in os.walk(image_root):
+        rel_dir = os.path.relpath(dirpath, image_root)
+        if rel_dir == '.':
+            continue  # images directly under image_root belong to no sensation
+        sensation = rel_dir.split(os.sep)[0]
+        if sensations and sensation not in sensations:
+            continue
         for filename in sorted(filenames):
             if os.path.splitext(filename)[-1].lower() in extensions:
-                images.append(os.path.join(dirpath, filename))
-    return images
+                images_by_sensation[sensation].append(os.path.join(dirpath, filename))
+    return dict(images_by_sensation)
 
 
 def load_json(path, default):
@@ -76,15 +74,17 @@ def run(args):
     extractor = ObjectExtractionAgent(args)
     canonicalizer = CanonicalizationAgent(args)
 
-    sensations = find_sensation_folders(args.image_root, args.sensations)
-    print(f'found {len(sensations)} sensation folders: {sensations}')
+    images_by_sensation = find_images_by_sensation(args.image_root, args.image_extensions, args.sensations)
+    if args.max_images_per_sensation:
+        images_by_sensation = {
+            sensation: images[:args.max_images_per_sensation]
+            for sensation, images in images_by_sensation.items()
+        }
+    print(f'found {len(images_by_sensation)} sensations: {sorted(images_by_sensation)}')
 
-    summary = {}
-    for sensation in sensations:
-        sensation_dir = os.path.join(args.image_root, sensation)
-        images = find_images(sensation_dir, args.image_extensions)
-        if args.max_images_per_sensation:
-            images = images[:args.max_images_per_sensation]
+    sensory_visual_elements = {}
+    for sensation in sorted(images_by_sensation):
+        images = images_by_sensation[sensation]
         print(f'[{sensation}] {len(images)} images found')
 
         raw_path = os.path.join(args.output_dir, 'raw', f'{sensation}.json')
@@ -96,16 +96,14 @@ def run(args):
 
         canonical_counts = canonicalizer.canonicalize(sensation, raw_counts, args.canonicalization_batch_size)
         canonical_counts = dict(sorted(canonical_counts.items(), key=lambda kv: -kv[1]))
+        print(f'[{sensation}] {len(canonical_counts)} canonical objects')
 
-        canonical_path = os.path.join(args.output_dir, f'{sensation}.json')
-        save_json(canonical_path, canonical_counts)
-        print(f'[{sensation}] {len(canonical_counts)} canonical objects -> {canonical_path}')
+        sensory_visual_elements[sensation] = canonical_counts
 
-        summary[sensation] = canonical_counts
-
-    summary_path = os.path.join(args.output_dir, 'summary.json')
-    save_json(summary_path, summary)
-    print(f'done. summary written to {summary_path}')
+    output_path = os.path.join(args.output_dir, 'sensory_visual_elements.json')
+    save_json(output_path, sensory_visual_elements)
+    print(f'done. {{sensation: {{object: count}}}} map written to {output_path}')
+    return sensory_visual_elements
 
 
 if __name__ == '__main__':
