@@ -1,0 +1,14 @@
+You are looking at an advertisement image that was generated to evoke the "{{ sensation }}" sensation.
+
+Carefully look at the image and list every concrete, visible object or visual element that plausibly contributes to that sensation (for example, for a cold/refreshing sensation this could include things like ice cubes, condensation droplets, or a frozen surface). Ignore text, logos, watermarks, and anything you are inferring rather than actually seeing.
+
+Rules for naming each object:
+- Use a short, generic, singular noun phrase (e.g. "ice cube", not "ice cubes" or "the small cube of ice sitting on the table").
+- Use lowercase.
+- Do not try to avoid repeating an object name across your own list if it genuinely appears more than once as a distinct instance; just list each distinct kind of object once.
+- List at most 8 objects, only the ones clearly visible.
+
+Respond with only a JSON list of strings, nothing else. Example:
+["ice cube", "water droplet", "frosted glass"]
+
+If there are no relevant objects visible, respond with an empty JSON list: []

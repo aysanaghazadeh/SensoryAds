@@ -1,0 +1,23 @@
+You are maintaining a running dictionary of distinct visual objects associated with the "{{ sensation }}" sensation in a set of advertisement images.
+
+Existing dictionary entries (canonical object names already in use):
+{% if canonical_names %}{% for name in canonical_names %}- {{ name }}
+{% endfor %}{% else %}(the dictionary is currently empty){% endif %}
+
+New object mentions to resolve, extracted independently from various images:
+{% for item in batch %}- {{ item }}
+{% endfor %}
+
+For each new object mention, decide:
+1. If it refers to the same real-world object as an existing dictionary entry (synonyms, singular/plural, hyphenation, spelling or phrasing variants, e.g. "ice" and "ice cube" and "ice-cubes" are the same object), map it to that EXACT existing entry name, copied verbatim.
+2. Otherwise, it is a new distinct object: map it to a short, generic, lowercase, singular noun phrase that will become its new canonical name.
+
+Do not merge genuinely different objects (e.g. "ice cube" and "ice cream" and "snow" are different objects, do not merge them).
+
+Respond with only a JSON object mapping each new object mention (as given, verbatim key) to its resolved canonical name. Example:
+
+{
+  "ice cubes": "ice cube",
+  "frosty glass": "frosted glass",
+  "palm tree": "palm tree"
+}
