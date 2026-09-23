@@ -1,16 +1,15 @@
 #!/bin/bash
 #SBATCH --job-name=SFT_training_LLM
 #SBATCH --cluster=gpu
-#SBATCH --partition=a100_nvlink
+#SBATCH --partition=h200
 # a100_nvlink spans both the 80GB (gpu-n[31-32]) and 40GB (gpu-n[28-30])
 # SXM4 nodes; constrain to the 80GB ones specifically.
-#SBATCH --constraint=80g
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=16
 #SBATCH --gres=gpu:2
 #SBATCH --mem=128G
-#SBATCH --time=0-05:00:00
+#SBATCH --time=0-10:00:00
 #SBATCH --output=SFT_training_LLM_%j.out
 #SBATCH --mail-user=aya34@pitt.edu
 #SBATCH --mail-type=END,FAIL
