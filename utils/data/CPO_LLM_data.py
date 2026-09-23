@@ -41,12 +41,17 @@ def get_LLM_CPO_training_data(args, image_urls, tokenizer=None):
         return row
 
     descriptions = pd.read_csv(args.description_file)
+    description_by_id = dict(zip(descriptions['ID'], descriptions['description']))
     dataset = {'prompt': [], 'chosen': [], 'rejected': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
     for image_url in image_urls:
         if image_url in sensations:
+            # A handful of IDs carry stray whitespace from the original
+            # annotation parse and don't match description_file's clean copy.
+            if image_url not in description_by_id:
+                continue
             sensation_scores = sensations[image_url]['sensation_scores']
-            description = descriptions.loc[descriptions['ID'] == image_url]['description'].values[0].split('Q2:')[-1]
+            description = description_by_id[image_url].split('Q2:')[-1]
             # Short prompt (matches hierarchical CPO data) — avoids embedding the full sensation catalog per row.
             prompt = f"""Context: Description of an image is {description}.
                          Sensation that the image evokes the most is: """

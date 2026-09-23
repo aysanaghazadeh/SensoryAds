@@ -1,6 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from torch import nn
 from peft import PeftModel
+from accelerate import PartialState
 import os
 
 class QWenLM(nn.Module):
@@ -22,6 +23,20 @@ class QWenLM(nn.Module):
             self.model = PeftModel.from_pretrained(self.model,
                                                    os.path.join(args.model_path,
                                                                 f'my_HierarchicalCPO_QWenLM/checkpoint-{args.model_checkpoint}/'))
+        elif args.train:
+            # One full (quantized) replica per process so accelerate can wrap it in
+            # DDP and split batches across GPUs, instead of sharding one model over
+            # all of them the way device_map="auto" does.
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                torch_dtype="auto",
+                device_map={"": PartialState().process_index},
+                quantization_config=BitsAndBytesConfig(load_in_8bit=True)
+            )
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name,
+                                                           token=os.environ.get('HF_TOKEN'),
+                                                           trust_remote_code=True,
+                                                           padding='right')
         else:
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_name,
@@ -29,13 +44,7 @@ class QWenLM(nn.Module):
                 device_map="auto",
                 quantization_config=BitsAndBytesConfig(load_in_8bit=True)
             )
-            if args.train:
-                self.tokenizer = AutoTokenizer.from_pretrained(model_name,
-                                                               token=os.environ.get('HF_TOKEN'),
-                                                               trust_remote_code=True,
-                                                               padding='right')
-            else:
-                self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     def forward(self, prompt):
         messages = [
