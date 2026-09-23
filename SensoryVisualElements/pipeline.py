@@ -40,16 +40,20 @@ def save_json(path, data):
 
 def extract_sensation_objects(args, extractor, sensation, images, raw_path):
     """Agent 1 pass: runs the extraction agent over every image of one sensation,
-    checkpointing to raw_path so a crash/interrupt does not lose earlier work."""
+    checkpointing to raw_path so a crash/interrupt does not lose earlier work.
+
+    A failed extraction is checkpointed as null (None), not []: an empty list means
+    the agent looked and genuinely found nothing, while null means it never
+    successfully looked, so --resume retries it instead of treating it as done."""
     raw_mentions = load_json(raw_path, {}) if args.resume else {}
     for i, image_path in enumerate(images):
-        if image_path in raw_mentions:
+        if raw_mentions.get(image_path) is not None:
             continue
         try:
             raw_mentions[image_path] = extractor.extract(image_path, sensation)
         except Exception as exc:
             print(f'[extraction failed] {image_path}: {exc}')
-            raw_mentions[image_path] = []
+            raw_mentions[image_path] = None
         if (i + 1) % 10 == 0 or (i + 1) == len(images):
             save_json(raw_path, raw_mentions)
             print(f'[{sensation}] extracted {i + 1}/{len(images)} images')
@@ -63,6 +67,8 @@ def pool_raw_counts(raw_mentions):
     different-looking mentions of the same object."""
     counts = defaultdict(int)
     for objects in raw_mentions.values():
+        if not objects:
+            continue
         for obj in objects:
             normalized = ' '.join(obj.strip().lower().split())
             if normalized:

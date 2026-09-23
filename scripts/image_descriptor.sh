@@ -5,7 +5,7 @@ python inference.py \
 --inference_type=description_generation \
 --MLLM_prompt=description_generation.jinja \
 --model_type=MLLM \
---MLLM=InternVL \
+--MLLM=QWenVL \
 --description_goal=image_descriptor \
 --test_set_images=train_images_total \
 --test_set_QA=train/sensation_annotations_parsed_1200_test.csv \

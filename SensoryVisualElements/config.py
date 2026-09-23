@@ -34,6 +34,9 @@ def get_args():
     parser.add_argument('--model_type', type=str, default='MLLM', choices=['MLLM'])
     parser.add_argument('--MLLM', type=str, default='GPT4_o')
     parser.add_argument('--extraction_prompt', type=str, default='sensory_object_extraction.jinja')
+    parser.add_argument('--extraction_max_new_tokens', type=int, default=200,
+                         help='generate_kwargs max_new_tokens passed to local-model MLLM backends '
+                              '(ignored by GPT4_o/Gemini, whose forward() does not take generate_kwargs)')
 
     # canonicalization agent (text)
     parser.add_argument('--LLM', type=str, default='GPT4o')
