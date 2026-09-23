@@ -1,18 +1,17 @@
 #!/bin/bash
-#SBATCH --job-name=hcpo_llama3
+#SBATCH --job-name=CPO_training_LLM
 #SBATCH --cluster=gpu
-#SBATCH --partition=h200
-# gpu-n89 has twice given a fresh `ls` a false "file not found" for data that
-# was present moments earlier from the login node (jobs 3994716, 3994726) -
-# excluding it to test whether gpu-n90 doesn't have the same issue.
-#SBATCH --exclude=gpu-n89
+#SBATCH --partition=a100_nvlink
+# a100_nvlink spans both the 80GB (gpu-n[31-32]) and 40GB (gpu-n[28-30])
+# SXM4 nodes; constrain to the 80GB ones specifically.
+#SBATCH --constraint=80g
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=16
 #SBATCH --gres=gpu:2
 #SBATCH --mem=128G
 #SBATCH --time=0-10:00:00
-#SBATCH --output=hcpo_llama3_%j.out
+#SBATCH --output=CPO_training_LLM_%j.out
 #SBATCH --mail-user=aya34@pitt.edu
 #SBATCH --mail-type=END,FAIL
 
