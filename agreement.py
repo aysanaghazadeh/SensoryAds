@@ -70,6 +70,18 @@ if __name__ == '__main__':
     print('-' * 100)
     print('Evosense-LLAMA3-InternVL-264000')
     metrics = json.load(open(
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_extended_annotation_LLAMA3_instruct17500.json'))
+    print(len(metrics))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    
+    
+    print('-' * 100)
+    print('Evosense-LLAMA3-InternVL-264000')
+    metrics = json.load(open(
         '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_extended_annotation_LLAMA3_instruct16500.json'))
     print(len(metrics))
     get_human_score_agreement(metrics, human_annotations)
@@ -124,16 +136,84 @@ if __name__ == '__main__':
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
     get_per_class_krippendorff_agreement(metrics, human_annotations)
-    exit()
+    
     print('-' * 100)
-    print('Evosense-LLAMA3-InternVL-90000')
-    metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_train_images_total_ALL_description_generation_LLAMA3_instruct_finetunedTrue_my_HierarchicalCPO_LLAMA3_instruct90000.json'))
-    print(len(metrics))
+    print('PickScore')
+    metrics = json.load(open('/Users/aysanaghazadeh/new_SensoryAds//PickScore/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.json'))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
     get_krippendorff_agreement(metrics, human_annotations)
     get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('Image-Reward')
+    metrics = json.load(open('/Users/aysanaghazadeh/new_SensoryAds/Image_Reward/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('CLIP-score')
+    metrics = json.load(open('/Users/aysanaghazadeh/new_SensoryAds//CLIPScore/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('MLLM - InternVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/new_SensoryAds/MLLM_InternVL/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('MLLM - QWenVL')
+    metrics = json.load(open('/Users/aysanaghazadeh/new_SensoryAds/MLLM_QWenVL/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)   
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('LLM - LLAMA3_instruct')
+    metrics = json.load(open('/Users/aysanaghazadeh/new_SensoryAds/LLM_LLAMA3_instruct/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('LLM - QWenLM')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/new_SensoryAds/LLM_QWenLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('Evosense-LLAMA3-InternVL-Zeroshot')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/new_SensoryAds/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_LLAMA3_instruct_finetunedFalse.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    print('-' * 100)
+    print('Evosense-QWenLM-InternVL-Zeroshot')
+    metrics = json.load(open(
+        '/Users/aysanaghazadeh/new_SensoryAds/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_QWenLM_finetunedFalse.json'))
+    get_human_score_agreement(metrics, human_annotations)
+    get_kappa_agreement(metrics, human_annotations)
+    get_krippendorff_agreement(metrics, human_annotations)
+    get_per_class_krippendorff_agreement(metrics, human_annotations)
+    
+    exit()
+    
     
     # print('-' * 100)
     # print('Evosense-LLAMA3-InternVL-5000')
