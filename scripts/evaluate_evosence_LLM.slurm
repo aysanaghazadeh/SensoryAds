@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128G
-#SBATCH --time=0-01:00:00
+#SBATCH --time=0-03:00:00
 #SBATCH --output=evosense_eval_llama3_%j.out
 #SBATCH --mail-user=aya34@pitt.edu
 #SBATCH --mail-type=END,FAIL
