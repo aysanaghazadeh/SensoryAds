@@ -20,9 +20,10 @@ class QWenLM(nn.Module):
             self.tokenizer = AutoTokenizer.from_pretrained(model_name)
             self.tokenizer.pad_token = self.tokenizer.eos_token
             self.tokenizer.padding_side = "right"
+            checkpoint_dir = args.model_name if args.model_name is not None else 'my_HierarchicalCPO_QWenLM'
             self.model = PeftModel.from_pretrained(self.model,
                                                    os.path.join(args.model_path,
-                                                                f'my_HierarchicalCPO_QWenLM/checkpoint-{args.model_checkpoint}/'))
+                                                                f'{checkpoint_dir}/checkpoint-{args.model_checkpoint}/'))
         elif args.train:
             # One full replica per process so accelerate can wrap it in DDP and
             # split batches across GPUs, instead of sharding one model over all
