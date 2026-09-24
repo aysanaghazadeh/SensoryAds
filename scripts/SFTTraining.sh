@@ -3,8 +3,10 @@ PYTHON=${PYTHON:-python}
 NUM_GPUS=$($PYTHON -c "import torch; print(torch.cuda.device_count())")
 echo "detected ${NUM_GPUS} GPU(s)"
 
+# port=0 picks any free port instead of the hardcoded default (29500), which
+# collides when another job's rendezvous is still using it on a shared node.
 if [ "$NUM_GPUS" -gt 1 ]; then
-    LAUNCH_ARGS="--multi_gpu --num_processes=${NUM_GPUS}"
+    LAUNCH_ARGS="--multi_gpu --num_processes=${NUM_GPUS} --main_process_port=0"
 else
     LAUNCH_ARGS="--num_processes=1"
 fi
