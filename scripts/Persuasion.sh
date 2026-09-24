@@ -17,11 +17,11 @@ pids=()
 ) &
 pids+=($!)
 
-CUDA_VISIBLE_DEVICES=1 python evaluate.py --config_type=DEFAULT \
+CUDA_VISIBLE_DEVICES=0 python evaluate.py --config_type=DEFAULT \
 --evaluation_type=llm_multi_question_persuasiveness_ranking \
 --result_file=SensoryAds/IN_InternVL_20260922_111803_AR_ALL_QWenImage_ALL_description_generation.csv  \
 --VLM=InternVL \
---description_file=../experiments/results/SensoryAds/IN_InternVL_20260922_111803_AR_ALL_QWenImage_ALL_AuraFlow_ALL_description_generation.csv \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20260922_111803_AR_ALL_QWenImage_ALL_description_generation.csv \
 --LLM=LLAMA3_instruct &
 pids+=($!)
 
@@ -40,3 +40,11 @@ for pid in "${pids[@]}"; do
     wait "$pid" || status=1
 done
 exit $status
+
+
+python evaluate.py --config_type=DEFAULT \
+--evaluation_type=llm_multi_question_persuasiveness_ranking \
+--result_file=SensoryAds/IN_InternVL_20260922_092522_AR_ALL_AuraFlow_ALL_description_generation.csv  \
+--VLM=InternVL \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_20260922_092522_AR_ALL_AuraFlow_ALL_description_generation.csv \
+--LLM=LLAMA3_instruct
