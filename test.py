@@ -548,3 +548,18 @@ print('qwenimage', np.mean(qwenimage_scores), len(qwenimage_scores))
 print('sd3', np.mean(sd3_scores), len(sd3_scores))
 print('saga', np.mean(saga_scores), len(saga_scores))
 print(np.mean(scores), np.std(scores))
+
+RUN_ID = {
+    'flux_sensory': '20250916_122348_AR_ALL_Flux_ALL',
+    'pixart_sensory': '20250918_122434_AR_ALL_PixArt_ALL',
+    'auraflow_sensory': '20250916_220717_AR_ALL_AuraFlow_ALL',
+    'dalle3_sensory': '20260212_004312_AR_ALL_DALLE3_ALL',
+    'sd3_sensory': '20250916_130149_AR_ALL_SD3_ALL',
+    'qwenimage_sensory': '20260224_024108_AR_ALL_QWenImage_ALL',
+    'saga_sensory': '20260129_002256_AR_ALL_AgenticEditing_ALL',
+    'flux_no_sensation': '20250220_011712_AR_ALL_Flux_ALL',
+    'sd3_no_sensation': '20260916_201638_AR_ALL_SD3_ALL',
+    'auraflow_no_sensation': '20260922_092522_AR_ALL_AuraFlow_ALL',
+    'qwenimage_no_sensation': '20260922_111803_AR_ALL_QWenImage_ALL',
+    'pixart_no_sensation': '20260908_001428_AR_ALL_PixArt_ALL',
+}
