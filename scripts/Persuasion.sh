@@ -3,12 +3,18 @@
 # this job to 0..N-1, so index 0/1/2 here always lands on distinct GPUs.
 pids=()
 
-CUDA_VISIBLE_DEVICES=0 python evaluate.py --config_type=DEFAULT \
---evaluation_type=llm_multi_question_persuasiveness_ranking \
---result_file=SensoryAds/IN_InternVL_20260916_201638_AR_ALL_SD3_ALL_description_generation.csv  \
---VLM=InternVL \
---description_file=../experiments/results/SensoryAds/IN_InternVL_20260916_201638_AR_ALL_SD3_ALL_description_generation.csv \
---LLM=LLAMA3_instruct &
+# This one's evaluate.py lives in the sibling CAP project, not here, so it
+# needs to run with CAP as its working directory; the subshell keeps that
+# `cd` from affecting the two SensoryAds-local commands below.
+(
+    cd ../CAP &&
+    CUDA_VISIBLE_DEVICES=0 python evaluate.py --config_type=DEFAULT \
+    --evaluation_type=llm_multi_question_persuasiveness_ranking \
+    --result_file=SensoryAds/IN_InternVL_20260916_201638_AR_ALL_SD3_ALL_description_generation.csv  \
+    --VLM=InternVL \
+    --description_file=../experiments/results/SensoryAds/IN_InternVL_20260916_201638_AR_ALL_SD3_ALL_description_generation.csv \
+    --LLM=LLAMA3_instruct
+) &
 pids+=($!)
 
 CUDA_VISIBLE_DEVICES=1 python evaluate.py --config_type=DEFAULT \
