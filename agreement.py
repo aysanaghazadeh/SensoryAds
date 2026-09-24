@@ -90,7 +90,7 @@ if __name__ == '__main__':
     print('-' * 100)
     print('Evosense-QWenLM-InternVL-184000')
     metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_QWenLM_finetunedTrue_my_HierarchicalCPO_extended_annotation_QWenLM11500.json'))
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_QWenLM_finetunedTrue_my_HierarchicalCPO_extended_annotation_QWenLM12500.json'))
     print(len(metrics))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     print('-' * 100)
     print('Evosense-QWenLM-QWenVL-184000')
     metrics = json.load(open(
-        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_QWenVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_QWenLM_finetunedTrue_my_HierarchicalCPO_extended_annotation_QWenLM11500.json'))
+        '/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/Evosense_LLM/IN_QWenVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation_QWenLM_finetunedTrue_my_HierarchicalCPO_extended_annotation_QWenLM12500.json'))
     print(len(metrics))
     get_human_score_agreement(metrics, human_annotations)
     get_kappa_agreement(metrics, human_annotations)
