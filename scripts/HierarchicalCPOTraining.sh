@@ -11,10 +11,15 @@ echo "data path: ${DATA_PATH} (exists: $([ -d "$DATA_PATH" ] && echo yes || echo
 NUM_GPUS=$($PYTHON -c "import torch; print(torch.cuda.device_count())")
 echo "detected ${NUM_GPUS} GPU(s)"
 
-# port=0 picks any free port instead of the hardcoded default (29500), which
-# collides when another job's rendezvous is still using it on a shared node.
+# port=0 (dynamic) left the worker processes trying to connect on a literal
+# port 0 and hanging forever, so derive a fixed port from the job ID instead
+# - unique enough per job to avoid colliding with another job's rendezvous on
+# a shared node. main_process_ip pins the loopback address explicitly so c10d
+# never has to resolve "localhost" (which was falling back from an unusable
+# IPv6 result with errno 97 on this cluster).
 if [ "$NUM_GPUS" -gt 1 ]; then
-    LAUNCH_ARGS="--multi_gpu --num_processes=${NUM_GPUS} --main_process_port=0"
+    MAIN_PROCESS_PORT=$(( 20000 + (${SLURM_JOB_ID:-$$} % 20000) ))
+    LAUNCH_ARGS="--multi_gpu --num_processes=${NUM_GPUS} --main_process_ip=127.0.0.1 --main_process_port=${MAIN_PROCESS_PORT}"
 else
     LAUNCH_ARGS="--num_processes=1"
 fi
