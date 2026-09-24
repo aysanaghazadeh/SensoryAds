@@ -24,14 +24,15 @@ class QWenLM(nn.Module):
                                                    os.path.join(args.model_path,
                                                                 f'my_HierarchicalCPO_QWenLM/checkpoint-{args.model_checkpoint}/'))
         elif args.train:
-            # One full (quantized) replica per process so accelerate can wrap it in
-            # DDP and split batches across GPUs, instead of sharding one model over
-            # all of them the way device_map="auto" does.
+            # One full replica per process so accelerate can wrap it in DDP and
+            # split batches across GPUs, instead of sharding one model over all
+            # of them the way device_map="auto" does. Not quantized: bnb's
+            # int8 matmuls are noticeably slower per step than fp16/bf16, and
+            # a 7B model fits comfortably in bf16 on these GPUs anyway.
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 torch_dtype="auto",
                 device_map={"": PartialState().process_index},
-                quantization_config=BitsAndBytesConfig(load_in_8bit=True)
             )
             self.tokenizer = AutoTokenizer.from_pretrained(model_name,
                                                            token=os.environ.get('HF_TOKEN'),
