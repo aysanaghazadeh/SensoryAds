@@ -2,6 +2,7 @@
 #SBATCH --job-name=CPO_training_LLM
 #SBATCH --cluster=gpu
 #SBATCH --partition=h200
+#SBATCH --exclude=gpu-n89
 # a100_nvlink spans both the 80GB (gpu-n[31-32]) and 40GB (gpu-n[28-30])
 # SXM4 nodes; constrain to the 80GB ones specifically.
 #SBATCH --nodes=1
