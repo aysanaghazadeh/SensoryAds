@@ -1,7 +1,7 @@
 # Scores with the SFT_score_train_LLM model. SFT_score_judge.jinja is the exact training
 # prompt; the model answers with a bare 0-5 score, which get_LLM_Judge_Score divides by 5.
 # MODEL_CHECKPOINT is the step of a saved checkpoint under models/mySFTScore_LLAMA3_instruct.
-python evaluation.py --config_type=DEFAULT \
+${PYTHON:-python} evaluation.py --config_type=DEFAULT \
 --evaluation_type=LLM \
 --LLM=LLAMA3_instruct \
 --model_type=LLM \
