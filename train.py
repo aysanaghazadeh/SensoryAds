@@ -3,6 +3,8 @@ from Training.SFT_training_LLM import train as SFT_training_LLM
 from Training.SFT_score_training_LLM import train as SFT_score_training_LLM
 from Training.CPO_training_LLM import train as CPO_training_LLM
 from Training.Hierarchical_CPO_training_LLM import train as HierarchicalCPO_training_LLM
+from Training.Hierarchical_CPO_training_MLLM import train as HierarchicalCPO_training_MLLM
+from Training.CLIP_training import train as CLIP_training
 from Training.SD3_training import train as SD3_training
 from Training.Hierarchical_CPO_training_LLM_Annotations import train as HierarchicalCPO_training_LLM_Annotations
 if __name__ == '__main__':
@@ -15,6 +17,10 @@ if __name__ == '__main__':
         SFT_training_LLM(args)
     if args.training_type == 'SFT_score_train_LLM':
         SFT_score_training_LLM(args)
+    if args.training_type == 'CLIP_train':
+        CLIP_training(args)
+    if args.training_type == 'HierarchicalCPO_train_MLLM':
+        HierarchicalCPO_training_MLLM(args)
     if args.training_type == 'HierarchicalCPO_train_LLM':
         HierarchicalCPO_training_LLM(args)
     if args.training_type == 'HierarchicalCPO_train_LLM_Annotations':

@@ -4,19 +4,30 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPIma
 import torch
 import torchvision.transforms as T
 from PIL import Image
+from accelerate import PartialState
 
 
 class InternVL(nn.Module):
     def __init__(self, args):
         super(InternVL, self).__init__()
         self.args = args
-        self.model = AutoModel.from_pretrained(
-            "OpenGVLab/InternVL3_5-8B",
-            torch_dtype=torch.bfloat16,
-            load_in_8bit=True,
-            low_cpu_mem_usage=True,
-            device_map='auto',
-            trust_remote_code=True).eval()
+        if getattr(args, 'train', False):
+            # One full replica per process so accelerate can wrap it in DDP and split
+            # batches across GPUs, instead of sharding one model over all of them.
+            self.model = AutoModel.from_pretrained(
+                "OpenGVLab/InternVL3_5-8B",
+                torch_dtype=torch.bfloat16,
+                low_cpu_mem_usage=True,
+                device_map={"": PartialState().process_index},
+                trust_remote_code=True)
+        else:
+            self.model = AutoModel.from_pretrained(
+                "OpenGVLab/InternVL3_5-8B",
+                torch_dtype=torch.bfloat16,
+                load_in_8bit=True,
+                low_cpu_mem_usage=True,
+                device_map='auto',
+                trust_remote_code=True).eval()
         self.tokenizer = AutoTokenizer.from_pretrained("OpenGVLab/InternVL3_5-8B",
                                                        trust_remote_code=True,
                                                        use_fast=False)

@@ -4,13 +4,21 @@ from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, Auto
 from qwen_vl_utils import process_vision_info
 import torch
 from peft import PeftModel
+from accelerate import PartialState
 
 class QWenVL(torch.nn.Module):
     def __init__(self, args):
         super().__init__()
         bnb_config = BitsAndBytesConfig(load_in_8bit=True)
         self.device = args.device
-        if not args.fine_tuned:
+        if getattr(args, 'train', False):
+            # One full replica per process so accelerate can wrap it in DDP and split
+            # batches across GPUs, instead of sharding one model over all of them.
+            self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                "Qwen/Qwen2.5-VL-7B-Instruct",
+                torch_dtype=torch.bfloat16,
+                device_map={"": PartialState().process_index})
+        elif not args.fine_tuned:
             self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct",
                                                                         quantization_config=bnb_config,
                                                                         device_map='auto').eval()
