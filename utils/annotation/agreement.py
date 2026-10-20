@@ -1,5 +1,6 @@
 from scipy.stats import spearmanr
 import numpy as np
+import itertools
 from utils.data.physical_sensations import SENSATIONS_PARENT_MAP, SENSATION_HIERARCHY
 import krippendorff
 from sklearn.metrics import cohen_kappa_score
@@ -44,7 +45,7 @@ def get_preference_per_image(human_annotations, metric_annotations, sensation_li
             else:
                 metric_score_sensation1 = sensation_scores1
                 metric_score_sensation2 = sensation_scores2
-            if human_score_sensation1 == human_score_sensation2:# or metric_score_sensation1 == metric_score_sensation2:
+            if human_score_sensation1 == human_score_sensation2:
                 continue
             if human_score_sensation1 > human_score_sensation2:
                 human_preferences.append(0)
@@ -192,10 +193,6 @@ def get_human_human_score_agreement(human1_annotations, human2_annotations):
         if image_url not in human2_annotations:
             continue
         count += 1
-        # if count < 40:
-        #     continue
-        # if count > 140:
-        #     break
         human1_scores_per_image = get_human_scores_per_image(human1_annotations, image_url, sensation_list)
         human2_scores_per_image = get_scores_per_image(human2_annotations, image_url, sensation_list)
 
@@ -212,12 +209,11 @@ def get_krippendorff_agreement(metric_scores, human_annotations):
         if image_url not in human_annotations:
             continue
         count += 1
-        # if count < 40:
-        #     continue
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
 
+    print(len(metrics_preferences), len(human_preferences))
     print(f'overall alpha agreement for {count} images is:', compute_krippendorff(metrics_preferences, human_preferences))
 
 def get_per_class_krippendorff_agreement(metric_scores, human_annotations):
@@ -371,15 +367,6 @@ def get_first_sensation_accuracy(metric_scores, human_annotations):
         third_sensation = list(image_metric_annotations.keys())[2]
         if first_sensation.lower() in human_sensation_chosen:
             correct_count += 1
-        # else:
-        #     print(image_url)
-        #     print(first_sensation, image_metric_annotations[first_sensation][-1])
-        #     print(second_sensation, image_metric_annotations[second_sensation][-1])
-        #     print(third_sensation, image_metric_annotations[third_sensation][-1])
-        #     # if human_sensation_chosen == ['none']:
-        #     print(human_sensation_chosen, image_metric_annotations['None'][-1])
-        #
-        #     print('-' * 30)
         count += 1
     print('accuracy of first chosen value is:', correct_count/count, 'out of total images of ', count)
 
@@ -454,11 +441,6 @@ def get_hierarchy_first_sensation_agreement(metric_scores, human_annotations):
         for sensation in sensations_group:
             if sensation.lower() in human_sensation_chosen:
                 image_correct_count += 1
-        # if image_correct_count < len(sensations_group):
-        #     print(image_url)
-        #     print(sensations_group, [image_metric_annotations[sensation][-1] for sensation in sensations_group])
-        #     print(human_sensation_chosen)
-        #     print('-' * 30)
         count += len(sensations_group)
         correct_count += image_correct_count
     print('accuracy of first chosen value is:', correct_count / count,

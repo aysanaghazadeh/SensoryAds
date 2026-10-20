@@ -3,8 +3,8 @@ import os
 import numpy as np
 
 def average_score(metrics_scores):
-    mean = 0.86
-    std = 0.15
+    mean = 0.7
+    std = 0.26
     values = []
     for image_url in metrics_scores:
         for sensation in metrics_scores[image_url]:
@@ -33,7 +33,7 @@ def compute_all_average_scores_all_files(directory):
     minimum_score_all = 2
     values_all = []
     for filename in os.listdir(directory):
-        if filename == '.DS_Store' or '40000' not in filename:
+        if filename == '.DS_Store' or '16500' not in filename:
             continue
         metrics_file = os.path.join(directory, filename)
         metrics_file = os.path.join(directory, filename)
@@ -67,7 +67,7 @@ def compute_average_per_sensation(metrics_scores):
 
 def compute_average_per_sensations_all_files(directory):
     for filename in os.listdir(directory):
-        if filename == '.DS_Store' or '40000' not in filename:
+        if filename == '.DS_Store' or '16500' not in filename:
             continue
         print(filename)
         metrics_file = os.path.join(directory, filename)
@@ -120,7 +120,7 @@ def compute_real_images_scores(real_ads, generated_ads):
 
 
 if __name__ == '__main__':
-    directory = '/Users/aysanaghazadeh/experiments/results/SensoryAds/Evosense_GT_Sensation'
+    directory = '/Users/aysanaghazadeh/new_SensoryAds/Evosense_GT_Sensation'
     compute_all_average_scores_all_files(directory)
     compute_average_per_sensations_all_files(directory)
     # generated_ads = json.load(open('/Users/aysanaghazadeh/experiments/SensoryAds/Evosense_GT_Sensation/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation_LLAMA3_instruct_finetunedTrue_21000.json'))

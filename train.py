@@ -1,5 +1,6 @@
 from configs.training_config import get_args
 from Training.SFT_training_LLM import train as SFT_training_LLM
+from Training.SFT_score_training_LLM import train as SFT_score_training_LLM
 from Training.CPO_training_LLM import train as CPO_training_LLM
 from Training.Hierarchical_CPO_training_LLM import train as HierarchicalCPO_training_LLM
 from Training.SD3_training import train as SD3_training
@@ -12,6 +13,8 @@ if __name__ == '__main__':
         CPO_training_LLM(args)
     if args.training_type == 'SFT_train_LLM':
         SFT_training_LLM(args)
+    if args.training_type == 'SFT_score_train_LLM':
+        SFT_score_training_LLM(args)
     if args.training_type == 'HierarchicalCPO_train_LLM':
         HierarchicalCPO_training_LLM(args)
     if args.training_type == 'HierarchicalCPO_train_LLM_Annotations':

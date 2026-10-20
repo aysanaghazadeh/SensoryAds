@@ -202,90 +202,94 @@
 #         print(sum_scores / count)
 #         print(count)
 #         print('--------------------------------')
-# # import matplotlib.pyplot as plt
-# # plt.rcParams["font.family"] = "Chalkboard SE"
-# # plt.rcParams['font.sans-serif'] = ['Chalkboard SE']
-# # plt.rcParams['font.size'] = 14
-# # from scipy.ndimage import gaussian_filter, gaussian_filter1d
-# # import numpy as np
+import matplotlib.pyplot as plt
+import os
+import json
+# plt.rcParams["font.family"] = "Chalkboard SE"
+# plt.rcParams['font.sans-serif'] = ['Chalkboard SE']
+plt.rcParams['font.size'] = 14
+from scipy.ndimage import gaussian_filter, gaussian_filter1d
+import numpy as np
         
-# # persuasion_scores = []
-# # AIM_scores = []
-# # Evosense_scores = []
+persuasion_scores = []
+AIM_scores = []
+Evosense_scores = []
 
-# # markers = ['o', 's', 'v', '^', 'p', 'H', 'X', 'd', '1', 'd', '8', 'x', '>']
-# # count = 0
-# # filenames = os.listdir('/Users/aysanaghazadeh/SensoryAds')
-# # for i, filename in enumerate(filenames):
-# #     if 'persuasion.json' in filename and 'train_images_total' not in filename and '20250220_011712' not in filename:
-# #         # if 'PixArt' in filename:
-# #         #     continue
-# #         count += 1
-# #         persuasion = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', filename)))
-# #         AIM_filename = filename.replace('_LLAMA3_instruct_persuasion.json', 'LLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json')
-# #         if not os.path.exists(os.path.join('/Users/aysanaghazadeh/SensoryAds', AIM_filename)):
-# #             print(f'{AIM_filename} does not exist')
-# #             continue
-# #         AIM = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', AIM_filename)))
-# #         Evosense_filename = filename.replace('_LLAMA3_instruct_persuasion.json', '_LLAMA3_instruct_finetunedTrue_40000.json')
-# #         if not os.path.exists(os.path.join('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation', Evosense_filename)):
-# #             print(f'{Evosense_filename} does not exist')
-# #             continue
-# #         Evosense = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds/Evosense_GT_Sensation', Evosense_filename)))
-# #         per_file_sensation_scores = []
-# #         per_file_AIM_scores = []
-# #         per_file_persuasion_scores = []
-# #         minimum, maximum = float('inf'), -float('inf')
-# #         for image_file in Evosense:
-# #             for sensation in Evosense[image_file]:
-# #                 image_url = os.path.join(sensation, image_file)
-# #                 if image_url not in AIM:
-# #                     continue
-# #                 if image_url not in persuasion:
-# #                     continue
+markers = ['o', 's', 'v', '^', 'p', 'H', 'X', 'd', '1', 'd', '8', 'x', '>']
+count = 0
+filenames = os.listdir('/Users/aysanaghazadeh/SensoryAds')
+for i, filename in enumerate(filenames):
+    if 'persuasion.json' in filename and 'train_images_total' not in filename and '20250220_011712' not in filename and 'AgenticEditing' not in filename:
+        # if 'PixArt' in filename:
+        #     continue
+        count += 1
+        persuasion = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', filename)))
+        AIM_filename = filename.replace('_LLAMA3_instruct_persuasion.json', 'LLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json')
+        if not os.path.exists(os.path.join('/Users/aysanaghazadeh/SensoryAds', AIM_filename)):
+            print(f'{AIM_filename} does not exist')
+            continue
+        AIM = json.load(open(os.path.join('/Users/aysanaghazadeh/SensoryAds', AIM_filename)))
+        Evosense_filename = filename.replace('_LLAMA3_instruct_persuasion.json', '_LLAMA3_instruct_finetunedTrue_16500.json')
+        if not os.path.exists(os.path.join('/Users/aysanaghazadeh/new_SensoryAds/Evosense_GT_Sensation', Evosense_filename)):
+            print(f'{Evosense_filename} does not exist')
+            continue
+        Evosense = json.load(open(os.path.join('/Users/aysanaghazadeh/new_SensoryAds/Evosense_GT_Sensation', Evosense_filename)))
+        per_file_sensation_scores = []
+        per_file_AIM_scores = []
+        per_file_persuasion_scores = []
+        minimum, maximum = float('inf'), -float('inf')
+        for image_file in Evosense:
+            for sensation in Evosense[image_file]:
+                image_url = os.path.join(sensation, image_file)
+                if image_url not in AIM:
+                    continue
+                if image_url not in persuasion:
+                    continue
                 
-# #                 if isinstance(persuasion[image_url], list):
-# #                     p = persuasion[image_url][-1] / 5
-# #                     a = (AIM[image_url][1] - 0.38) / (0.95 - 0.38)
-# #                     e = Evosense[image_file][sensation][-1]
+                if isinstance(persuasion[image_url], list):
+                    p = persuasion[image_url][-1] / 5
+                    a = (AIM[image_url][1])
+                    e = (Evosense[image_file][sensation][-1] - 0.7 - 0.02) / (0.26)
                     
-# #                     if e > 1.02:
-# #                         continue
-# #                     if e < minimum:
-# #                         minimum = e
-# #                     if e > maximum:
-# #                         maximum = e
-# #                     per_file_sensation_scores.append(e)
-# #                     per_file_AIM_scores.append(a)
-# #                     per_file_persuasion_scores.append(p)
+                    if e >= 1.2:
+                        continue
+                    if e < 0.0:
+                        continue
+                    if e < minimum:
+                        minimum = e
+                    if e > maximum:
+                        maximum = e
+                    per_file_sensation_scores.append(e)
+                    per_file_AIM_scores.append(a)
+                    per_file_persuasion_scores.append(p)
         
-# #         per_file_sensation_scores = [(e - minimum) / (maximum - minimum) for e in per_file_sensation_scores]
-# #         Evosense_scores += per_file_sensation_scores
-# #         AIM_scores += per_file_AIM_scores
-# #         persuasion_scores += per_file_persuasion_scores
-# #         per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores = zip(*sorted(zip(per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores)))
-# #         per_file_AIM_scores = gaussian_filter1d(per_file_AIM_scores, sigma=40)
-# #         per_file_persuasion_scores = gaussian_filter1d(per_file_persuasion_scores, sigma=40)
+        # per_file_sensation_scores = [(e - 0.7) / (0.26) for e in per_file_sensation_scores]
+        Evosense_scores += per_file_sensation_scores
+        AIM_scores += per_file_AIM_scores
+        persuasion_scores += per_file_persuasion_scores
+        per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores = zip(*sorted(zip(per_file_sensation_scores, per_file_AIM_scores, per_file_persuasion_scores)))
+        per_file_AIM_scores = gaussian_filter1d(per_file_AIM_scores, sigma=20)
+        per_file_persuasion_scores = gaussian_filter1d(per_file_persuasion_scores, sigma=40)
         
-# #         plt.plot(per_file_sensation_scores, per_file_AIM_scores, label=filename.split('_')[6] if 'AgenticEditing' not in filename else 'SAGA', marker=markers[count])
-# #         plt.xlabel('SenseScore', fontsize=16)
-# #         plt.ylabel('AIM', fontsize=16)
-# #         # plt.title(filename.split('_')[6])
-# #         # plt.show()
-# #         # plt.plot(per_file_sensation_scores, per_file_persuasion_scores)
-# #         # plt.xlabel('SenseScore')
-# #         # plt.ylabel('Persuasion')
-# # # plt.title('AIM vs SenseScore for different models', fontsize=18)
-# # Evosense_scores, AIM_scores, persuasion_scores = zip(*sorted(zip(Evosense_scores, AIM_scores, persuasion_scores)))
-# # print(len(Evosense_scores), len(AIM_scores), len(persuasion_scores))
-# # AIM_scores = gaussian_filter1d(AIM_scores, sigma=100)
-# # persuasion_scores = gaussian_filter1d(persuasion_scores, sigma=100)
-# # plt.plot(Evosense_scores, AIM_scores, label='All Images', marker=markers[count])
-# # plt.xlabel('SenseScore', fontsize=16)
-# # plt.ylabel('AIM', fontsize=16)
-# # plt.title('AIM vs SenseScore for all models', fontsize=18)
-# # plt.legend(ncol=2, fontsize=14)
-# # plt.show()
+        # plt.plot(per_file_sensation_scores, per_file_AIM_scores, label=filename.split('_')[6] if 'AgenticEditing' not in filename else 'SAGA', marker=markers[count])
+        # plt.xlabel('SenseScore', fontsize=16)
+        # plt.ylabel('AIM', fontsize=16)
+        # plt.title(filename.split('_')[6])
+        # plt.show()
+        plt.plot(per_file_sensation_scores, per_file_persuasion_scores, label=filename.split('_')[6] if 'AgenticEditing' not in filename else 'SAGA', marker=markers[count])
+        plt.xlabel('SenseScore')
+        plt.ylabel('Persuasion')
+# plt.title('AIM vs SenseScore for different models', fontsize=18)
+Evosense_scores, AIM_scores, persuasion_scores = zip(*sorted(zip(Evosense_scores, AIM_scores, persuasion_scores)))
+print(len(Evosense_scores), len(AIM_scores), len(persuasion_scores))
+AIM_scores = gaussian_filter1d(AIM_scores, sigma=100)
+persuasion_scores = gaussian_filter1d(persuasion_scores, sigma=100)
+plt.plot(Evosense_scores, persuasion_scores, label='All Images', marker=markers[count])
+plt.xlabel('SenseScore', fontsize=16)
+plt.ylabel('Persuasion', fontsize=16)
+plt.title('Persuasion vs SenseScore for all models', fontsize=18)
+plt.legend(ncol=2, fontsize=14)
+plt.show()
 # # count = 0
 # # for i, filename in enumerate(filenames):
 # #     if 'persuasion.json' in filename and 'train_images_total' not in filename and '20250220_011712' not in filename:
@@ -499,67 +503,67 @@
 # print(len(sample1), len(sample2))
 # print('saga, DALLE3', stat, p_val)
 
-import json
-import numpy as np
-flux = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-pixart = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-auraflow = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-dalle3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260212_004312_AR_ALL_DALLE3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-sd3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-qwenimage = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260224_024108_AR_ALL_QWenImage_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-scores = []
-flux_scores = []
-pixart_scores = []
-auraflow_scores = []
-dalle3_scores = []
-sd3_scores = []
-qwenimage_scores = []
-saga_scores = []
-for image_url in saga:
-    if image_url == 'average':
-        continue
-    if image_url in saga:
-        scores.append(saga[image_url][1])
-        saga_scores.append((saga[image_url][1]))  
-    if image_url in flux:
-        scores.append(flux[image_url][1])
-        flux_scores.append((flux[image_url][1]))  
-    if image_url in pixart:
-        scores.append(pixart[image_url][1])
-        pixart_scores.append((pixart[image_url][1]))  
-    if image_url in auraflow:
-        scores.append(auraflow[image_url][1])
-        auraflow_scores.append((auraflow[image_url][1]))  
-    if image_url in dalle3:
-        scores.append(dalle3[image_url][1])
-        dalle3_scores.append((dalle3[image_url][1]))  
-    if image_url in qwenimage:
-        scores.append(qwenimage[image_url][1])
-        qwenimage_scores.append((qwenimage[image_url][1]))  
-    if image_url in sd3:
-        scores.append(sd3[image_url][1])
-        sd3_scores.append((sd3[image_url][1]))  
-print('flux', np.mean(flux_scores), len(flux_scores))
-print('pixart', np.mean(pixart_scores), len(pixart_scores))
-print('auraflow', np.mean(auraflow_scores), len(auraflow_scores))
-print('dalle3', np.mean(dalle3_scores), len(dalle3_scores))
-print('qwenimage', np.mean(qwenimage_scores), len(qwenimage_scores))
-print('sd3', np.mean(sd3_scores), len(sd3_scores))
-print('saga', np.mean(saga_scores), len(saga_scores))
-print(np.mean(scores), np.std(scores))
+# import json
+# import numpy as np
+# flux = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# pixart = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# auraflow = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# dalle3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260212_004312_AR_ALL_DALLE3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# sd3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# qwenimage = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260224_024108_AR_ALL_QWenImage_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# scores = []
+# flux_scores = []
+# pixart_scores = []
+# auraflow_scores = []
+# dalle3_scores = []
+# sd3_scores = []
+# qwenimage_scores = []
+# saga_scores = []
+# for image_url in saga:
+#     if image_url == 'average':
+#         continue
+#     if image_url in saga:
+#         scores.append(saga[image_url][1])
+#         saga_scores.append((saga[image_url][1]))  
+#     if image_url in flux:
+#         scores.append(flux[image_url][1])
+#         flux_scores.append((flux[image_url][1]))  
+#     if image_url in pixart:
+#         scores.append(pixart[image_url][1])
+#         pixart_scores.append((pixart[image_url][1]))  
+#     if image_url in auraflow:
+#         scores.append(auraflow[image_url][1])
+#         auraflow_scores.append((auraflow[image_url][1]))  
+#     if image_url in dalle3:
+#         scores.append(dalle3[image_url][1])
+#         dalle3_scores.append((dalle3[image_url][1]))  
+#     if image_url in qwenimage:
+#         scores.append(qwenimage[image_url][1])
+#         qwenimage_scores.append((qwenimage[image_url][1]))  
+#     if image_url in sd3:
+#         scores.append(sd3[image_url][1])
+#         sd3_scores.append((sd3[image_url][1]))  
+# print('flux', np.mean(flux_scores), len(flux_scores))
+# print('pixart', np.mean(pixart_scores), len(pixart_scores))
+# print('auraflow', np.mean(auraflow_scores), len(auraflow_scores))
+# print('dalle3', np.mean(dalle3_scores), len(dalle3_scores))
+# print('qwenimage', np.mean(qwenimage_scores), len(qwenimage_scores))
+# print('sd3', np.mean(sd3_scores), len(sd3_scores))
+# print('saga', np.mean(saga_scores), len(saga_scores))
+# print(np.mean(scores), np.std(scores))
 
-RUN_ID = {
-    'flux_sensory': '20250916_122348_AR_ALL_Flux_ALL',
-    'pixart_sensory': '20250918_122434_AR_ALL_PixArt_ALL',
-    'auraflow_sensory': '20250916_220717_AR_ALL_AuraFlow_ALL',
-    'dalle3_sensory': '20260212_004312_AR_ALL_DALLE3_ALL',
-    'sd3_sensory': '20250916_130149_AR_ALL_SD3_ALL',
-    'qwenimage_sensory': '20260224_024108_AR_ALL_QWenImage_ALL',
-    'saga_sensory': '20260129_002256_AR_ALL_AgenticEditing_ALL',
-    'flux_no_sensation': '20250220_011712_AR_ALL_Flux_ALL',
-    'sd3_no_sensation': '20260916_201638_AR_ALL_SD3_ALL',
-    'auraflow_no_sensation': '20260922_092522_AR_ALL_AuraFlow_ALL',
-    'qwenimage_no_sensation': '20260922_111803_AR_ALL_QWenImage_ALL',
-    'pixart_no_sensation': '20260908_001428_AR_ALL_PixArt_ALL',
-}
+# RUN_ID = {
+#     'flux_sensory': '20250916_122348_AR_ALL_Flux_ALL',
+#     'pixart_sensory': '20250918_122434_AR_ALL_PixArt_ALL',
+#     'auraflow_sensory': '20250916_220717_AR_ALL_AuraFlow_ALL',
+#     'dalle3_sensory': '20260212_004312_AR_ALL_DALLE3_ALL',
+#     'sd3_sensory': '20250916_130149_AR_ALL_SD3_ALL',
+#     'qwenimage_sensory': '20260224_024108_AR_ALL_QWenImage_ALL',
+#     'saga_sensory': '20260129_002256_AR_ALL_AgenticEditing_ALL',
+#     'flux_no_sensation': '20250220_011712_AR_ALL_Flux_ALL',
+#     'sd3_no_sensation': '20260916_201638_AR_ALL_SD3_ALL',
+#     'auraflow_no_sensation': '20260922_092522_AR_ALL_AuraFlow_ALL',
+#     'qwenimage_no_sensation': '20260922_111803_AR_ALL_QWenImage_ALL',
+#     'pixart_no_sensation': '20260908_001428_AR_ALL_PixArt_ALL',
+# }

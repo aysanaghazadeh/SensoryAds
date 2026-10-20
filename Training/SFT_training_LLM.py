@@ -39,13 +39,13 @@ def cpo_rows_to_sft(dataset):
     )
 
 
-def get_training_args(args):
+def get_training_args(args, run_name="mySFT"):
     # args.batch_size is the total batch size across GPUs, so split it per process.
     num_processes = PartialState().num_processes
     per_device_train_batch_size = max(1, args.batch_size // num_processes)
     print(f'total batch size: {args.batch_size} over {num_processes} process(es) '
           f'-> per-device batch size: {per_device_train_batch_size}')
-    out = args.model_path + f"/mySFT_{args.LLM}"
+    out = args.model_path + f"/{run_name}_{args.LLM}"
     training_args = SFTConfig(
         output_dir=out,
         remove_unused_columns=False,
