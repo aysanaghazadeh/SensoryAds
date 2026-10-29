@@ -33,11 +33,6 @@ export HF_HUB_OFFLINE=1
 
 cd $SLURM_SUBMIT_DIR
 
-# Pass the checkpoint at submission:
-# `MODEL_CHECKPOINT=1000 sbatch scripts/evaluate_LLM_Judge_SFT.slurm`.
-: "${MODEL_CHECKPOINT:?set MODEL_CHECKPOINT to a saved checkpoint step of mySFTScore_LLAMA3_instruct}"
-export MODEL_CHECKPOINT
-
 bash scripts/evaluate_LLM_Judge_SFT.sh
 eval_status=$?
 
