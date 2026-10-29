@@ -2,7 +2,7 @@ from utils.data.HierarchicalCPO_MLLM_data import get_train_MLLM_HierarchicalCPO_
 from accelerate import PartialState
 from datetime import timedelta
 from transformers import Trainer, TrainingArguments
-from peft import get_peft_model, LoraConfig, TaskType
+from peft import get_peft_model, LoraConfig
 from PIL import Image
 import torch
 import torch.nn.functional as F
@@ -160,8 +160,10 @@ def get_model(args):
                              r=8,
                              lora_alpha=32,
                              lora_dropout=0.1,
-                             target_modules=LORA_TARGET_REGEX,
-                             task_type=TaskType.CAUSAL_LM)
+                             target_modules=LORA_TARGET_REGEX)
+    # No task_type on purpose: that selects PeftModelForCausalLM, whose forward always passes
+    # inputs_embeds/labels/... to the base model, and InternVLChatModel.forward rejects them.
+    # The generic PeftModel forwards exactly the kwargs the collator builds.
     model = get_peft_model(model, peft_config)
     model.print_trainable_parameters()
     return model, builder
