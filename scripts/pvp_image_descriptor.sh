@@ -1,0 +1,13 @@
+python inference.py \
+--config_type=DEFAULT \
+--data_path=../Data/PVP \
+--AD_type=ALL \
+--Image_type=real \
+--inference_type=description_generation \
+--MLLM_prompt=description_generation.jinja \
+--model_type=MLLM \
+--MLLM=InternVL \
+--description_goal=image_descriptor \
+--test_set_images=image_files \
+--test_set_QA=PVP_images.csv \
+--resume=True

@@ -12,6 +12,7 @@ Two stages, so the GPU part and the analysis can be run separately:
 import argparse
 import json
 import os
+import re
 import sys
 
 import pandas as pd
@@ -21,6 +22,8 @@ NORM_MIN, NORM_MAX = -38.970709800720215, -2.043711707713487
 
 
 def id_of(image_path):
+    # same relative path prepare_pvp_images.py wrote, then truncated like description_generation does
+    image_path = re.sub(r'^(PVP/)?image_files/', '', image_path)
     return '/'.join(image_path.split('/')[-3:])
 
 
