@@ -63,7 +63,7 @@ class SensationEvaluation:
         for index, row in descriptions.iterrows():
             image_url = row.ID
             description = row.description
-            scores[image_url] = {}
+            scores.setdefault(image_url, {})
             for sensation in SENSATIONS_PARENT_MAP:
                 if image_url in scores and sensation in scores[image_url]:
                     continue

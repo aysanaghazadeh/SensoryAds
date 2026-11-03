@@ -1,28 +1,24 @@
 """Relate the highest EvoSense sensation score of PVP images to their persuasion score.
 
-Two stages, so the GPU part and the analysis can be run separately:
-  score    - EvoSense-score the generated description of every PVP image against every sensation
-             (descriptions come from inference.py description_generation, see --description_file;
-             needs the same LLM args as evaluation.py, e.g. --LLM, --fine_tuned, --model_name).
-  analyze  - take each image's highest sensation score and correlate it with Score.
+Run after scripts/evaluate_evosense_LLM_PVP.sh, which scores each generated description against every
+sensation (evaluation.py --evaluation_type=Evosense_LLM) and writes a JSON keyed by image ID:
+  {ID: {sensation: [total_logprob, last_token_logprob, normalized_average_logprob]}}
+This takes each image's highest normalized score and correlates it with the PVP persuasion Score.
 
-  python pvp_sensation_vs_persuasion.py score   --description_file=<descriptions.csv> --pvp_scores=pvp_evosense.json --config_type=DEFAULT --LLM=LLAMA3_instruct ...
-  python pvp_sensation_vs_persuasion.py analyze --pvp_scores=pvp_evosense.json
+  python pvp_sensation_vs_persuasion.py --scores=../experiments/results/SensoryAds/Evosense_LLM/<file>.json
 """
 import argparse
-import json
-import os
 import re
-import sys
 
+import json
 import pandas as pd
+from scipy.stats import pearsonr, spearmanr
 
-# Same normalization as SensationEvaluation.evaluate_Evosense_LLM (constants fit on the train images).
-NORM_MIN, NORM_MAX = -38.970709800720215, -2.043711707713487
+NORMALIZED_AVG_LOGPROB = 2  # index in the per-sensation list
 
 
 def id_of(image_path):
-    # same relative path prepare_pvp_images.py wrote, then truncated like description_generation does
+    # same ID prepare_pvp_images.py wrote for description_generation (relative to image_files, last 3 components)
     image_path = re.sub(r'^(PVP/)?image_files/', '', image_path)
     return '/'.join(image_path.split('/')[-3:])
 
@@ -34,47 +30,25 @@ def load_pvp():
     return pd.concat([ds[split].to_pandas() for split in ds], ignore_index=True)
 
 
-def score(pvp, descriptions_path, out_path):
-    from configs.evaluation_config import get_args
-    from Evaluation.sensation_alignment_metrics import get_EvoSense_LLM
-    from LLMs.LLM import LLM
-    from utils.data.physical_sensations import SENSATIONS_PARENT_MAP
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--scores', required=True, help='JSON written by evaluation.py Evosense_LLM')
+    parser.add_argument('--output', default=None, help='per-image CSV (default: next to --scores)')
+    cli = parser.parse_args()
 
-    args = get_args()
-    model = LLM(args)
-    scores = json.load(open(out_path)) if os.path.exists(out_path) else {}
-    # description_generation stores ID as the last 3 components of the image path
-    descriptions = pd.read_csv(descriptions_path).set_index('ID').description
-    images = pvp.drop_duplicates('Image_Path')
-    images = images[images.Image_Path.map(id_of).isin(descriptions.index)]
-    print(f'{len(images)} PVP images have a generated description')
-    for i, (_, row) in enumerate(images.iterrows()):
-        per_sensation = scores.setdefault(row.Image_Path, {})
-        description = descriptions[id_of(row.Image_Path)]
-        for sensation in SENSATIONS_PARENT_MAP:
-            if sensation in per_sensation:
-                continue
-            _, _, _, average_logprob = get_EvoSense_LLM(args, model, description, sensation)
-            per_sensation[sensation] = (average_logprob - NORM_MIN) / (NORM_MAX - NORM_MIN)
-        if i % 20 == 0:
-            json.dump(scores, open(out_path, 'w'))
-            print(f'{i}/{len(images)} images scored')
-    json.dump(scores, open(out_path, 'w'))
-
-
-def analyze(pvp, scores_path):
-    from scipy.stats import pearsonr, spearmanr
-
-    scores = json.load(open(scores_path))
+    scores = json.load(open(cli.scores))
     top = pd.DataFrame({
-        'Image_Path': list(scores),
-        'top_sensation': [max(s, key=s.get) for s in scores.values()],
-        'sensation_score': [max(s.values()) for s in scores.values()],
+        'ID': list(scores),
+        'top_sensation': [max(s, key=lambda k: s[k][NORMALIZED_AVG_LOGPROB]) for s in scores.values()],
+        'sensation_score': [max(v[NORMALIZED_AVG_LOGPROB] for v in s.values()) for s in scores.values()],
     })
+
+    pvp = load_pvp()
+    pvp['ID'] = pvp.Image_Path.map(id_of)
     # one row per annotator rating; persuasion is averaged over annotators per image
-    persuasion = pvp.groupby('Image_Path').Score.mean().rename('persuasion_score').reset_index()
-    df = top.merge(persuasion, on='Image_Path')
-    print(f'{len(df)} images with both a sensation and a persuasion score')
+    persuasion = pvp.groupby('ID').Score.mean().rename('persuasion_score').reset_index()
+    df = top.merge(persuasion, on='ID')
+    print(f'{len(df)} of {len(top)} scored images matched a PVP persuasion score')
 
     for name, corr in [('Pearson', pearsonr), ('Spearman', spearmanr)]:
         r, p = corr(df.sensation_score, df.persuasion_score)
@@ -86,19 +60,4 @@ def analyze(pvp, scores_path):
     print('\nMean persuasion score by top sensation')
     print(df.groupby('top_sensation').persuasion_score.agg(['count', 'mean']).sort_values('mean', ascending=False))
 
-    df.to_csv(scores_path.replace('.json', '_vs_persuasion.csv'), index=False)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('stage', choices=['score', 'analyze'])
-    parser.add_argument('--pvp_scores', default='pvp_evosense.json')
-    parser.add_argument('--description_file', help='CSV (ID, description) written by description_generation')
-    own, rest = parser.parse_known_args()
-    sys.argv = [sys.argv[0]] + rest  # the remaining flags belong to evaluation_config.get_args
-
-    pvp = load_pvp()
-    if own.stage == 'score':
-        score(pvp, own.description_file, own.pvp_scores)
-    else:
-        analyze(pvp, own.pvp_scores)
+    df.to_csv(cli.output or cli.scores.replace('.json', '_vs_persuasion.csv'), index=False)
