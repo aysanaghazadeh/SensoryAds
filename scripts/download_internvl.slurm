@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=download_internvl
-#SBATCH --cluster=htc
-#SBATCH --partition=htc
+#SBATCH --cluster=gpu
+#SBATCH --partition=a100
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
+#SBATCH --gres=gpu:1
 #SBATCH --mem=16G
 #SBATCH --time=0-06:00:00
 #SBATCH --output=download_internvl_%j.out
