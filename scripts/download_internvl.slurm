@@ -27,10 +27,13 @@ fi
 # A stalled connection makes hf download hang without erroring, so cap each attempt and retry.
 # Every attempt resumes from the .incomplete blobs, so nothing is lost by restarting.
 export HF_HUB_DOWNLOAD_TIMEOUT=60
+# The Xet backend's parallel connections get reset on this network ("tls handshake eof"),
+# so fall back to the plain HTTPS path, which resumes the same .incomplete blobs.
+export HF_HUB_DISABLE_XET=1
 job_status=1
 for attempt in $(seq 1 30); do
     echo "attempt $attempt: $(du -sb $HF_HOME/hub/models--OpenGVLab--InternVL3_5-8B/blobs 2>/dev/null | cut -f1) bytes on disk"
-    timeout 10m hf download OpenGVLab/InternVL3_5-8B --max-workers 8
+    timeout 10m hf download OpenGVLab/InternVL3_5-8B --max-workers 4
     job_status=$?
     [ $job_status -eq 0 ] && break
     sleep 5
