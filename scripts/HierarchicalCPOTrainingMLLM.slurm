@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=HierarchicalCPO_training_MLLM
 #SBATCH --cluster=gpu
-#SBATCH --partition=a100
+#SBATCH --partition=l40s
 # a100_nvlink spans both the 80GB (gpu-n[31-32]) and 40GB (gpu-n[28-30])
 # SXM4 nodes; constrain to the 80GB ones specifically.
 #SBATCH --nodes=1
