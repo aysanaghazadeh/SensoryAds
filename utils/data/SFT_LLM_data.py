@@ -31,6 +31,10 @@ def get_LLM_SFT_score_training_data(args, image_urls, tokenizer=None):
             sensation_scores = sensations[image_url]['sensation_scores']
             description = description_by_id[image_url].split('Q2:')[-1]
             for sensation, score in sensation_scores.items():
+                # Most sensations are not evoked by an image at all; training on those zeros
+                # would swamp the signal, so only evoked sensations (score > 0) are kept.
+                if score == 0:
+                    continue
                 sensation = sensation.strip()
                 prompt = f"""Image Description: {description}
 Question: What is the {sensation} sensation intensity of the described image?"""
