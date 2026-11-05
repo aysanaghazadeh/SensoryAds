@@ -18,7 +18,7 @@ fi
 
 $PYTHON -m accelerate.commands.launch $LAUNCH_ARGS train.py --config_type=DEFAULT \
 --training_type=HierarchicalCPO_train_MLLM \
---batch_size=4 \
+--batch_size=16 \
 --MLLM=$MLLM \
 --data_path=$DATA_PATH \
 --sensation_annotations=train/sensation_annotations_parsed_1200_train.json \
