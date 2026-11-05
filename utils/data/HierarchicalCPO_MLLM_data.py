@@ -16,8 +16,15 @@ def get_MLLM_HierarchicalCPO_training_data(args, image_urls):
     # pair's image in memory (as DPO_MLLM_data does) would not fit.
     dataset = {'image_url': [], 'prompt': [], 'chosen': [], 'rejected': [], 'parent_of_chosen': []}
     sensations = json.load(open(os.path.join(args.data_path, args.sensation_annotations)))
+    image_dir = os.path.join(args.data_path, args.test_set_images)
+    missing_images = []
     for image_url in image_urls:
         if image_url not in sensations:
+            continue
+        # Checked once per image rather than once per pair. Skipped (not fixed) so every
+        # process sees the same dataset, as with missing descriptions in CPO_LLM_data.py.
+        if not os.path.exists(os.path.join(image_dir, image_url)):
+            missing_images.append(image_url)
             continue
         sensation_scores = sensations[image_url]['sensation_scores']
         # Unordered pairs only: (a, b) and (b, a) resolve to the same chosen/rejected.
@@ -35,6 +42,8 @@ def get_MLLM_HierarchicalCPO_training_data(args, image_urls):
                 dataset['chosen'].append(chosen_answer)
                 dataset['rejected'].append(rejected_answer)
                 dataset['parent_of_chosen'].append(LOWER_SENSATIONS_PARENT_MAP[chosen_answer])
+    if missing_images:
+        print(f'skipped {len(missing_images)} images not found in {image_dir}, e.g. {missing_images[:5]}')
     print(f'total number of sensation pairs: {len(dataset["prompt"])}')
     return Dataset.from_dict(dataset)
 
