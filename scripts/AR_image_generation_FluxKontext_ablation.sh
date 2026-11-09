@@ -32,6 +32,7 @@ for entry in "${ABLATIONS[@]}"; do
                         --T2I_model=AgenticEditing \
                         --Editing_model=FluxKontext \
                         --T2I_prompt=AR_with_sensation.jinja \
+                        --AD_type=SensoryAdsAll \
                         --with_physical_sensation=True \
                         --test_set_sensation=train/sensation_annotations_parsed.json \
                         --test_set_QA=train/SensoryAd_Action_Reason.json \
