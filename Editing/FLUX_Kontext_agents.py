@@ -209,14 +209,14 @@ class ImageEditingAgent:
         self.critic_labels = {ISSUE_LABELS[k] for k in self.critic_order}
         self.max_edits_without_critic = getattr(args, "ablation_max_edits", 3)
         quantization_config = PipelineQuantizationConfig(
-                                    quant_backend="bitsandbytes_8bit",
-                                    quant_kwargs={"load_in_8bit": True},
+                                    quant_backend="bitsandbytes_4bit",
+                                    quant_kwargs={"load_in_4bit": True, "bnb_4bit_quant_type": "nf4", "bnb_4bit_compute_dtype": torch.bfloat16},
                                     components_to_quantize=["transformer", "text_encoder_2"],
                                 )
         self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", 
                                                         torch_dtype=torch.bfloat16, 
                                                         quantization_config=quantization_config)
-        # bitsandbytes layers are placed on the GPU while loading and the pipeline/model .to() refuses them,
+        # bitsandbytes layers are placed on the GPU while loading (8-bit refuses .to() outright),
         # so only move the components that were not quantized.
         self.pipe.text_encoder.to(args.device)
         self.pipe.vae.to(args.device)
