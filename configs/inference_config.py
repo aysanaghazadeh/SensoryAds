@@ -108,6 +108,23 @@ def parse_args():
                         type=bool,
                         default=False,
                         help='True if you want to find the AR message for the sensation to generate the image.')
+    parser.add_argument('--ablate_agents',
+                        type=str,
+                        default='',
+                        help='Comma-separated agents to remove in FluxKontext agentic editing (ablation): '
+                             'text_refiner (planner output goes straight to the editor), '
+                             'critic (fixed --ablation_max_edits rounds, no issue feedback). Empty = full system. '
+                             'Use --find_sensation to control the sensation_finder agent.')
+    parser.add_argument('--critic_priority',
+                        type=str,
+                        default='default',
+                        help="Critic priority-rule ablation. 'default' = visual,message,sensation. Any comma list "
+                             "of visual/message/sensation sets the priority order; omitted criteria are dropped "
+                             "from the critic. 'none' keeps all criteria but removes the priority rule.")
+    parser.add_argument('--ablation_max_edits',
+                        type=int,
+                        default=3,
+                        help='Number of edit rounds when the critic is ablated.')
     parser.add_argument('--model_path',
                         type=str,
                         default='../models',

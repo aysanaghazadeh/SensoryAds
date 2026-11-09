@@ -15,6 +15,7 @@ from huggingface_hub import get_token
 from PIL import Image
 import wandb
 import json
+import re
 from io import BytesIO
 import base64
 from diffusers.quantizers import PipelineQuantizationConfig
@@ -23,6 +24,94 @@ from utils.data.physical_sensations import SENSATION_HIERARCHY, SENSATIONS_PAREN
 from transformers import BitsAndBytesConfig as TransformersBitsAndBytesConfig
 from transformers import Qwen2_5_VLForConditionalGeneration
 MIN_EDITS_BEFORE_NO_ISSUE = 2
+
+# ---- Ablation support -------------------------------------------------------------------------
+ISSUE_LABELS = {
+    "visual": "Visual Element Inconsistency",
+    "message": "Image-Message Alignment",
+    "sensation": "Sensation Evocation",
+}
+CRITIC_DEFAULT_ORDER = ["visual", "message", "sensation"]
+ABLATABLE_AGENTS = {"text_refiner", "critic"}
+CRITIC_CHECKS = {
+    "visual": """Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent → "Visual Element Inconsistency".""",
+    "message": """Does the image clearly convey "{ad_message}"?
+- Product/brand visible and prominent?
+- Message is the focus?
+- CRITICAL: If the specific product mentioned above is NOT clearly visible/recognizable → "Image-Message Alignment" (even if sensation is strong)
+- If NO → "Image-Message Alignment\"""",
+    "sensation": """Does the image effectively evoke "{target_sensation}"?
+- Visual cues evoking the sensation are prominent and strong?
+- Sensation is strong?
+- If NO → "Sensation Evocation\"""",
+}
+_PRIORITY_CONDITIONS = {
+    "visual": "Visual Element Inconsistency applies",
+    "message": "the advertisement message is NOT clearly conveyed (including missing product)",
+    "sensation": "sensation is weak",
+}
+
+
+def parse_ablated_agents(spec):
+    names = {x.strip() for x in (spec or "").split(",") if x.strip() and x.strip().lower() != "none"}
+    unknown = names - ABLATABLE_AGENTS
+    if unknown:
+        raise ValueError(f"Unknown ablate_agents {sorted(unknown)}; choose from {sorted(ABLATABLE_AGENTS)}")
+    return names
+
+
+def parse_critic_priority(spec):
+    """
+    "visual,message,sensation" (default) -> the original priority order.
+    Any permutation re-orders the priority rule; a subset also drops the omitted criteria from the critic.
+    "none" keeps all three criteria but removes the priority rule (critic picks the most severe issue).
+    Returns (order, use_priority_rule).
+    """
+    spec = (spec or "").strip().lower()
+    if spec in ("", "default"):
+        return list(CRITIC_DEFAULT_ORDER), True
+    if spec == "none":
+        return list(CRITIC_DEFAULT_ORDER), False
+    order = [x.strip() for x in spec.split(",") if x.strip()]
+    if not order or len(set(order)) != len(order) or any(x not in ISSUE_LABELS for x in order):
+        raise ValueError(f"Bad critic_priority '{spec}'; use a comma list of {list(ISSUE_LABELS)}, 'default' or 'none'")
+    return order, True
+
+
+def build_priority_rule(order, use_rule=True):
+    if not use_rule:
+        return ("NO PRIORITY RULE: if several issues apply, output the single issue you judge most severe "
+                "for this advertisement.")
+    if order == CRITIC_DEFAULT_ORDER:
+        return """PRIORITY RULE (CRITICAL):
+1) If Visual Element Inconsistency applies → output "Visual Element Inconsistency"
+2) Else if the advertisement message is NOT clearly conveyed (including missing product) → output "Image-Message Alignment"
+3) Else (message is clear) if sensation is weak → output "Sensation Evocation\""""
+    lines = ["PRIORITY RULE (CRITICAL):"]
+    for n, key in enumerate(order, 1):
+        lead = "If" if n == 1 else "Else if"
+        lines.append(f'{n}) {lead} {_PRIORITY_CONDITIONS[key]} → output "{ISSUE_LABELS[key]}"')
+    return "\n".join(lines)
+
+
+def build_critic_system_prompt(order, use_rule):
+    """Swap the priority-rule section of CRITIC_SYSTEM_PROMPT; unchanged for the default setup."""
+    if order == CRITIC_DEFAULT_ORDER and use_rule:
+        return CRITIC_SYSTEM_PROMPT
+    head, rest = CRITIC_SYSTEM_PROMPT.split("PRIORITY RULE (CRITICAL):")
+    tail = rest[rest.index("OUTPUT FORMAT REQUIREMENT"):]
+    prompt = head + build_priority_rule(order, use_rule) + "\n\n" + tail
+    if len(order) < 3:
+        for key in CRITIC_DEFAULT_ORDER:
+            if key not in order:
+                prompt = prompt.replace(f"- {ISSUE_LABELS[key]}\n", "")
+                prompt = re.sub(rf"\n\d\. {ISSUE_LABELS[key]} - .*?(?=\n\d\. |\nBE STRICT)", "", prompt, flags=re.S)
+        if "visual" not in order:
+            prompt = prompt.replace("- The visuals must be CONSISTENT.\n- There must be no visual inconsistencies.\n", "")
+        kept = iter(range(1, len(order) + 1))
+        prompt = re.sub(r"(?m)^\d\. (?=(Visual Element|Image-Message|Sensation Evocation) )", lambda m: f"{next(kept)}. ", prompt)
+        prompt = prompt.replace("these three strings", f"these {len(order)} strings").replace("of the three labels", f"of the {len(order)} labels")
+    return prompt
 
 
 def _flatten_sensations_all(node):
@@ -114,6 +203,11 @@ class ImageEditingAgent:
     def __init__(self, args):
         self.args = args
         self.sensation_options = None
+        # Ablation config (defaults reproduce the full system)
+        self.ablated_agents = parse_ablated_agents(getattr(args, "ablate_agents", ""))
+        self.critic_order, self.critic_priority_rule = parse_critic_priority(getattr(args, "critic_priority", "default"))
+        self.critic_labels = {ISSUE_LABELS[k] for k in self.critic_order}
+        self.max_edits_without_critic = getattr(args, "ablation_max_edits", 3)
         quantization_config = PipelineQuantizationConfig(
                                     quant_backend="bitsandbytes_8bit",
                                     quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16}
@@ -136,7 +230,7 @@ class ImageEditingAgent:
 
         self.critic_agent = MultimodalConversableAgent(
             name="critic",
-            system_message=CRITIC_SYSTEM_PROMPT,
+            system_message=build_critic_system_prompt(self.critic_order, self.critic_priority_rule),
             max_consecutive_auto_reply=10,
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 75},  # Enough for the three strings but not too much
@@ -174,7 +268,13 @@ class ImageEditingAgent:
             max_consecutive_auto_reply=1,
             code_execution_config=False,
         )
-        agents=[self.user_proxy, self.sensation_finder_agent, self.planner_agent, self.critic_agent, self.text_refiner_agent] if getattr(self.args, "find_sensation", False) else [self.user_proxy, self.planner_agent, self.critic_agent, self.text_refiner_agent]
+        agents = [self.user_proxy, self.planner_agent]
+        if getattr(self.args, "find_sensation", False):
+            agents.insert(1, self.sensation_finder_agent)
+        if "critic" not in self.ablated_agents:
+            agents.append(self.critic_agent)
+        if "text_refiner" not in self.ablated_agents:
+            agents.append(self.text_refiner_agent)
         self.group_chat = GroupChat(
             agents=agents,
             messages=[],
@@ -282,6 +382,92 @@ class ImageEditingAgent:
         })
 
         return image
+
+
+    def _issue_label_lines(self, bullet=True):
+        prefix = "- " if bullet else ""
+        return "\n".join(f"{prefix}{ISSUE_LABELS[k]}" for k in self.critic_order)
+
+    def _fallback_label(self, preferred):
+        """Return `preferred` if that criterion is active in this ablation, else the top-priority active one."""
+        return preferred if preferred in self.critic_labels else ISSUE_LABELS[self.critic_order[0]]
+
+    def _critic_eval_block(self):
+        checks = []
+        for key in self.critic_order if self.critic_priority_rule else [k for k in CRITIC_DEFAULT_ORDER if k in self.critic_order]:
+            checks.append(CRITIC_CHECKS[key])
+        numbered = "\n".join(f"{n}. {c}" for n, c in enumerate(checks, 1))
+        return f"EVALUATION:\n{numbered}\n\n{build_priority_rule(self.critic_order, self.critic_priority_rule)}"
+
+    def _edit_and_evaluate(self, prompt, group_chat):
+        new_image = self.image_editing(prompt, self.shared_messages.images[-1], group_chat)
+        self.shared_messages.current_description = prompt
+
+        if "critic" in self.ablated_agents:
+            return self._next_without_critic(group_chat)
+
+        # Resize and compress image before sending to critic
+        resized_image = self.resize_image_for_llm(new_image, max_size=256)
+        img_uri = self.image_to_compressed_uri(resized_image)
+        self.shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
+
+        critic_user_message = {
+            "role": "user",
+            "content": f"""IMPORTANT: You are an STRICT EVALUATOR, not a DESCRIBER.
+
+You MUST NOT copy or paraphrase any previous text or prompts.
+You MUST NOT describe the image in full sentences.
+You MUST IGNORE all previous messages and focus ONLY on:
+- The image below
+- The advertisement message
+- The target sensation
+
+Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options AS THE ISSUE OF THE IMAGE AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE.
+Strictly follow the following format:
+<Issue>
+<explanation of the you chose the issue>
+
+Image to evaluate:
+<img {img_uri}>
+
+{self._critic_eval_block().format(ad_message=self.shared_messages.ad_message, target_sensation=self.shared_messages.target_sensation)}
+
+EXPLAIN WHAT IS THE ISSUE OF THE IMAGE IN ONE SENTENCE AND OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
+{self._issue_label_lines()}
+
+"""
+        }
+        self.group_chat.messages.append(critic_user_message)
+        return self.critic_agent
+
+    def _next_without_critic(self, group_chat):
+        """Critic ablation: run a fixed number of edit rounds with generic (issue-agnostic) feedback."""
+        if self.shared_messages.step_counter >= self.max_edits_without_critic:
+            wandb.log({"final_status": f"Stopped - {self.shared_messages.step_counter} edits (critic ablated)"})
+            return None
+        resized_image = self.resize_image_for_llm(self.shared_messages.images[-1], max_size=256)
+        img_uri = self.image_to_compressed_uri(resized_image)
+        previous_attempts_text = ""
+        for i, prev in enumerate(self.shared_messages.all_previous_instructions, 1):
+            previous_attempts_text += f"\nAttempt {i}:\n{json.dumps(prev, indent=2)}\n"
+        group_chat.messages.append({
+            "role": "user",
+            "content": f"""Continue improving the image so it better conveys the advertisement message and evokes the target sensation.
+
+Current Image (most recent edited version):
+<img {img_uri}>
+
+Advertisement Message: {self.shared_messages.ad_message}
+Target Sensation: {self.shared_messages.target_sensation}
+
+All Previous Instructions Tried (in order, most recent last):
+{previous_attempts_text}
+
+CRITICAL REQUIREMENTS:
+1. Generate COMPLETELY DIFFERENT editing instructions that have NOT been tried before
+2. Output ONLY a valid JSON array in the exact format specified, no explanations, no markdown"""
+        })
+        return self.planner_agent
 
 
     # Custom speaker selection function to control the flow
@@ -424,6 +610,10 @@ DO NOT output conversational text. DO NOT output explanations. ONLY output the J
             
             # Only proceed to text_refiner if we have valid instructions
             if self.shared_messages.current_instructions:
+                if "text_refiner" in self.ablated_agents:
+                    # Ablation: no refiner, feed the planner's raw instruction values straight to the editor
+                    raw_prompt = ". ".join(str(i["value"]).strip() for i in self.shared_messages.current_instructions)
+                    return self._edit_and_evaluate(raw_prompt, group_chat)
                 # Send instructions to text_refiner with explicit conversion instruction
                 refiner_message = {
                     "role": "user",
@@ -447,61 +637,7 @@ CRITICAL: Convert the above JSON instructions into ONE cohesive natural language
         elif last_speaker is self.text_refiner_agent:
             refined_prompt = self.extract_text_content(messages[-1].get("content", "")).strip()
             self.log_agent_response("text_refiner", refined_prompt)
-            new_image = self.image_editing(refined_prompt, self.shared_messages.images[-1], group_chat)
-            self.shared_messages.current_description = refined_prompt
-
-            # Resize and compress image before sending to critic
-            resized_image = self.resize_image_for_llm(new_image, max_size=256)
-            img_uri = self.image_to_compressed_uri(resized_image)
-            self.shared_messages.critic_retry_count = 0  # Reset retry counter for new evaluation
-
-            critic_user_message = {
-                "role": "user",
-                "content": f"""IMPORTANT: You are an STRICT EVALUATOR, not a DESCRIBER.
-
-You MUST NOT copy or paraphrase any previous text or prompts.
-You MUST NOT describe the image in full sentences.
-You MUST IGNORE all previous messages and focus ONLY on:
-- The image below
-- The advertisement message
-- The target sensation
-
-Your task: Evaluate the image given the advertisement message and target sensation. Output only ONE of the evaluation options AS THE ISSUE OF THE IMAGE AND EXPLAIN WHY YOU CHOSE IT IN ONE SENTENCE.
-Strictly follow the following format:
-<Issue>
-<explanation of the you chose the issue>
-
-Image to evaluate:
-<img {img_uri}>
-
-EVALUATION:
-1. Are the visual elements in the image consistent? If the visual elements, texutal elements, etc are inconsistent → "Visual Element Inconsistency".
-2. Does the image clearly convey "{self.shared_messages.ad_message}"?
-- Product/brand visible and prominent?
-- Message is the focus?
-- CRITICAL: If the specific product mentioned above is NOT clearly visible/recognizable → "Image-Message Alignment" (even if sensation is strong)
-- If NO → "Image-Message Alignment"
-
-3. Does the image effectively evoke "{self.shared_messages.target_sensation}"?
-- Visual cues evoking the sensation are prominent and strong?
-- Sensation is strong?
-- If NO → "Sensation Evocation"
-
-PRIORITY RULE (CRITICAL):
-1) If Visual Element Inconsistency applies → output "Visual Element Inconsistency"
-2) Else if the advertisement message is NOT clearly conveyed (including missing product) → output "Image-Message Alignment"
-3) Else (message is clear) if sensation is weak → output "Sensation Evocation"
-
-EXPLAIN WHAT IS THE ISSUE OF THE IMAGE IN ONE SENTENCE AND OUTPUT ONLY ONE OF THE FOLLOWING STRINGS WITHOUT ANY ADDITIONAL TEXT (nothing else):
-- Visual Element Inconsistency
-- Image-Message Alignment
-- Sensation Evocation
-
-"""
-            }
-            self.group_chat.messages.append(critic_user_message)
-
-            return self.critic_agent
+            return self._edit_and_evaluate(refined_prompt, group_chat)
 
         elif last_speaker is self.critic_agent:
             critic_response = self.extract_text_content(messages[-1].get("content", "")).strip()
@@ -543,9 +679,7 @@ Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
 EVALUATE and output EXACTLY ONE of these strings (nothing else, no descriptions):
-- Visual Element Inconsistency
-- Image-Message Alignment
-- Sensation Evocation
+{self._issue_label_lines()}
 
 REMEMBER: You are evaluating, not describing. Output only one string followed by the explanation in one sentence."""
                     }
@@ -554,7 +688,7 @@ REMEMBER: You are evaluating, not describing. Output only one string followed by
                 else:
                     # Max retries reached, default to most likely issue
                     print(f"WARNING: Critic failed after {self.shared_messages.critic_retry_count} retries. Defaulting to 'Image-Message Alignment'")
-                    issue_type = "Image-Message Alignment"
+                    issue_type = self._fallback_label("Image-Message Alignment")
                     self.shared_messages.critic_retry_count = 0  # Reset for next evaluation
             
             if "Image-Message Alignment" in critic_response:
@@ -600,20 +734,18 @@ Strictly follow the following format:
 <explanation of the you chose the issue>
 
 Output EXACTLY ONE of these strings and explain why you chose it in one sentence(nothing else):
-- Visual Element Inconsistency
-- Image-Message Alignment
-- Sensation Evocation
+{self._issue_label_lines()}
 """
                         }
                         self.group_chat.messages.append(retry_message)
                         return self.critic_agent
                     print("Treating refusal as evaluation needed - defaulting to 'Sensation Evocation' (most common issue)")
-                    issue_type = "Sensation Evocation"
+                    issue_type = self._fallback_label("Sensation Evocation")
                     self.shared_messages.refusal_retry_count = 0
                 else:
                     print(f"WARNING: Critic output unexpected format: {critic_response[:100]}...")
                     print("Defaulting to 'Image-Message Alignment' for safety")
-                    issue_type = "Image-Message Alignment"
+                    issue_type = self._fallback_label("Image-Message Alignment")
                 critic_response = issue_type  # Use standardized response
 
             if "No Issue" in issue_type:
@@ -638,13 +770,11 @@ Strictly follow the following format:
 <explanation of the you chose the issue>
 
 Output EXACTLY ONE of these strings followed by the explanation in one sentence (nothing else):
-Visual Element Inconsistency
-Image-Message Alignment
-Sensation Evocation"""
+{self._issue_label_lines(bullet=False)}"""
                         }
                         self.group_chat.messages.append(retry_message)
                         return self.critic_agent
-                    issue_type = "Sensation Evocation"
+                    issue_type = self._fallback_label("Sensation Evocation")
                     self.shared_messages.no_issue_retry_count = 0
                 else:
                     self.shared_messages.no_issue_retry_count = 0
@@ -671,9 +801,7 @@ Advertisement Message: "{self.shared_messages.ad_message}"
 Target Sensation: {self.shared_messages.target_sensation}
 
 Output EXACTLY ONE of these strings (nothing else):
-Visual Element Inconsistency
-Image-Message Alignment
-Sensation Evocation
+{self._issue_label_lines(bullet=False)}
 """
                     }
                     self.group_chat.messages.append(confirm_message)
