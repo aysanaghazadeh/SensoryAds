@@ -4,15 +4,8 @@
 # With no names, every ablation below runs. Each writes to its own experiment_datetime folder.
 # Format: name|ablate_agents|critic_priority
 ABLATIONS=(
-    "full||default"
     "no_text_refiner|text_refiner|default"
     "no_critic|critic|default"
-    "no_text_refiner_no_critic|text_refiner,critic|default"
-    "prio_visual_sensation_message||visual,sensation,message"
-    "prio_message_visual_sensation||message,visual,sensation"
-    "prio_message_sensation_visual||message,sensation,visual"
-    "prio_sensation_visual_message||sensation,visual,message"
-    "prio_sensation_message_visual||sensation,message,visual"
     "prio_none||none"
     "criteria_no_visual||message,sensation"
     "criteria_no_message||visual,sensation"
