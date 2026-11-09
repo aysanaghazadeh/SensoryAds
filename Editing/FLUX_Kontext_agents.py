@@ -213,11 +213,13 @@ class ImageEditingAgent:
                                     quant_kwargs={"load_in_8bit": True},
                                     components_to_quantize=["transformer", "text_encoder_2"],
                                 )
-        # bitsandbytes-quantized pipelines can't be moved with .to(); device_map places them at load time.
         self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", 
                                                         torch_dtype=torch.bfloat16, 
-                                                        quantization_config=quantization_config,
-                                                        device_map="balanced")
+                                                        quantization_config=quantization_config)
+        # bitsandbytes layers are placed on the GPU while loading and the pipeline/model .to() refuses them,
+        # so only move the components that were not quantized.
+        self.pipe.text_encoder.to(args.device)
+        self.pipe.vae.to(args.device)
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
         print("pipeline loaded")
