@@ -210,12 +210,14 @@ class ImageEditingAgent:
         self.max_edits_without_critic = getattr(args, "ablation_max_edits", 3)
         quantization_config = PipelineQuantizationConfig(
                                     quant_backend="bitsandbytes_8bit",
-                                    quant_kwargs={"load_in_8bit": True, "bnb_8bit_quant_type": "nf4", "bnb_8bit_compute_dtype": torch.bfloat16}
+                                    quant_kwargs={"load_in_8bit": True},
+                                    components_to_quantize=["transformer", "text_encoder_2"],
                                 )
+        # bitsandbytes-quantized pipelines can't be moved with .to(); device_map places them at load time.
         self.pipe = FluxKontextPipeline.from_pretrained("black-forest-labs/FLUX.1-Kontext-dev", 
                                                         torch_dtype=torch.bfloat16, 
-                                                        quantization_config=quantization_config)
-        self.pipe = self.pipe.to(device=args.device)
+                                                        quantization_config=quantization_config,
+                                                        device_map="balanced")
         if torch.cuda.is_available():
             torch_dtype = torch.bfloat16
         print("pipeline loaded")
