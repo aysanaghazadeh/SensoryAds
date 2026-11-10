@@ -37,8 +37,6 @@ cd $SLURM_SUBMIT_DIR
 # `MLLM=QWenVL MODEL_CHECKPOINT=1000 sbatch scripts/evaluate_Evosense_MLLM.slurm`
 # MLLM (QWenVL or InternVL, default InternVL) must match the training run; the checkpoint is a
 # saved step of models/my_HierarchicalCPO_<MLLM>.
-: "${MODEL_CHECKPOINT:?set MODEL_CHECKPOINT to a saved checkpoint step}"
-export MODEL_CHECKPOINT MLLM
 
 bash scripts/evaluate_Evosense_MLLM.sh
 eval_status=$?
