@@ -5,6 +5,8 @@ import torch
 import torchvision.transforms as T
 from PIL import Image
 from accelerate import PartialState
+from peft import PeftModel
+import os
 
 
 class InternVL(nn.Module):
@@ -20,6 +22,18 @@ class InternVL(nn.Module):
                 low_cpu_mem_usage=True,
                 device_map={"": PartialState().process_index},
                 trust_remote_code=True)
+        elif getattr(args, 'fine_tuned', False):
+            # bf16 like in training; adapters come from Training/Hierarchical_CPO_training_MLLM.py.
+            self.model = AutoModel.from_pretrained(
+                "OpenGVLab/InternVL3_5-8B",
+                torch_dtype=torch.bfloat16,
+                low_cpu_mem_usage=True,
+                device_map='auto',
+                trust_remote_code=True)
+            model_name = args.model_name if args.model_name is not None else f'my_HierarchicalCPO_{args.MLLM}'
+            adapter_path = os.path.join(args.model_path, model_name, f'checkpoint-{args.model_checkpoint}')
+            self.model = PeftModel.from_pretrained(self.model, adapter_path).eval()
+            print(f'model loaded from {adapter_path}')
         else:
             self.model = AutoModel.from_pretrained(
                 "OpenGVLab/InternVL3_5-8B",

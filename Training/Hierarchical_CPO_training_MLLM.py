@@ -10,69 +10,11 @@ import os
 
 from MLLMs.InternVL2 import InternVL
 from MLLMs.QWenVL import QWenVL
+from utils.data.MLLM_batch import get_batch_builder, add_answer_mask
 
-# Caps image cost per sequence (each row is run three times: chosen, rejected, parent).
-QWEN_MAX_IMAGE_SIDE = 448
-INTERNVL_MAX_PATCHES = 4
 # Language-model projections only; the vision towers ('visual' in Qwen,
 # 'vision_model' in InternVL) stay frozen and un-adapted.
 LORA_TARGET_REGEX = r"^(?!.*(visual|vision_model)).*\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)$"
-
-
-class QwenBatchBuilder:
-    def __init__(self, wrapper):
-        self.processor = wrapper.processor
-        self.tokenizer = self.processor.tokenizer
-        self.tokenizer.padding_side = "right"
-
-    def build(self, prompts, answers, images):
-        """prompts/answers cover chosen+rejected+parent (3B); images are the B unique ones."""
-        images = [image.copy() for image in images]
-        for image in images:
-            image.thumbnail((QWEN_MAX_IMAGE_SIDE, QWEN_MAX_IMAGE_SIDE))
-        texts = []
-        for prompt, answer in zip(prompts, answers):
-            messages = [
-                {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": prompt}]},
-                {"role": "assistant", "content": [{"type": "text", "text": answer}]},
-            ]
-            texts.append(self.processor.apply_chat_template(messages, tokenize=False))
-        batch = dict(self.processor(text=texts, images=images * 3, padding=True, return_tensors="pt"))
-        answer_lens = [len(self.tokenizer(a + "<|im_end|>\n", add_special_tokens=False).input_ids)
-                       for a in answers]
-        return batch, answer_lens
-
-
-class InternVLBatchBuilder:
-    def __init__(self, wrapper):
-        self.wrapper = wrapper
-        self.tokenizer = wrapper.tokenizer
-        self.tokenizer.padding_side = "right"
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-        self.num_image_token = wrapper.model.num_image_token
-        self.system_message = getattr(wrapper.model, "system_message", None)
-        # The model scatters image features into the positions of this token.
-        wrapper.model.img_context_token_id = self.tokenizer.convert_tokens_to_ids("<IMG_CONTEXT>")
-
-    def build(self, prompts, answers, images):
-        pixel_values = [self.wrapper.load_image(image, max_num=INTERNVL_MAX_PATCHES) for image in images]
-        num_patches = [pv.shape[0] for pv in pixel_values] * 3
-        texts = []
-        for prompt, answer, n in zip(prompts, answers, num_patches):
-            image_tokens = "<img>" + "<IMG_CONTEXT>" * (self.num_image_token * n) + "</img>"
-            text = ""
-            if self.system_message:
-                text += f"<|im_start|>system\n{self.system_message}<|im_end|>\n"
-            text += f"<|im_start|>user\n{image_tokens}\n{prompt}<|im_end|>\n<|im_start|>assistant\n{answer}<|im_end|>\n"
-            texts.append(text)
-        batch = dict(self.tokenizer(texts, padding=True, return_tensors="pt"))
-        pixel_values = torch.cat(pixel_values * 3).to(torch.bfloat16)
-        batch["pixel_values"] = pixel_values
-        batch["image_flags"] = torch.ones(pixel_values.shape[0], 1, dtype=torch.long)
-        answer_lens = [len(self.tokenizer(a + "<|im_end|>\n", add_special_tokens=False).input_ids)
-                       for a in answers]
-        return batch, answer_lens
 
 
 class HierarchicalCPOMLLMCollator:
@@ -89,12 +31,7 @@ class HierarchicalCPOMLLMCollator:
                    + [row["parent_of_chosen"] for row in rows])
         prompts = [row["prompt"] for row in rows] * 3
         batch, answer_lens = self.builder.build(prompts, answers, images)
-        # Right padding: the answer is the last answer_len real tokens of each sequence.
-        lengths = batch["attention_mask"].sum(dim=1)
-        positions = torch.arange(batch["input_ids"].shape[1]).unsqueeze(0)
-        starts = (lengths - torch.tensor(answer_lens)).unsqueeze(1)
-        batch["answer_mask"] = (positions >= starts) & (positions < lengths.unsqueeze(1))
-        return batch
+        return add_answer_mask(batch, answer_lens)
 
 
 class HierarchicalCPOMLLMTrainer(Trainer):
@@ -148,13 +85,12 @@ class HierarchicalCPOMLLMTrainer(Trainer):
 
 
 def get_model(args):
-    wrappers = {"InternVL": (InternVL, InternVLBatchBuilder), "QWenVL": (QWenVL, QwenBatchBuilder)}
+    wrappers = {"InternVL": InternVL, "QWenVL": QWenVL}
     if args.MLLM not in wrappers:
         raise ValueError(f"Hierarchical CPO MLLM training supports {list(wrappers)}, got MLLM={args.MLLM!r}")
-    wrapper_class, builder_class = wrappers[args.MLLM]
-    wrapper = wrapper_class(args)
+    wrapper = wrappers[args.MLLM](args)
     # Builder first: InternVL's builder sets img_context_token_id on the raw model.
-    builder = builder_class(wrapper)
+    builder = get_batch_builder(wrapper, args.MLLM)
     model = wrapper.model
     peft_config = LoraConfig(inference_mode=False,
                              r=8,

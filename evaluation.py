@@ -21,9 +21,6 @@ class SensationEvaluation:
         if self.args.evaluation_type == 'Evosense_LLM_generated':
             from LLMs.LLM import LLM
             self.model = LLM(args)
-        if self.args.evaluation_type == 'Evosense_MLLM':
-            from MLLMs.MLLM import MLLM
-            self.model = MLLM(args)
         if 'VQA_score' in self.args.evaluation_type:
             import t2v_metrics
             self.model = t2v_metrics.VQAScore(model='clip-flant5-xxl', cache_dir=os.getenv('HF_HOME'))
@@ -39,6 +36,9 @@ class SensationEvaluation:
         if 'MLLM' in self.args.evaluation_type:
             from MLLMs.MLLM import MLLM
             self.model = MLLM(args)
+            if self.args.evaluation_type == 'Evosense_MLLM':
+                from utils.data.MLLM_batch import get_batch_builder
+                self.builder = get_batch_builder(self.model.model, args.MLLM)
         elif 'LLM' in self.args.evaluation_type:
             from LLMs.LLM import LLM
             self.model = LLM(args)
@@ -168,7 +168,7 @@ class SensationEvaluation:
     def evaluate_Evosense_MLLM(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv',
-                                                        f'_{args.MLLM}_finetuned{args.fine_tuned}{f"_{args.model_checkpoint}" if args.fine_tuned else ""}.json').split(
+                                                        f'_{args.MLLM}_finetuned{args.fine_tuned}{f"_{args.model_name}_{args.model_checkpoint}" if args.fine_tuned else ""}.json').split(
             '/')[-1]
         directory_path = os.path.join(args.result_path, 'results', args.project_name, args.evaluation_type)
         os.makedirs(directory_path, exist_ok=True)
@@ -183,20 +183,20 @@ class SensationEvaluation:
             else:
                 print(f'{result_file} does not exist and will be created.')
             scores = {}
-        for row in descriptions.iterrows():
+        self.model.model.model.eval()
+        sensations = list(SENSATIONS_PARENT_MAP)
+        for index, row in descriptions.iterrows():
             image_url = row['ID']
+            if image_url in scores and all(sensation in scores[image_url] for sensation in sensations):
+                continue
             if args.Image_type == 'generated':
-                image = Image.open(os.path.join(args.result_path, 'generated_images', args.project_name, image_url))
+                image = os.path.join(args.result_path, 'generated_images', args.project_name, image_url)
             else:
-                image = Image.open(os.path.join(args.data_path, args.test_set_images, image_url))
-            description = row['description']
-            if image_url not in scores:
-                scores[image_url] = {}
-            for sensation in SENSATIONS_PARENT_MAP:
-                if image_url in scores and sensation in scores[image_url]:
-                    continue
-                total_logprob,_, last_token_logprob, average_logprob = get_EvoSense_MLLM(args, self.model, image, sensation)
-                scores[image_url][sensation] = [total_logprob, last_token_logprob, average_logprob]
+                image = os.path.join(args.data_path, args.test_set_images, image_url)
+            # Same layout as Evosense_LLM: [total, last token, average] log-probability.
+            image_scores = get_EvoSense_MLLM(args, self.model.model, self.builder, image, sensations)
+            scores[image_url] = {sensation: list(values) for sensation, values in image_scores.items()}
+            print(image_url)
             json.dump(scores, open(result_file, 'w'))
 
     def evaluate_T2V(self, args):
@@ -221,7 +221,7 @@ class SensationEvaluation:
             scores[image_url] = {}
             for sensation in SENSATIONS_PARENT_MAP:
                 score = get_T2V_score(args, self.model, image, sensation)
-                scores[image_url][sensation] = score.item()
+                scores[image_url][sensation] = float(score)
             print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
             json.dump(scores, open(result_file, 'w'))
 
@@ -255,7 +255,7 @@ class SensationEvaluation:
             if image_url not in scores:
                 scores[image_url] = {}
             score = get_T2V_score(args, self.model, image, sensation)
-            scores[image_url][sensation] = score.item()
+            scores[image_url][sensation] = float(score)
             print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
             json.dump(scores, open(result_file, 'w'))
 
@@ -289,7 +289,7 @@ class SensationEvaluation:
                 if image_url not in scores:
                     scores[image_url] = {}
                 score = get_T2V_score(args, self.model, image, sensation)
-                scores[image_url][sensation] = score.item()
+                scores[image_url][sensation] = float(score)
                 print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
                 json.dump(scores, open(result_file, 'w'))
 

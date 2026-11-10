@@ -60,60 +60,36 @@ def get_EvoSense_LLM(args, pipe, description, sensation):
     return total_logprob, selected_logprobs, selected_logprobs[-1], sum(selected_logprobs) / len(selected_logprobs)
 
 
-def get_EvoSense_MLLM(args, pipe, image, sensation):
+def get_EvoSense_MLLM(args, pipe, builder, image, sensations, chunk_size=8):
+    """log p(sensation | image) for every sensation, with the exact prompt and chat format the MLLM
+    was trained on (Training/Hierarchical_CPO_training_MLLM.py).
+
+    `pipe` is the MLLMs/* wrapper, `image` a path. Returns {sensation: (total, last_token, average)}."""
     import torch
-    import torch.nn.functional as F
-    image = Image.open(image)
-    user_msgs = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "image", "image": image},
-                {"type": "text", "text": f"Given the image, the sensation that the image evokes is:"}
-            ],
-        }
-    ]
-    context_text = pipe.processor.apply_chat_template(user_msgs, add_generation_prompt=True, tokenize=False)
-
-    # Tokenize target continuation separately (no special tokens)
-    target_ids = pipe.processor.tokenizer.encode(sensation, add_special_tokens=False)
-
-    # 1) Encode context (image + text), run once to get past_key_values and last logits
-    ctx_inputs = pipe.processor(images=image, text=context_text, return_tensors="pt")
-    ctx_inputs = {k: v.to(args.device) for k, v in ctx_inputs.items()}
-
-    with torch.no_grad():
-        out = pipe.model(**ctx_inputs, use_cache=True)
-        past = out.past_key_values
-        last_logits = out.logits[:, -1, :]  # predicts the first target token
-
-    # 2) Incrementally consume target tokens to accumulate per-token logprobs
-    per_token_logprobs = []
-    total_logprob = 0.0
-
-    for tok in target_ids:
-        # log p(tok | context + previous target tokens)
-        lp = F.log_softmax(last_logits, dim=-1)[0, tok].item()
-        per_token_logprobs.append(lp)
-        total_logprob += lp
-
-        # advance the state by feeding the actual token
-        tok_tensor = torch.tensor([[tok]], device=args.device)
+    from PIL import Image
+    from utils.data.HierarchicalCPO_MLLM_data import PROMPT
+    from utils.data.MLLM_batch import add_answer_mask
+    image = Image.open(image).convert('RGB')
+    scores = {}
+    for start in range(0, len(sensations), chunk_size):
+        names = sensations[start:start + chunk_size]
+        # Training answers are the lower-case annotation names.
+        answers = [name.lower() for name in names]
+        batch, answer_lens = builder.build([PROMPT] * len(names), answers, [image], num_copies=len(names))
+        batch = add_answer_mask(batch, answer_lens)
+        batch = {k: v.to(args.device) for k, v in batch.items()}
+        answer_mask = batch.pop('answer_mask')
         with torch.no_grad():
-            step_out = pipe.model(input_ids=tok_tensor, past_key_values=past, use_cache=True)
-        past = step_out.past_key_values
-        last_logits = step_out.logits[:, -1, :]
-
-    # Safety for empty target
-    if len(per_token_logprobs) == 0:
-        return float("-inf"), [], float("-inf"), float("-inf")
-
-    return (
-        total_logprob,
-        per_token_logprobs,
-        per_token_logprobs[-1],
-        sum(per_token_logprobs) / len(per_token_logprobs),
-    )
+            logits = pipe.model(**batch).logits
+        mask = answer_mask[:, 1:]
+        targets = batch['input_ids'][:, 1:][mask]
+        selected = logits[:, :-1][mask].float()
+        token_logps = torch.log_softmax(selected, dim=-1).gather(-1, targets.unsqueeze(-1)).squeeze(-1)
+        for name, logps in zip(names, token_logps.split(mask.sum(dim=1).tolist())):
+            logps = logps.tolist()
+            scores[name] = (sum(logps), logps[-1], sum(logps) / len(logps)) if logps else (
+                float('-inf'), float('-inf'), float('-inf'))
+    return scores
 
 
 def get_T2V_score(args, model, image, text):

@@ -30,7 +30,14 @@ class QWenVL(torch.nn.Module):
             )
 
             # Load LoRA fine-tuned adapter
-            self.model = PeftModel.from_pretrained(self.model, os.path.join(args.model_path, 'checkpoint-1500'))
+            if args.model_checkpoint is not None:
+                # Adapters from Training/Hierarchical_CPO_training_MLLM.py.
+                model_name = args.model_name if args.model_name is not None else f'my_HierarchicalCPO_{args.MLLM}'
+                adapter_path = os.path.join(args.model_path, model_name, f'checkpoint-{args.model_checkpoint}')
+            else:
+                adapter_path = os.path.join(args.model_path, 'checkpoint-1500')
+            self.model = PeftModel.from_pretrained(self.model, adapter_path)
+            print(f'model loaded from {adapter_path}')
         # self.model = self.model.to(device=args.device)
 
 
