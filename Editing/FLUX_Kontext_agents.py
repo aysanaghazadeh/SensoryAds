@@ -227,6 +227,7 @@ class ImageEditingAgent:
         self.planner_agent = MultimodalConversableAgent(
             name="planner",
             system_message=PLANNER_SYSTEM_PROMPT,
+            human_input_mode="NEVER",
             max_consecutive_auto_reply=10,
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 512},
@@ -235,6 +236,7 @@ class ImageEditingAgent:
         self.critic_agent = MultimodalConversableAgent(
             name="critic",
             system_message=build_critic_system_prompt(self.critic_order, self.critic_priority_rule),
+            human_input_mode="NEVER",
             max_consecutive_auto_reply=10,
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 75},  # Enough for the three strings but not too much
@@ -243,6 +245,7 @@ class ImageEditingAgent:
         self.text_refiner_agent = ConversableAgent(
             name="text_refiner",
             system_message=TEXT_REFINER_SYSTEM_PROMPT,
+            human_input_mode="NEVER",
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                         "max_tokens": 512},
         )
@@ -252,6 +255,7 @@ class ImageEditingAgent:
                 self.sensation_finder_agent = MultimodalConversableAgent(
                     name="sensation_finder",
                     system_message=SENSATION_AND_AR_MESSAGE_FINDER_SYSTEM_PROMPT,
+                    human_input_mode="NEVER",
                     max_consecutive_auto_reply=10,
                     llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                                 "max_tokens": 256},
@@ -260,6 +264,7 @@ class ImageEditingAgent:
                 self.sensation_finder_agent = MultimodalConversableAgent(
                     name="sensation_finder",
                     system_message=SENSATION_FINDER_SYSTEM_PROMPT,
+                    human_input_mode="NEVER",
                     max_consecutive_auto_reply=10,
                     llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
                                 "max_tokens": 256},
@@ -288,6 +293,7 @@ class ImageEditingAgent:
 
         self.group_chat_manager = GroupChatManager(
             groupchat=self.group_chat,
+            human_input_mode="NEVER",
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}]},
         )
 
@@ -695,7 +701,12 @@ REMEMBER: You are evaluating, not describing. Output only one string followed by
                     issue_type = self._fallback_label("Image-Message Alignment")
                     self.shared_messages.critic_retry_count = 0  # Reset for next evaluation
             
-            if "Image-Message Alignment" in critic_response:
+            mentioned = [(critic_response.find(label), label) for label in ISSUE_LABELS.values() if label in critic_response]
+            if not self.critic_priority_rule and mentioned:
+                # No-priority ablation: take the label the critic led with, not a fixed label order
+                issue_type = min(mentioned)[1]
+                self.shared_messages.critic_retry_count = 0  # Reset on success
+            elif "Image-Message Alignment" in critic_response:
                 issue_type = "Image-Message Alignment"
                 self.shared_messages.critic_retry_count = 0  # Reset on success
             elif "Sensation Evocation" in critic_response:

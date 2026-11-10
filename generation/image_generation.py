@@ -157,7 +157,11 @@ def generate_images(args):
                     continue
             if args.T2I_model == 'AgenticEditing':
                 if args.Editing_model == 'FluxKontext':
-                    generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename))
+                    base_image_path = os.path.join('../experiments/generated_images/SensoryAds/20250916_122348/AR_ALL_Flux', sensation, filename)
+                    if not os.path.exists(base_image_path):
+                        print(f'WARNING: base image {base_image_path} not found; skipping {filename} for sensation {sensation}...')
+                        continue
+                    generated_image = Image.open(base_image_path)
                 elif args.Editing_model == 'QwenImageEdit':
                     generated_image = Image.open(os.path.join('../experiments/generated_images/SensoryAds/20260224_024108/AR_ALL_QWenImage', sensation, filename))
                     # generated_image = Image.new("RGB", (1024, 1024), (255, 255, 255))
