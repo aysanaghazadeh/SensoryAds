@@ -10,6 +10,6 @@ $PYTHON evaluation.py --config_type=DEFAULT \
 --MLLM=$MLLM \
 --fine_tuned=True \
 --model_name=my_HierarchicalCPO_$MLLM \
---model_checkpoint=1000 \
+--model_checkpoint=500 \
 --description_file=../experiments/results/SensoryAds/IN_InternVL_sensation_annotations_parsed_1200_test_ALL_real_description_generation.csv \
 --resume=True
