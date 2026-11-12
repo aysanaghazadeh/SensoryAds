@@ -1,12 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=Evosense_MLLM_eval
 #SBATCH --cluster=gpu
-#SBATCH --partition=h200
+#SBATCH --partition=l40s
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=16
 #SBATCH --gres=gpu:1
-#SBATCH --mem=128G
 #SBATCH --time=0-06:00:00
 #SBATCH --output=Evosense_MLLM_eval_%j.out
 #SBATCH --mail-user=aya34@pitt.edu
