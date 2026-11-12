@@ -5,6 +5,7 @@
 # Format: name|ablate_agents|critic_priority
 ABLATIONS=(
     "prio_none||none"
+    "no_text_refiner|text_refiner|default"
     "no_critic|critic|default"
     "criteria_no_visual||message,sensation"
     "criteria_no_message||visual,sensation"
