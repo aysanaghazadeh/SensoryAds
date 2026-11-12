@@ -185,6 +185,7 @@ class SensationEvaluation:
             scores = {}
         self.model.model.model.eval()
         sensations = list(SENSATIONS_PARENT_MAP)
+        missing_images = []
         for index, row in descriptions.iterrows():
             image_url = row['ID']
             if image_url in scores and all(sensation in scores[image_url] for sensation in sensations):
@@ -193,11 +194,17 @@ class SensationEvaluation:
                 image = os.path.join(args.result_path, 'generated_images', args.project_name, image_url)
             else:
                 image = os.path.join(args.data_path, args.test_set_images, image_url)
+            if not os.path.exists(image):
+                missing_images.append(image_url)
+                continue
             # Same layout as Evosense_LLM: [total, last token, average] log-probability.
             image_scores = get_EvoSense_MLLM(args, self.model.model, self.builder, image, sensations)
             scores[image_url] = {sensation: list(values) for sensation, values in image_scores.items()}
             print(image_url)
             json.dump(scores, open(result_file, 'w'))
+        if missing_images:
+            print(f'skipped {len(missing_images)} images not found under {os.path.dirname(image)}, '
+                  f'e.g. {missing_images[:5]}')
 
     def evaluate_T2V(self, args):
         descriptions = pd.read_csv(args.description_file)
