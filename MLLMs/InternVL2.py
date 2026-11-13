@@ -1,6 +1,6 @@
 from torch import nn
 from torchvision.transforms.functional import InterpolationMode
-from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPImageProcessor
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPImageProcessor, PreTrainedModel
 import torch
 import torchvision.transforms as T
 from PIL import Image
@@ -35,8 +35,11 @@ class InternVL(nn.Module):
             self.model = PeftModel.from_pretrained(self.model, adapter_path).eval()
             print(f'model loaded from {adapter_path}')
         else:
-            # Single GPU: device_map='auto' makes newer transformers read
-            # model.all_tied_weights_keys, which InternVL's remote code doesn't define.
+            # Newer transformers reads model.all_tied_weights_keys while loading, but InternVL's
+            # remote code never sets it. It has no tied weights, so an empty class-level default
+            # is safe; models that set it keep their own value.
+            if not hasattr(PreTrainedModel, 'all_tied_weights_keys'):
+                PreTrainedModel.all_tied_weights_keys = {}
             self.model = AutoModel.from_pretrained(
                 "OpenGVLab/InternVL3_5-8B",
                 torch_dtype=torch.bfloat16,
