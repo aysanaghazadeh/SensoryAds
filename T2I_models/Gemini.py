@@ -1,6 +1,7 @@
 from torch import nn
 from google import genai
 import base64
+from google.genai import types
 import os
 from PIL import Image
 import io
@@ -17,11 +18,23 @@ class Gemini(nn.Module):
 
     def forward(self, prompt, seed=None):
         try:
-            interaction = self.client.interactions.create(
-                model=self.model_name,
-                input=prompt,
-            )
-            image = Image.open(io.BytesIO(base64.b64decode(interaction.output_image.data)))
+            if hasattr(self.client, "interactions"):
+                interaction = self.client.interactions.create(
+                    model=self.model_name,
+                    input=prompt,
+                )
+                image = Image.open(io.BytesIO(base64.b64decode(interaction.output_image.data)))
+            else:
+                # Older google-genai without the interactions API
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(response_modalities=["IMAGE"]),
+                )
+                parts = response.candidates[0].content.parts
+                image = next((Image.open(io.BytesIO(p.inline_data.data)) for p in parts if p.inline_data is not None), None)
+                if image is None:
+                    raise ValueError(f"No image in response: {response.text}")
         except Exception as e:
             print(f"Error generating image: {e}")
             image = None
