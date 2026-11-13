@@ -1,7 +1,6 @@
 from torch import nn
 from torchvision.transforms.functional import InterpolationMode
-from transformers.quantizers.base import HfQuantizer
-from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPImageProcessor, BitsAndBytesConfig, PreTrainedModel
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPImageProcessor
 import torch
 import torchvision.transforms as T
 from PIL import Image
@@ -36,20 +35,13 @@ class InternVL(nn.Module):
             self.model = PeftModel.from_pretrained(self.model, adapter_path).eval()
             print(f'model loaded from {adapter_path}')
         else:
-            # Newer transformers reads model.all_tied_weights_keys while quantizing / inferring
-            # a device map, but InternVL's remote code never sets it. It has no tied weights,
-            # so an empty class-level default is safe; models that set it keep their own value.
-            if not hasattr(PreTrainedModel, 'all_tied_weights_keys'):
-                PreTrainedModel.all_tied_weights_keys = {}
-            # Likewise the quantizer merges model.tp_plan, which is a str for InternVL's remote
-            # code; tensor parallelism isn't used here, so skip it.
-            HfQuantizer.update_parallel_plan = lambda self, *a, **kw: None
+            # Single GPU: device_map='auto' makes newer transformers read
+            # model.all_tied_weights_keys, which InternVL's remote code doesn't define.
             self.model = AutoModel.from_pretrained(
                 "OpenGVLab/InternVL3_5-8B",
                 torch_dtype=torch.bfloat16,
-                quantization_config=BitsAndBytesConfig(load_in_8bit=True),
                 low_cpu_mem_usage=True,
-                device_map='auto',
+                device_map={"": 0},
                 trust_remote_code=True).eval()
         self.tokenizer = AutoTokenizer.from_pretrained("OpenGVLab/InternVL3_5-8B",
                                                        trust_remote_code=True,
