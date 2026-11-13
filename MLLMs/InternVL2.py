@@ -1,5 +1,6 @@
 from torch import nn
 from torchvision.transforms.functional import InterpolationMode
+from transformers.quantizers.base import HfQuantizer
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPImageProcessor, BitsAndBytesConfig, PreTrainedModel
 import torch
 import torchvision.transforms as T
@@ -40,6 +41,9 @@ class InternVL(nn.Module):
             # so an empty class-level default is safe; models that set it keep their own value.
             if not hasattr(PreTrainedModel, 'all_tied_weights_keys'):
                 PreTrainedModel.all_tied_weights_keys = {}
+            # Likewise the quantizer merges model.tp_plan, which is a str for InternVL's remote
+            # code; tensor parallelism isn't used here, so skip it.
+            HfQuantizer.update_parallel_plan = lambda self, *a, **kw: None
             self.model = AutoModel.from_pretrained(
                 "OpenGVLab/InternVL3_5-8B",
                 torch_dtype=torch.bfloat16,
