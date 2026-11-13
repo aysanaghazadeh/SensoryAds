@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=Evosense_MLLM_gen_eval
 #SBATCH --cluster=gpu
-#SBATCH --partition=a100
+#SBATCH --partition=h200
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=16
