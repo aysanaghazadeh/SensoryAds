@@ -4,6 +4,7 @@ from T2I_models.SDXLFlash import SDXL
 from T2I_models.DMD2 import DMD
 from T2I_models.AuraFlow import AuraFlow
 from T2I_models.DALLE3 import DALLE3
+from T2I_models.Gemini import Gemini
 from T2I_models.Flux import Flux
 from T2I_models.QWenImage import QWenImage
 from T2I_models.SD3 import SD3
@@ -22,6 +23,7 @@ class T2IModel(nn.Module):
             'DMD': DMD,
             'AuraFlow': AuraFlow,
             'DALLE3': DALLE3,
+            'Gemini': Gemini,
             'Flux': Flux,
             'QWenImage': QWenImage,
             'SD3': SD3

@@ -7,8 +7,7 @@ python inference.py \
 --model_type=MLLM \
 --MLLM=InternVL \
 --description_goal=image_descriptor \
---test_set_images=../experiments/generated_images/SensoryAds/20260922_092522/AR_ALL_AuraFlow \
---test_set_QA=../experiments/results/SensoryAds/AR_ALL_AuraFlow_20260922_092522.csv \
+--test_set_images=../experiments/generated_images/SensoryAds/ablation_20261110_105032_prio_none/AR_ALL_AgenticEditing \
+--test_set_QA=../experiments/results/SensoryAds/AR_ALL_AgenticEditing_ablation_20261110_105032_no_text_refiner.csv \
 --resume=True
 
-20260922_092522_AR_ALL_AuraFlow_ALL

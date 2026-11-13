@@ -1,6 +1,6 @@
 from torch import nn
 from torchvision.transforms.functional import InterpolationMode
-from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPImageProcessor
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, CLIPImageProcessor, BitsAndBytesConfig
 import torch
 import torchvision.transforms as T
 from PIL import Image
@@ -38,7 +38,7 @@ class InternVL(nn.Module):
             self.model = AutoModel.from_pretrained(
                 "OpenGVLab/InternVL3_5-8B",
                 torch_dtype=torch.bfloat16,
-                load_in_8bit=True,
+                quantization_config=BitsAndBytesConfig(load_in_8bit=True),
                 low_cpu_mem_usage=True,
                 device_map='auto',
                 trust_remote_code=True).eval()

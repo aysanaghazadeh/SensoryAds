@@ -144,7 +144,11 @@ def parse_args():
     parser.add_argument('--T2I_model',
                         type=str,
                         default='PixArt',
-                        help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate, AgenticEditing')
+                        help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate, Gemini, AgenticEditing')
+    parser.add_argument('--gemini_model',
+                        type=str,
+                        default='gemini-2.5-flash-image',
+                        help='Gemini image model used when --T2I_model=Gemini.')
     parser.add_argument('--Editing_model',
                         type=str,
                         default='FluxKontext',
