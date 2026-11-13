@@ -13,19 +13,21 @@ class Gemini(nn.Module):
         api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
         if not api_key:
             raise EnvironmentError("Set GOOGLE_API_KEY (or GEMINI_API_KEY) to use the Gemini T2I model.")
-        self.client = genai.Client(api_key=api_key)
+        # Vertex AI is opt-in: the key must also be allowed to call aiplatform.googleapis.com.
+        self.vertex = getattr(args, "gemini_backend", "gemini_api") == "vertex"
+        self.client = genai.Client(api_key=api_key, vertexai=True) if self.vertex else genai.Client(api_key=api_key)
         self.model_name = getattr(args, "gemini_model", "gemini-3.1-flash-image")
 
     def forward(self, prompt, seed=None):
         try:
-            if hasattr(self.client, "interactions"):
+            if hasattr(self.client, "interactions") and not self.vertex:
                 interaction = self.client.interactions.create(
                     model=self.model_name,
                     input=prompt,
                 )
                 image = Image.open(io.BytesIO(base64.b64decode(interaction.output_image.data)))
             else:
-                # Older google-genai without the interactions API
+                # Vertex backend, or older google-genai without the interactions API
                 response = self.client.models.generate_content(
                     model=self.model_name,
                     contents=prompt,

@@ -149,6 +149,12 @@ def parse_args():
                         type=str,
                         default='gemini-3.1-flash-image',
                         help='Gemini image model used when --T2I_model=Gemini.')
+    parser.add_argument('--gemini_backend',
+                        type=str,
+                        default='gemini_api',
+                        choices=['gemini_api', 'vertex'],
+                        help="Backend for --T2I_model=Gemini: the Gemini Developer API (generativelanguage.googleapis.com) "
+                             "or Vertex AI (aiplatform.googleapis.com). The API key must be allowed to use the chosen one.")
     parser.add_argument('--Editing_model',
                         type=str,
                         default='FluxKontext',
