@@ -191,7 +191,7 @@ class SensationEvaluation:
             if image_url in scores and all(sensation in scores[image_url] for sensation in sensations):
                 continue
             if args.Image_type == 'generated':
-                image = os.path.join(args.result_path, 'generated_images', args.project_name, image_url)
+                image = os.path.join(args.result_path, 'generated_images', args.project_name, args.test_set_images, image_url)
             else:
                 image = os.path.join(args.data_path, args.test_set_images, image_url)
             if not os.path.exists(image):

@@ -1,0 +1,46 @@
+#!/bin/bash
+#SBATCH --job-name=Evosense_MLLM_gen_eval
+#SBATCH --cluster=gpu
+#SBATCH --partition=a100
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --gres=gpu:1
+#SBATCH --time=1-00:00:00
+#SBATCH --output=Evosense_MLLM_gen_eval_%j.out
+#SBATCH --mail-user=aya34@pitt.edu
+#SBATCH --mail-type=END,FAIL
+
+module purge
+
+# Calling the env's interpreter directly: conda's activate relies on a shell
+# function that never gets initialized in a non-interactive batch shell, which
+# silently leaves you on the system python instead.
+export PYTHON=/ix/akovashka/aya34/envs/SensoryAds/bin/python
+
+: "${HF_TOKEN:?set 'export HF_TOKEN=...' in ~/.bashrc on the cluster; do not commit it}"
+export HF_HOME=/ix/akovashka/aya34/HF_CACHE
+export DATA_PATH=/ix/akovashka/aya34/projects/Data/PittAd
+export EXPERIMENTS_PATH=/ix/akovashka/aya34/projects/experiments
+export TOKENIZERS_PARALLELISM=false
+# Python block-buffers stdout when it isn't a TTY, so prints would otherwise
+# only reach the .out file in chunks (or at process exit).
+export PYTHONUNBUFFERED=1
+# Compute nodes have no outbound internet, so any Hub lookup hangs instead of
+# failing fast. Requires the weights to already be in HF_HOME.
+export HF_HUB_OFFLINE=1
+
+cd $SLURM_SUBMIT_DIR
+
+# Pass these at submission:
+# `MLLM=QWenVL MODEL_CHECKPOINT=1000 sbatch scripts/evaluate_Evosense_MLLM_generated.slurm`
+# MLLM (QWenVL or InternVL, default InternVL) must match the training run; the checkpoint is a
+# saved step of models/my_HierarchicalCPO_<MLLM>.
+
+bash scripts/evaluate_Evosense_MLLM_generated.sh
+eval_status=$?
+
+crc-job-stats
+
+# Exit on the evaluation's status, not crc-job-stats', so Slurm reports failures.
+exit $eval_status

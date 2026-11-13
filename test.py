@@ -503,55 +503,55 @@ plt.show()
 # print(len(sample1), len(sample2))
 # print('saga, DALLE3', stat, p_val)
 
-# import json
-# import numpy as np
-# flux = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-# pixart = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-# auraflow = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-# dalle3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260212_004312_AR_ALL_DALLE3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-# sd3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-# qwenimage = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260224_024108_AR_ALL_QWenImage_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-# saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-# scores = []
-# flux_scores = []
-# pixart_scores = []
-# auraflow_scores = []
-# dalle3_scores = []
-# sd3_scores = []
-# qwenimage_scores = []
-# saga_scores = []
-# for image_url in saga:
-#     if image_url == 'average':
-#         continue
-#     if image_url in saga:
-#         scores.append(saga[image_url][1])
-#         saga_scores.append((saga[image_url][1]))  
-#     if image_url in flux:
-#         scores.append(flux[image_url][1])
-#         flux_scores.append((flux[image_url][1]))  
-#     if image_url in pixart:
-#         scores.append(pixart[image_url][1])
-#         pixart_scores.append((pixart[image_url][1]))  
-#     if image_url in auraflow:
-#         scores.append(auraflow[image_url][1])
-#         auraflow_scores.append((auraflow[image_url][1]))  
-#     if image_url in dalle3:
-#         scores.append(dalle3[image_url][1])
-#         dalle3_scores.append((dalle3[image_url][1]))  
-#     if image_url in qwenimage:
-#         scores.append(qwenimage[image_url][1])
-#         qwenimage_scores.append((qwenimage[image_url][1]))  
-#     if image_url in sd3:
-#         scores.append(sd3[image_url][1])
-#         sd3_scores.append((sd3[image_url][1]))  
-# print('flux', np.mean(flux_scores), len(flux_scores))
-# print('pixart', np.mean(pixart_scores), len(pixart_scores))
-# print('auraflow', np.mean(auraflow_scores), len(auraflow_scores))
-# print('dalle3', np.mean(dalle3_scores), len(dalle3_scores))
-# print('qwenimage', np.mean(qwenimage_scores), len(qwenimage_scores))
-# print('sd3', np.mean(sd3_scores), len(sd3_scores))
-# print('saga', np.mean(saga_scores), len(saga_scores))
-# print(np.mean(scores), np.std(scores))
+import json
+import numpy as np
+flux = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+pixart = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250918_122434_AR_ALL_PixArt_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+auraflow = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_220717_AR_ALL_AuraFlow_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+dalle3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260212_004312_AR_ALL_DALLE3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+sd3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+qwenimage = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260224_024108_AR_ALL_QWenImage_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+scores = []
+flux_scores = []
+pixart_scores = []
+auraflow_scores = []
+dalle3_scores = []
+sd3_scores = []
+qwenimage_scores = []
+saga_scores = []
+for image_url in list(saga.keys())[:270]:
+    if image_url == 'average':
+        continue
+    if image_url in saga:
+        scores.append(saga[image_url][1])
+        saga_scores.append((saga[image_url][1]))  
+    if image_url in flux:
+        scores.append(flux[image_url][1])
+        flux_scores.append((flux[image_url][1]))  
+    if image_url in pixart:
+        scores.append(pixart[image_url][1])
+        pixart_scores.append((pixart[image_url][1]))  
+    if image_url in auraflow:
+        scores.append(auraflow[image_url][1])
+        auraflow_scores.append((auraflow[image_url][1]))  
+    if image_url in list(dalle3.keys())[:270]:
+        scores.append(dalle3[image_url][1])
+        dalle3_scores.append((dalle3[image_url][1]))  
+    if image_url in qwenimage:
+        scores.append(qwenimage[image_url][1])
+        qwenimage_scores.append((qwenimage[image_url][1]))  
+    if image_url in sd3:
+        scores.append(sd3[image_url][1])
+        sd3_scores.append((sd3[image_url][1]))  
+print('flux', np.mean(flux_scores), len(flux_scores))
+print('pixart', np.mean(pixart_scores), len(pixart_scores))
+print('auraflow', np.mean(auraflow_scores), len(auraflow_scores))
+print('dalle3', np.mean(dalle3_scores), len(dalle3_scores))
+print('qwenimage', np.mean(qwenimage_scores), len(qwenimage_scores))
+print('sd3', np.mean(sd3_scores), len(sd3_scores))
+print('saga', np.mean(saga_scores), len(saga_scores))
+print(np.mean(scores), np.std(scores))
 
 # RUN_ID = {
 #     'flux_sensory': '20250916_122348_AR_ALL_Flux_ALL',

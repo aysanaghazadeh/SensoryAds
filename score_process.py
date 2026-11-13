@@ -6,7 +6,7 @@ def average_score(metrics_scores):
     mean = 0.7
     std = 0.26
     values = []
-    for image_url in metrics_scores:
+    for image_url in list(metrics_scores.keys())[0:270]:
         for sensation in metrics_scores[image_url]:
             scores = metrics_scores[image_url][sensation]
             if isinstance(scores, list):
