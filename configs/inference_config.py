@@ -144,7 +144,11 @@ def parse_args():
     parser.add_argument('--T2I_model',
                         type=str,
                         default='PixArt',
-                        help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate, Gemini, AgenticEditing')
+                        help='T2I generation model chosen from: PixArt, Expressive, ECLIPSE, Translate, Gemini, GPTImage, AgenticEditing')
+    parser.add_argument('--openai_image_model',
+                        type=str,
+                        default='gpt-image-2.5-sunburst',
+                        help='OpenAI image model used when --T2I_model=GPTImage.')
     parser.add_argument('--gemini_model',
                         type=str,
                         default='gemini-3.1-flash-image',
