@@ -44,7 +44,7 @@ exit $status
 
 python evaluate.py --config_type=DEFAULT \
 --evaluation_type=llm_multi_question_persuasiveness_ranking \
---result_file=SensoryAds/IN_InternVL_ablation_20261110_105032_prio_none_AR_ALL_AgenticEditing_ALL_description_generation.csv   \
+--result_file=SensoryAds/IN_InternVL_ablation_20261109_202423_no_text_refiner_AR_ALL_AgenticEditing_ALL_description_generation.csv   \
 --VLM=InternVL \
---description_file=../experiments/results/SensoryAds/IN_InternVL_ablation_20261110_105032_prio_none_AR_ALL_AgenticEditing_ALL_description_generation.csv \
+--description_file=../experiments/results/SensoryAds/IN_InternVL_ablation_20261109_202423_no_text_refiner_AR_ALL_AgenticEditing_ALL_description_generation.csv \
 --LLM=LLAMA3_instruct

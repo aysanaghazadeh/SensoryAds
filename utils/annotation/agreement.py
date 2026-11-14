@@ -1,3 +1,4 @@
+import functools
 from scipy.stats import spearmanr
 import numpy as np
 import itertools
@@ -163,9 +164,108 @@ def bootstrap_spearman(human_scores, metric_score, n_boot=10000, ci=95, random_s
     r_obs, p_obs = spearmanr(human_scores, metric_score)
     return r_obs, (lower, upper), p_obs
 
+N_PERM = 10000
+N_BOOT = 10000
+
+
+def _kappa_from_confusion(conf):
+    conf = np.asarray(conf, dtype=float)
+    n = conf.sum((-1, -2))
+    p_o = np.trace(conf, axis1=-2, axis2=-1) / n
+    p_e = (conf.sum(-2) * conf.sum(-1)).sum(-1) / n ** 2
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return (p_o - p_e) / (1 - p_e)
+
+
+def _alpha_from_confusion(conf):
+    # two coders, no missing values: alpha = 1 - (n - 1) * sum_{c != k} o_ck / sum_{c != k} n_c n_k
+    conf = np.asarray(conf, dtype=float)
+    coincidence = conf + np.swapaxes(conf, -1, -2)
+    n_c = coincidence.sum(-2)
+    n = n_c.sum(-1)
+    expected = n ** 2 - (n_c ** 2).sum(-1)
+    observed = coincidence.sum((-1, -2)) - np.trace(coincidence, axis1=-2, axis2=-1)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return 1 - (n - 1) * observed / expected
+
+
+def _percentile_ci(boot_stats, ci):
+    alpha = 100 - ci
+    lower, upper = np.nanpercentile(boot_stats, [alpha / 2, 100 - alpha / 2])
+    return lower, upper
+
+
+def categorical_agreement_with_ci_and_p(stat_from_confusion, x, y, groups, n_boot=N_BOOT, n_perm=N_PERM, ci=95, random_state=0):
+    """Agreement statistic from the x-vs-y confusion matrix, bootstrap CI over images (pairs from one image
+    are dependent) and a two-sided permutation p-value for H0: no agreement between x and y."""
+    rng = np.random.default_rng(random_state)
+    x, y = np.asarray(x), np.asarray(y)
+    labels, codes = np.unique(np.concatenate([x, y]), return_inverse=True)
+    k = len(labels)
+    cx, cy = codes[:len(x)], codes[len(x):]
+    _, image_ids = np.unique(np.asarray(groups), return_inverse=True)
+    n_images = image_ids.max() + 1
+    per_image = np.bincount(image_ids * k * k + cx * k + cy, minlength=n_images * k * k).reshape(n_images, k, k)
+    total = per_image.sum(0)
+    observed = stat_from_confusion(total)
+
+    weights = rng.multinomial(n_images, np.full(n_images, 1 / n_images), size=n_boot)
+    boot_stats = stat_from_confusion(np.tensordot(weights, per_image, axes=(1, 0)))
+    lower, upper = _percentile_ci(boot_stats, ci)
+
+    # shuffling y gives a random table with the observed row/column totals: draw it row by row
+    row_totals, col_totals = total.sum(1), total.sum(0)
+    null_tables = np.empty((n_perm, k, k))
+    for b in range(n_perm):
+        remaining = col_totals.copy()
+        for i in range(k - 1):
+            null_tables[b, i] = rng.multivariate_hypergeometric(remaining, row_totals[i])
+            remaining = remaining - null_tables[b, i].astype(remaining.dtype)
+        null_tables[b, k - 1] = remaining
+    null_stats = stat_from_confusion(null_tables)
+    p_value = (np.sum(np.abs(null_stats) >= abs(observed)) + 1) / (n_perm + 1)
+    return observed, (lower, upper), p_value
+
+
+def pearson_agreement_with_ci_and_p(x, y, groups, n_boot=N_BOOT, n_perm=N_PERM, ci=95, random_state=0):
+    rng = np.random.default_rng(random_state)
+    x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
+    _, image_ids = np.unique(np.asarray(groups), return_inverse=True)
+    n_images = image_ids.max() + 1
+    sums = np.stack([np.bincount(image_ids, weights=w, minlength=n_images)
+                     for w in (np.ones_like(x), x, y, x * x, y * y, x * y)], axis=1)
+
+    def pearson_from_sums(s):
+        n, sx, sy, sxx, syy, sxy = (s[..., i] for i in range(6))
+        cov = sxy / n - sx * sy / n ** 2
+        return cov / np.sqrt((sxx / n - (sx / n) ** 2) * (syy / n - (sy / n) ** 2))
+
+    observed = pearson_from_sums(sums.sum(0))
+    weights = rng.multinomial(n_images, np.full(n_images, 1 / n_images), size=n_boot)
+    lower, upper = _percentile_ci(pearson_from_sums(weights @ sums), ci)
+
+    zx, zy = (x - x.mean()) / x.std(), (y - y.mean()) / y.std()
+    null_stats = np.array([np.mean(zx * rng.permutation(zy)) for _ in range(n_perm)])
+    p_value = (np.sum(np.abs(null_stats) >= abs(observed)) + 1) / (n_perm + 1)
+    return observed, (lower, upper), p_value
+
+
+kappa_with_ci_and_p = functools.partial(categorical_agreement_with_ci_and_p, _kappa_from_confusion)
+alpha_with_ci_and_p = functools.partial(categorical_agreement_with_ci_and_p, _alpha_from_confusion)
+
+
+def report_agreement(name, count, agreement_fn, x, y, groups):
+    observed, (lower, upper), p_value = agreement_fn(x, y, groups)
+    floor = 1 / (N_PERM + 1)
+    p_text = f'p<{floor:.1g}' if p_value <= floor else f'p={p_value:.2g}'
+    print(f'overall {name} for {count} images is: {observed:.4f} (95% CI [{lower:.4f}, {upper:.4f}], {p_text})')
+    return observed, (lower, upper), p_value
+
+
 def get_human_score_agreement(metric_scores, human_annotations):
     human_scores_list = []
     metrics_score_list = []
+    groups = []
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
     for image_url in metric_scores:
@@ -176,11 +276,13 @@ def get_human_score_agreement(metric_scores, human_annotations):
         #     continue
         human_scores_per_image = get_human_scores_per_image(human_annotations, image_url, sensation_list)
         metrics_scores_per_image = get_scores_per_image(metric_scores, image_url, sensation_list)
-        
+
         human_scores_list += human_scores_per_image
         metrics_score_list += metrics_scores_per_image
-    print(f'overall correlation for {count} images is:', compute_pearson_correlation(metrics_score_list, human_scores_list))
+        groups += [count] * len(human_scores_per_image)
     print(f'total number of image-sensation pair is {len(metrics_score_list)}')
+    return report_agreement('correlation', count, pearson_agreement_with_ci_and_p,
+                            metrics_score_list, human_scores_list, groups)
 
 
 def get_human_human_score_agreement(human1_annotations, human2_annotations):
@@ -203,6 +305,7 @@ def get_human_human_score_agreement(human1_annotations, human2_annotations):
 def get_krippendorff_agreement(metric_scores, human_annotations):
     human_preferences = []
     metrics_preferences = []
+    groups = []
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
     for image_url in metric_scores:
@@ -212,9 +315,11 @@ def get_krippendorff_agreement(metric_scores, human_annotations):
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
+        groups += [count] * len(human_preferences_per_image)
 
     print(len(metrics_preferences), len(human_preferences))
-    print(f'overall alpha agreement for {count} images is:', compute_krippendorff(metrics_preferences, human_preferences))
+    return report_agreement('alpha agreement', count, alpha_with_ci_and_p,
+                            metrics_preferences, human_preferences, groups)
 
 def get_per_class_krippendorff_agreement(metric_scores, human_annotations):
     human_preferences = {
@@ -309,6 +414,7 @@ def get_sensations(human_annotations, image_url):
 def get_kappa_agreement(metric_scores, human_annotations):
     human_preferences = []
     metrics_preferences = []
+    groups = []
     sensation_list = list(SENSATIONS_PARENT_MAP)
     count = 0
     # descriptions = pd.read_csv('/Users/aysanaghazadeh/experiments/results/SensoryAds/new_results/IN_InternVL_train_images_total_ALL_description_generation.csv')
@@ -328,8 +434,9 @@ def get_kappa_agreement(metric_scores, human_annotations):
         human_preferences_per_image, metrics_preferences_per_image = get_preference_per_image(human_annotations, metric_scores, sensation_list, image_url)
         metrics_preferences += metrics_preferences_per_image
         human_preferences += human_preferences_per_image
-    print(f'overall kappa agreement for {count} images is:', compute_cohen_kappa(metrics_preferences, human_preferences))
-    # print(f'CI for kappa agreement for {count} images is:', bootstrap_kappa(metrics_preferences, human_preferences))
+        groups += [count] * len(human_preferences_per_image)
+    return report_agreement('kappa agreement', count, kappa_with_ci_and_p,
+                            metrics_preferences, human_preferences, groups)
 
 def get_human_human_kappa_agreement(human1_annotations, human2_annotations):
     human1_preferences = []
