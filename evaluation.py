@@ -360,6 +360,37 @@ class SensationEvaluation:
                 print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
                 json.dump(scores, open(result_file, 'w'))
             
+    def evaluate_LLM_GT_Sensation(self, args):
+        descriptions = pd.read_csv(args.description_file)
+        result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]
+        directory_path = os.path.join(args.result_path, 'results', args.project_name, f'{args.evaluation_type}_{args.LLM}')
+        os.makedirs(directory_path, exist_ok=True)
+        result_file = os.path.join(directory_path, result_filename)
+        if os.path.exists(result_file) and args.resume:
+            scores = json.load(open(result_file))
+            print(f'{result_file} already exists and {len(scores)} images are processed and will be skipped.')
+        else:
+            if os.path.exists(result_file):
+                scores = json.load(open(result_file))
+                print(f'{result_file} already exists, and {len(scores)} images will be overwritten.')
+            else:
+                print(f'{result_file} does not exist and will be created.')
+            scores = {}
+        for index, row in descriptions.iterrows():
+            image_url = '/'.join(row.ID.split('/')[-2:])
+            sensation = row.ID.split('/')[0]
+            if args.AD_type == 'Sensation':
+                sensation = row.ID.split('/')[1]
+            if image_url in scores and sensation in scores[image_url]:
+                continue
+            description = row['description'].split('Q2:')[-1]
+            if image_url not in scores:
+                scores[image_url] = {}
+            score = get_LLM_Judge_Score(args, self.model, description, sensation)
+            scores[image_url][sensation] = score
+            print(f'{image_url} \n {json.dumps(scores[image_url], indent=4)}')
+            json.dump(scores, open(result_file, 'w'))
+
     def evaluate_MLLM_GT_Sensation(self, args):
         descriptions = pd.read_csv(args.description_file)
         result_filename = args.description_file.replace('.csv', '.json').split('/')[-1]

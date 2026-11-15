@@ -45,6 +45,14 @@ CRITIC_CHECKS = {
 - Sensation is strong?
 - If NO → "Sensation Evocation\"""",
 }
+NO_ISSUE_LABEL = "No Issue"
+NO_ISSUE_NOTE = """
+
+NO ISSUE OPTION (CRITICAL):
+- If the image has no visual inconsistencies, clearly conveys the advertisement message, AND strongly evokes the target sensation, output "No Issue" followed by a one-sentence explanation.
+- NEVER output an issue label when your own explanation says the image is already good; output "No Issue" instead.
+- This option overrides the "EXACTLY ONE of these strings" requirement above.
+"""
 _PRIORITY_CONDITIONS = {
     "visual": "Visual Element Inconsistency applies",
     "message": "the advertisement message is NOT clearly conveyed (including missing product)",
@@ -78,11 +86,14 @@ def parse_critic_priority(spec):
     return order, True
 
 
-def build_priority_rule(order, use_rule=True):
+def build_priority_rule(order, use_rule=True, allow_no_issue=True):
     if not use_rule:
-        return ("NO PRIORITY RULE: if several issues apply, output the single issue you judge most severe "
+        rule = ("NO PRIORITY RULE: if several issues apply, output the single issue you judge most severe "
                 "for this advertisement.")
-    if order == CRITIC_DEFAULT_ORDER:
+        if allow_no_issue:
+            rule += f' If no issue applies, output "{NO_ISSUE_LABEL}".'
+        return rule
+    if order == CRITIC_DEFAULT_ORDER and not allow_no_issue:
         return """PRIORITY RULE (CRITICAL):
 1) If Visual Element Inconsistency applies → output "Visual Element Inconsistency"
 2) Else if the advertisement message is NOT clearly conveyed (including missing product) → output "Image-Message Alignment"
@@ -91,16 +102,18 @@ def build_priority_rule(order, use_rule=True):
     for n, key in enumerate(order, 1):
         lead = "If" if n == 1 else "Else if"
         lines.append(f'{n}) {lead} {_PRIORITY_CONDITIONS[key]} → output "{ISSUE_LABELS[key]}"')
+    if allow_no_issue:
+        lines.append(f'{len(order) + 1}) Else (no issue applies) → output "{NO_ISSUE_LABEL}"')
     return "\n".join(lines)
 
 
-def build_critic_system_prompt(order, use_rule):
-    """Swap the priority-rule section of CRITIC_SYSTEM_PROMPT; unchanged for the default setup."""
-    if order == CRITIC_DEFAULT_ORDER and use_rule:
+def build_critic_system_prompt(order, use_rule, allow_no_issue=True):
+    """Swap the priority-rule section of CRITIC_SYSTEM_PROMPT; unchanged for the legacy default setup."""
+    if order == CRITIC_DEFAULT_ORDER and use_rule and not allow_no_issue:
         return CRITIC_SYSTEM_PROMPT
     head, rest = CRITIC_SYSTEM_PROMPT.split("PRIORITY RULE (CRITICAL):")
     tail = rest[rest.index("OUTPUT FORMAT REQUIREMENT"):]
-    prompt = head + build_priority_rule(order, use_rule) + "\n\n" + tail
+    prompt = head + build_priority_rule(order, use_rule, allow_no_issue) + "\n\n" + tail
     if len(order) < 3:
         for key in CRITIC_DEFAULT_ORDER:
             if key not in order:
@@ -111,7 +124,7 @@ def build_critic_system_prompt(order, use_rule):
         kept = iter(range(1, len(order) + 1))
         prompt = re.sub(r"(?m)^\d\. (?=(Visual Element|Image-Message|Sensation Evocation) )", lambda m: f"{next(kept)}. ", prompt)
         prompt = prompt.replace("these three strings", f"these {len(order)} strings").replace("of the three labels", f"of the {len(order)} labels")
-    return prompt
+    return prompt + NO_ISSUE_NOTE if allow_no_issue else prompt
 
 
 def _flatten_sensations_all(node):
@@ -207,6 +220,8 @@ class ImageEditingAgent:
         self.ablated_agents = parse_ablated_agents(getattr(args, "ablate_agents", ""))
         self.critic_order, self.critic_priority_rule = parse_critic_priority(getattr(args, "critic_priority", "default"))
         self.critic_labels = {ISSUE_LABELS[k] for k in self.critic_order}
+        # Without this the critic can only ever report an issue, so runs rarely end before max_round.
+        self.allow_no_issue = getattr(args, "critic_no_issue_option", "on") == "on"
         self.max_edits_without_critic = getattr(args, "ablation_max_edits", 3)
         quantization_config = PipelineQuantizationConfig(
                                     quant_backend="bitsandbytes_4bit",
@@ -235,7 +250,7 @@ class ImageEditingAgent:
 
         self.critic_agent = MultimodalConversableAgent(
             name="critic",
-            system_message=build_critic_system_prompt(self.critic_order, self.critic_priority_rule),
+            system_message=build_critic_system_prompt(self.critic_order, self.critic_priority_rule, self.allow_no_issue),
             human_input_mode="NEVER",
             max_consecutive_auto_reply=10,
             llm_config={"config_list": [{"model": "gpt-4o", "api_key": os.environ["OPENAI_API_KEY"]}], "temperature": 0.5,
@@ -394,9 +409,12 @@ class ImageEditingAgent:
         return image
 
 
-    def _issue_label_lines(self, bullet=True):
+    def _issue_label_lines(self, bullet=True, no_issue=True):
         prefix = "- " if bullet else ""
-        return "\n".join(f"{prefix}{ISSUE_LABELS[k]}" for k in self.critic_order)
+        labels = [ISSUE_LABELS[k] for k in self.critic_order]
+        if self.allow_no_issue and no_issue:
+            labels.append(NO_ISSUE_LABEL)
+        return "\n".join(f"{prefix}{label}" for label in labels)
 
     def _fallback_label(self, preferred):
         """Return `preferred` if that criterion is active in this ablation, else the top-priority active one."""
@@ -407,7 +425,7 @@ class ImageEditingAgent:
         for key in self.critic_order if self.critic_priority_rule else [k for k in CRITIC_DEFAULT_ORDER if k in self.critic_order]:
             checks.append(CRITIC_CHECKS[key])
         numbered = "\n".join(f"{n}. {c}" for n, c in enumerate(checks, 1))
-        return f"EVALUATION:\n{numbered}\n\n{build_priority_rule(self.critic_order, self.critic_priority_rule)}"
+        return f"EVALUATION:\n{numbered}\n\n{build_priority_rule(self.critic_order, self.critic_priority_rule, self.allow_no_issue)}"
 
     def _edit_and_evaluate(self, prompt, group_chat):
         new_image = self.image_editing(prompt, self.shared_messages.images[-1], group_chat)
@@ -702,7 +720,10 @@ REMEMBER: You are evaluating, not describing. Output only one string followed by
                     self.shared_messages.critic_retry_count = 0  # Reset for next evaluation
             
             mentioned = [(critic_response.find(label), label) for label in ISSUE_LABELS.values() if label in critic_response]
-            if not self.critic_priority_rule and mentioned:
+            if self.allow_no_issue and critic_response.lstrip().lower().startswith("no issue"):
+                issue_type = "No Issue"
+                self.shared_messages.critic_retry_count = 0  # Reset on success
+            elif not self.critic_priority_rule and mentioned:
                 # No-priority ablation: take the label the critic led with, not a fixed label order
                 issue_type = min(mentioned)[1]
                 self.shared_messages.critic_retry_count = 0  # Reset on success
@@ -785,7 +806,7 @@ Strictly follow the following format:
 <explanation of the you chose the issue>
 
 Output EXACTLY ONE of these strings followed by the explanation in one sentence (nothing else):
-{self._issue_label_lines(bullet=False)}"""
+{self._issue_label_lines(bullet=False, no_issue=False)}"""
                         }
                         self.group_chat.messages.append(retry_message)
                         return self.critic_agent

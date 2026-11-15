@@ -205,6 +205,7 @@ def parse_args():
                                  'PickScore_GT_Sensation',
                                  'CLIPScore_GT_Sensation',
                                  'MLLM_GT_Sensation',
+                                 'LLM_GT_Sensation',
                                  'Evosense_LLM',
                                  'Evosense_LLM_generated',
                                  'Evosense_MLLM',

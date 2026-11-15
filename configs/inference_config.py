@@ -121,6 +121,13 @@ def parse_args():
                         help="Critic priority-rule ablation. 'default' = visual,message,sensation. Any comma list "
                              "of visual/message/sensation sets the priority order; omitted criteria are dropped "
                              "from the critic. 'none' keeps all criteria but removes the priority rule.")
+    parser.add_argument('--critic_no_issue_option',
+                        type=str,
+                        default='on',
+                        choices=['on', 'off'],
+                        help="'on' lets the FLUX agentic critic answer 'No Issue' so the loop can end early. "
+                             "'off' reproduces the older behavior, where the critic could only name an issue and "
+                             "runs usually ended at max_round.")
     parser.add_argument('--ablation_max_edits',
                         type=int,
                         default=3,
