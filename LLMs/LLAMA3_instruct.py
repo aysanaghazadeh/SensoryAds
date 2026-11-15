@@ -35,7 +35,7 @@ class LLAMA3Instruct(nn.Module):
                 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
                 self.model = AutoModelForCausalLM.from_pretrained(model_id,
                                                                   token=os.environ.get('HF_TOKEN'),
-                                                                  load_in_8bit=True,
+                                                                  quantization_config=quantization_config,
                                                                   device_map='auto')
                 self.tokenizer = AutoTokenizer.from_pretrained(model_id,
                                                                token=os.environ.get('HF_TOKEN'))
