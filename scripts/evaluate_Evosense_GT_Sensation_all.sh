@@ -5,6 +5,7 @@
 #   CPO LLAMA3_instruct                     : InternVL descriptions only
 #   SFT LLAMA3_instruct                     : InternVL descriptions only
 # Run from the repo root: bash scripts/evaluate_Evosense_GT_Sensation_all.sh
+PYTHON=${PYTHON:-python}
 RESULTS=../experiments/results/SensoryAds
 
 # Checkpoints inside ../models/<model_name>/checkpoint-<N>. CPO/SFT are the ones
@@ -26,10 +27,15 @@ INTERNVL_NAMES=(
 run_evosense() {  # description_name LLM [fine_tuned model_name checkpoint]
   local NAME=$1 LLM=$2 FT=${3:-False} MODEL_NAME=$4 CKPT=$5
   local ARGS=()
+  # evaluation.py loads the model before reading the csv, so skip up front.
+  if [ ! -f "$RESULTS/$NAME.csv" ]; then
+    echo "SKIP (missing description file): $RESULTS/$NAME.csv"
+    return
+  fi
   if [ "$FT" = "True" ]; then
     ARGS=(--fine_tuned=True --model_name=$MODEL_NAME --model_checkpoint=$CKPT)
   fi
-  python evaluation.py --config_type=DEFAULT \
+  $PYTHON evaluation.py --config_type=DEFAULT \
   --evaluation_type=Evosense_GT_Sensation \
   --description_file=$RESULTS/$NAME.csv \
   --LLM=$LLM \
