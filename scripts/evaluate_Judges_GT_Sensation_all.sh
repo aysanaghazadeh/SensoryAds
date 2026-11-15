@@ -10,7 +10,7 @@ RUNS=(
 "IN_InternVL_20250916_122348_AR_ALL_Flux_ALL_description_generation|20250916_122348/AR_ALL_Flux"
 )
 
-for LLM in QWenLM InternLM; do
+for LLM in QWenLM InternLM LLAMA3_instruct; do
   for run in "${RUNS[@]}"; do
     NAME="${run%%|*}"
     IMAGES="${run##*|}"
