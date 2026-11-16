@@ -36,6 +36,7 @@ class LLAMA3Instruct(nn.Module):
                 self.model = AutoModelForCausalLM.from_pretrained(model_id,
                                                                   token=os.environ.get('HF_TOKEN'),
                                                                   quantization_config=quantization_config,
+                                                                  dtype=torch.bfloat16,
                                                                   device_map='auto')
                 self.tokenizer = AutoTokenizer.from_pretrained(model_id,
                                                                token=os.environ.get('HF_TOKEN'))
