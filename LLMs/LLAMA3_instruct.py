@@ -35,7 +35,9 @@ class LLAMA3Instruct(nn.Module):
                 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
                 self.model = AutoModelForCausalLM.from_pretrained(model_id,
                                                                   token=os.environ.get('HF_TOKEN'),
-                                                                  quantization_config=quantization_config,
+                                                                  # 8-bit bitsandbytes gave NaN/inf logits under
+                                                                  # transformers 5.x, so load unquantized in bf16
+                                                                  # (same as the fine-tuned branch).
                                                                   dtype=torch.bfloat16,
                                                                   device_map='auto')
                 self.tokenizer = AutoTokenizer.from_pretrained(model_id,
