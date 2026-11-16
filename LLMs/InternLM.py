@@ -34,7 +34,8 @@ class InternLM(nn.Module):
             tokenized_chat = self.tokenizer.apply_chat_template(messages,
                                                                 tokenize=True,
                                                                 add_generation_prompt=True,
-                                                                return_tensors="pt").to(self.args.device)
+                                                                return_tensors="pt",
+                                                                return_dict=False).to(self.args.device)
 
             generated_ids = self.model.generate(tokenized_chat)
 

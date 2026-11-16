@@ -60,7 +60,8 @@ class LLAMA3Instruct(nn.Module):
             input_ids = self.tokenizer.apply_chat_template(
                 messages,
                 add_generation_prompt=True,
-                return_tensors="pt"
+                return_tensors="pt",
+                return_dict=False
             ).to(self.model.device)
 
             terminators = [
@@ -89,7 +90,8 @@ class LLAMA3Instruct(nn.Module):
             input_ids = self.tokenizer.apply_chat_template(
                 messages,
                 add_generation_prompt=True,
-                return_tensors="pt"
+                return_tensors="pt",
+                return_dict=False
             ).to(self.model.device)
 
             terminators = [
