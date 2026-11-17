@@ -514,11 +514,13 @@ qwenimage = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_2026022
 saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
 no_prio = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_ablation_20261110_105032_prio_none_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
 no_critic = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_ablation_20261113_092704_no_critic_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
-no_text_refiner = 
+pixart_no = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_ablation_20260908_001428_AR_ALL_PixArt_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+# no_text_refiner = 
 mean = 0.66
 std = 0.07
 minimum = -1.0
 maximum = 0.5
+pixart_no_scores = []
 scores = []
 flux_scores = []
 pixart_scores = []
@@ -559,6 +561,9 @@ for image_url in list(saga.keys()):
     if image_url in no_critic:
         scores.append((((no_critic[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
         no_critic_scores.append((((no_critic[image_url][1] - mean) / std) - minimum) / (maximum - minimum)) 
+    if image_url in pixart_no:
+        scores.append((((pixart_no[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        pixart_no_scores.append((((pixart_no[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
 print('flux', np.mean(flux_scores), np.std(flux_scores), len(flux_scores))
 print('pixart', np.mean(pixart_scores), np.std(pixart_scores), len(pixart_scores))
 print('auraflow', np.mean(auraflow_scores), len(auraflow_scores))
@@ -568,6 +573,7 @@ print('sd3', np.mean(sd3_scores), np.std(sd3_scores), len(sd3_scores))
 print('saga', np.mean(saga_scores), np.std(saga_scores), len(saga_scores))
 print('no_prio', np.mean(no_prio_scores), np.std(no_prio_scores), len(no_prio_scores))
 print('no_critic', np.mean(no_critic_scores), np.std(no_critic_scores), len(no_critic_scores))
+print('pixart_no', np.mean(pixart_no_scores), np.std(pixart_no_scores), len(pixart_no_scores))
 print(np.mean(scores), np.std(scores))
 print(min(scores), max(scores))
 

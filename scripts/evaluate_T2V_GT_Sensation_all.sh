@@ -1,5 +1,6 @@
 # T2V metrics (VQAScore, ImageReward, PickScore, CLIPScore). Needs the env with t2v_metrics (transformers<5).
 # Run from the repo root: bash scripts/evaluate_T2V_GT_Sensation_all.sh
+PYTHON=${PYTHON:-python}
 RESULTS=../experiments/results/SensoryAds
 
 # description csv (without .csv) | test_set_images
@@ -14,7 +15,7 @@ for METRIC in VQA_score Image_Reward PickScore CLIPScore; do
   for run in "${RUNS[@]}"; do
     NAME="${run%%|*}"
     IMAGES="${run##*|}"
-    python evaluation.py --config_type=DEFAULT \
+    $PYTHON evaluation.py --config_type=DEFAULT \
     --evaluation_type=${METRIC}_GT_Sensation \
     --description_file=$RESULTS/$NAME.csv \
     --test_set_images=$IMAGES \

@@ -1,5 +1,6 @@
 # LLM judge (LLAMA3_instruct) on GT sensations.
 # Run from the repo root: bash scripts/evaluate_LLM_Judge_LLAMA3_GT_Sensation_all.sh
+PYTHON=${PYTHON:-python}
 RESULTS=../experiments/results/SensoryAds
 
 # description csv (without .csv) | test_set_images
@@ -13,7 +14,7 @@ RUNS=(
 for run in "${RUNS[@]}"; do
   NAME="${run%%|*}"
   IMAGES="${run##*|}"
-  python evaluation.py --config_type=DEFAULT \
+  $PYTHON evaluation.py --config_type=DEFAULT \
   --evaluation_type=LLM_GT_Sensation \
   --description_file=$RESULTS/$NAME.csv \
   --test_set_images=$IMAGES \

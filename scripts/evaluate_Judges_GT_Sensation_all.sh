@@ -1,5 +1,6 @@
 # LLM judge (QWenLM, InternLM) and MLLM judge (QWenVL, InternVL) on GT sensations.
 # Run from the repo root: bash scripts/evaluate_Judges_GT_Sensation_all.sh
+PYTHON=${PYTHON:-python}
 RESULTS=../experiments/results/SensoryAds
 
 # description csv (without .csv) | test_set_images
@@ -14,7 +15,7 @@ for LLM in QWenLM InternLM LLAMA3_instruct; do
   for run in "${RUNS[@]}"; do
     NAME="${run%%|*}"
     IMAGES="${run##*|}"
-    python evaluation.py --config_type=DEFAULT \
+    $PYTHON evaluation.py --config_type=DEFAULT \
     --evaluation_type=LLM_GT_Sensation \
     --description_file=$RESULTS/$NAME.csv \
     --test_set_images=$IMAGES \
@@ -30,7 +31,7 @@ for MLLM in QWenVL InternVL; do
   for run in "${RUNS[@]}"; do
     NAME="${run%%|*}"
     IMAGES="${run##*|}"
-    python evaluation.py --config_type=DEFAULT \
+    $PYTHON evaluation.py --config_type=DEFAULT \
     --evaluation_type=MLLM_GT_Sensation \
     --description_file=$RESULTS/$NAME.csv \
     --test_set_images=$IMAGES \
