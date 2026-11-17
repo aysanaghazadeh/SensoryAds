@@ -289,7 +289,7 @@ plt.xlabel('SenseScore', fontsize=16)
 plt.ylabel('Persuasion', fontsize=16)
 plt.title('Persuasion vs SenseScore for all models', fontsize=18)
 plt.legend(ncol=2, fontsize=14)
-plt.show()
+# plt.show()
 # # count = 0
 # # for i, filename in enumerate(filenames):
 # #     if 'persuasion.json' in filename and 'train_images_total' not in filename and '20250220_011712' not in filename:
@@ -512,6 +512,13 @@ dalle3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260212_0
 sd3 = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20250916_130149_AR_ALL_SD3_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
 qwenimage = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260224_024108_AR_ALL_QWenImage_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
 saga = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_20260129_002256_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+no_prio = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_ablation_20261110_105032_prio_none_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+no_critic = json.load(open('/Users/aysanaghazadeh/SensoryAds/IN_InternVL_ablation_20261113_092704_no_critic_AR_ALL_AgenticEditing_ALL_description_generationLLAMA3_instruct_text_image_alignment_isFineTunedTrue_3000_weighted.json'))
+no_text_refiner = 
+mean = 0.66
+std = 0.07
+minimum = -1.0
+maximum = 0.5
 scores = []
 flux_scores = []
 pixart_scores = []
@@ -520,38 +527,49 @@ dalle3_scores = []
 sd3_scores = []
 qwenimage_scores = []
 saga_scores = []
-for image_url in list(saga.keys())[:270]:
-    if image_url == 'average':
+no_prio_scores = []
+no_critic_scores = []
+for image_url in list(saga.keys()):
+    if image_url == 'average' or image_url not in dalle3 or image_url not in no_prio:
         continue
     if image_url in saga:
-        scores.append(saga[image_url][1])
-        saga_scores.append((saga[image_url][1]))  
+        scores.append((((saga[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        saga_scores.append((((saga[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
     if image_url in flux:
-        scores.append(flux[image_url][1])
-        flux_scores.append((flux[image_url][1]))  
+        scores.append((((flux[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        flux_scores.append((((flux[image_url][1] - mean) / std) - minimum) / (maximum - minimum)) 
     if image_url in pixart:
-        scores.append(pixart[image_url][1])
-        pixart_scores.append((pixart[image_url][1]))  
+        scores.append((((pixart[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        pixart_scores.append((((pixart[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
     if image_url in auraflow:
-        scores.append(auraflow[image_url][1])
-        auraflow_scores.append((auraflow[image_url][1]))  
-    if image_url in list(dalle3.keys())[:270]:
-        scores.append(dalle3[image_url][1])
-        dalle3_scores.append((dalle3[image_url][1]))  
+        scores.append((((auraflow[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        auraflow_scores.append((((auraflow[image_url][1] - mean) / std) - minimum) / (maximum - minimum))  
+    if image_url in list(dalle3.keys()):
+        scores.append((((dalle3[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        dalle3_scores.append((((dalle3[image_url][1] - mean) / std) - minimum) / (maximum - minimum))  
     if image_url in qwenimage:
-        scores.append(qwenimage[image_url][1])
-        qwenimage_scores.append((qwenimage[image_url][1]))  
+        scores.append((((qwenimage[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        qwenimage_scores.append((((qwenimage[image_url][1] - mean) / std) - minimum) / (maximum - minimum))  
     if image_url in sd3:
-        scores.append(sd3[image_url][1])
-        sd3_scores.append((sd3[image_url][1]))  
-print('flux', np.mean(flux_scores), len(flux_scores))
-print('pixart', np.mean(pixart_scores), len(pixart_scores))
+        scores.append((((sd3[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        sd3_scores.append((((sd3[image_url][1] - mean) / std) - minimum) / (maximum - minimum))  
+    if image_url in no_prio:
+        scores.append((((no_prio[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        no_prio_scores.append((((no_prio[image_url][1] - mean) / std) - minimum) / (maximum - minimum)) 
+    if image_url in no_critic:
+        scores.append((((no_critic[image_url][1] - mean) / std) - minimum) / (maximum - minimum))
+        no_critic_scores.append((((no_critic[image_url][1] - mean) / std) - minimum) / (maximum - minimum)) 
+print('flux', np.mean(flux_scores), np.std(flux_scores), len(flux_scores))
+print('pixart', np.mean(pixart_scores), np.std(pixart_scores), len(pixart_scores))
 print('auraflow', np.mean(auraflow_scores), len(auraflow_scores))
-print('dalle3', np.mean(dalle3_scores), len(dalle3_scores))
-print('qwenimage', np.mean(qwenimage_scores), len(qwenimage_scores))
-print('sd3', np.mean(sd3_scores), len(sd3_scores))
-print('saga', np.mean(saga_scores), len(saga_scores))
+print('dalle3', np.mean(dalle3_scores), np.std(dalle3_scores), len(dalle3_scores))
+print('qwenimage', np.mean(qwenimage_scores), np.std(qwenimage_scores), len(qwenimage_scores))
+print('sd3', np.mean(sd3_scores), np.std(sd3_scores), len(sd3_scores))
+print('saga', np.mean(saga_scores), np.std(saga_scores), len(saga_scores))
+print('no_prio', np.mean(no_prio_scores), np.std(no_prio_scores), len(no_prio_scores))
+print('no_critic', np.mean(no_critic_scores), np.std(no_critic_scores), len(no_critic_scores))
 print(np.mean(scores), np.std(scores))
+print(min(scores), max(scores))
 
 # RUN_ID = {
 #     'flux_sensory': '20250916_122348_AR_ALL_Flux_ALL',
