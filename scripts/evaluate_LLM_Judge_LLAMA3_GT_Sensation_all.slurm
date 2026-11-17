@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=LLM_Judge_LLAMA3_GT
 #SBATCH --cluster=gpu
-#SBATCH --partition=h200
+#SBATCH --partition=l40s
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=16
