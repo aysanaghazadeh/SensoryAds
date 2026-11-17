@@ -74,11 +74,15 @@ class LLAMA3Instruct(nn.Module):
 
             outputs = self.model.generate(
                 input_ids,
+                attention_mask=torch.ones_like(input_ids),
+                pad_token_id=self.tokenizer.eos_token_id,
                 max_new_tokens=256,
                 eos_token_id=terminators,
                 do_sample=True,
                 temperature=0.6,
                 top_p=0.9,
+                # An occasional NaN/inf logit made torch.multinomial abort the whole run.
+                remove_invalid_values=True,
             )
             response = outputs[0][input_ids.shape[-1]:]
             response = self.tokenizer.decode(response, skip_special_tokens=True)
