@@ -80,9 +80,10 @@ class ImageGenerationPromptGenerator:
 
     @staticmethod
     def get_LLM_input_prompt(args, action_reason, sentiment=None, topic=None, audience=None, sensation=None):
-        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience, 'sensation': sensation}
+        data = {'action_reason': action_reason, 'sentiment': sentiment, 'topic': topic, 'audience': audience,
+                'sensation': sensation, 'physical_sensation': sensation}
         env = Environment(loader=FileSystemLoader(args.prompt_path))
-        template = env.get_template(args.llm_prompt)
+        template = env.get_template(args.LLM_prompt)
         output = template.render(**data)
         return output
 
@@ -182,7 +183,7 @@ class ImageGenerationPromptGenerator:
         QA = json.load(open(QA_path))
         action_reason = QA[image_filename][0]
         
-        LLM_input_prompt = self.get_LLM_input_prompt(args, action_reason, sentiment, topic, audience)
+        LLM_input_prompt = self.get_LLM_input_prompt(args, action_reason, sentiment, topic, audience, sensation=physical_sensation)
         description = self.LLM_model(LLM_input_prompt)
         # description = f'{description}'
         if 'objects:' in description:
